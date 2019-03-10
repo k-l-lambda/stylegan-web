@@ -1,0 +1,10 @@
+
+
+2010.10.31	K.L.	<k.l.lambda@gmail.com>
+
+	+	gan-server.py created.
+
+	|	Project setup based on NVlabs/stylegan.
+
+
+------------------------------------------------------- stylegan-web ChangeLog -------------------------------------------------------
