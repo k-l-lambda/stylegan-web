@@ -3,6 +3,7 @@ import io
 import os
 import sys
 import pickle
+import json
 import numpy as np
 import dnnlib
 import dnnlib.tflib
@@ -53,11 +54,24 @@ class Handler(BaseHTTPRequestHandler):
 		if self.path == '/test':
 			self.handTest()
 			return
+		if self.path == '/spec':
+			global model_name
+			global Gs
+
+			self.send_response(200)
+			self.send_header('Content-type', 'application/json')
+			self.end_headers()
+			self.wfile.write(json.dumps({
+				'model': model_name,
+				'latents_dimensions': Gs.input_shape[1],
+			}).encode('ascii'))
+
+			return
 		elif self.path == '/':
 			self.path = '/index.html'
 
 		# static files
-		filename = os.path.join(os.curdir, './front-end', self.path[1:])
+		filename = os.path.join(os.curdir, './dist', self.path[1:])
 		print('filename:', filename)
 
 		if os.path.isfile(filename):
@@ -75,6 +89,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main(argv):
 	#print('argv:', argv)
+	global model_name
 
 	model_name = argv[1] if len(argv) > 1 else'ffhq'
 	model_url = MODEL_URLS.get(model_name)
