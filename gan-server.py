@@ -1,5 +1,6 @@
 ﻿
 import io
+import os
 import sys
 import pickle
 import numpy as np
@@ -20,6 +21,11 @@ MODEL_URLS = {
 	'cats':		'http://127.0.0.1/karras2019stylegan-cats-256x256.pkl',			# d09fc0938ea1aecf2af74ac0432e1279
 }
 
+
+MIME_TYPES = {
+	'.html': 'text/html',
+	'.js': 'application/javascript',
+}
 
 
 
@@ -46,6 +52,21 @@ class Handler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		if self.path == '/test':
 			self.handTest()
+			return
+		elif self.path == '/':
+			self.path = '/index.html'
+
+		# static files
+		filename = os.path.join(os.curdir, './front-end', self.path[1:])
+		print('filename:', filename)
+
+		if os.path.isfile(filename):
+			ext = os.path.splitext(filename)[1]
+
+			self.send_response(200)
+			self.send_header('Content-type', MIME_TYPES.get(ext, 'text/plain'))
+			self.end_headers()
+			self.wfile.write(open(filename, 'rb').read())
 		else:
 			self.send_response(404)
 			self.end_headers()
@@ -80,6 +101,7 @@ def main(argv):
 		server.serve_forever()
 	except:
 		print('server interrupted:', sys.exc_info())
+
 
 
 if __name__ == "__main__":

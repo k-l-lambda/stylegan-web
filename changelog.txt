@@ -2,6 +2,8 @@
 
 2019.3.10	K.L.	<k.l.lambda@gmail.com>
 
+	+	index.html: front end home page created.
+
 	+	gan-server.py: encode result image to PNG bytes.
 
 	+	gan-server.py: added test handler.
