@@ -20,8 +20,7 @@ def main():
     print('t1:', time.time() - t0)
 
     # Load pre-trained network.
-    #url = 'https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ' # karras2019stylegan-ffhq-1024x1024.pkl
-    url = 'http://127.0.0.1:8081/Visual%20Studio%202015/Projects/stylegan/karras2019stylegan-ffhq-1024x1024.pkl'
+    url = 'https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ' # karras2019stylegan-ffhq-1024x1024.pkl
     with dnnlib.util.open_url(url, cache_dir=config.cache_dir) as f:
         #print('f:', f)
         print('t2:', time.time() - t0)
