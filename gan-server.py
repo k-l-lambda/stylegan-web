@@ -1,10 +1,11 @@
-
+﻿
+import io
 import sys
-import os
 import pickle
 import numpy as np
 import dnnlib
-import dnnlib.tflib as tflib
+import dnnlib.tflib
+import PIL.Image
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import config
@@ -27,16 +28,20 @@ class Handler(BaseHTTPRequestHandler):
 		global Gs
 		#print('Gs:', Gs)
 
-		rnd = np.random.RandomState(7)
+		rnd = np.random.RandomState(0)
 		latents = rnd.randn(1, Gs.input_shape[1])
 
 		# Generate image.
-		fmt = dict(func = tflib.convert_images_to_uint8, nchw_to_nhwc = True)
+		fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
 		images = Gs.run(latents, None, truncation_psi = 0.7, randomize_noise = True, output_transform = fmt)
+
+		# encode to PNG
+		fp = io.BytesIO()
+		PIL.Image.fromarray(images[0], 'RGB').save(fp, PIL.Image.registered_extensions()['.png'])
 
 		self.send_response(200)
 		self.end_headers()
-		self.wfile.write(images.tobytes())
+		self.wfile.write(fp.getvalue())
 
 	def do_GET(self):
 		if self.path == '/test':
@@ -59,7 +64,7 @@ def main(argv):
 
 	print('Initializing TensorFlow...')
 
-	tflib.init_tf()
+	dnnlib.tflib.init_tf()
 
 	print('Loading model %s ...' % model_name)
 
