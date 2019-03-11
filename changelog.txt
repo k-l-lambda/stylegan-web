@@ -2,6 +2,8 @@
 
 2019.3.11	K.L.	<k.l.lambda@gmail.com>
 
+	+	index.vue: added features array.
+
 	+	gan-server.py: handGenerate added.
 
 	+	gan-server.py: added query argument parsing.
