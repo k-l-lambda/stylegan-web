@@ -1,6 +1,7 @@
 <template>
 	<body>
 		hello.
+		<img src="/test?instantaneous" />
 	</body>
 </template>
 

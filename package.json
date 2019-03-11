@@ -2,7 +2,8 @@
 	"name": "stylegan-web",
 	"version": "1.0.0",
 	"scripts": {
-		"build": "rollup -c rollup.config.js"
+		"build": "rollup -c rollup.config.js",
+		"start": "python ./gan-server.py"
 	},
 	"devDependencies": {
 		"rollup": "^1.6.0",

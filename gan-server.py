@@ -2,6 +2,7 @@
 import io
 import os
 import sys
+import time
 import pickle
 import json
 import numpy as np
@@ -9,6 +10,7 @@ import dnnlib
 import dnnlib.tflib
 import PIL.Image
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 
 import config
 
@@ -32,15 +34,22 @@ MIME_TYPES = {
 
 class Handler(BaseHTTPRequestHandler):
 	def handTest(self):
-		global Gs
-		#print('Gs:', Gs)
+		queries = parse_qs(urlparse(self.path).query, keep_blank_values = True)
+
+		global Gs, Gi
+
+		model = Gi if queries.get('instantaneous') else Gs
 
 		rnd = np.random.RandomState(0)
-		latents = rnd.randn(1, Gs.input_shape[1])
+		latents = rnd.randn(1, model.input_shape[1])
+
+		t0 = time.time()
 
 		# Generate image.
 		fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
-		images = Gs.run(latents, None, truncation_psi = 0.7, randomize_noise = True, output_transform = fmt)
+		images = model.run(latents, None, truncation_psi = 0.7, randomize_noise = True, output_transform = fmt)
+
+		print('test time cost:', time.time() - t0)
 
 		# encode to PNG
 		fp = io.BytesIO()
@@ -51,10 +60,12 @@ class Handler(BaseHTTPRequestHandler):
 		self.wfile.write(fp.getvalue())
 
 	def do_GET(self):
-		if self.path == '/test':
+		url = urlparse(self.path)
+
+		if url.path == '/test':
 			self.handTest()
 			return
-		if self.path == '/spec':
+		if url.path == '/spec':
 			global model_name
 			global Gs
 
@@ -67,7 +78,7 @@ class Handler(BaseHTTPRequestHandler):
 			}).encode('ascii'))
 
 			return
-		elif self.path == '/':
+		elif url.path == '/':
 			self.path = '/index.html'
 
 		# static files
@@ -105,8 +116,10 @@ def main(argv):
 	print('Loading model %s ...' % model_name)
 
 	with dnnlib.util.open_url(model_url, cache_dir = config.cache_dir) as f:
-		global Gs
-		_G, _D, Gs = pickle.load(f)
+		global Gs, Gi
+		Gi, Di, Gs = pickle.load(f)
+		#print('models i:', Gi.input_shape, Di.input_shape)		[, 512]					[, 3, 1024, 1024]
+		#print('models o:', Gi.output_shape, Di.output_shape)	[, 3, 1024, 1024]		[, 1]
 
 	try:
 		server = HTTPServer(('0.0.0.0', config.server_port), Handler)
