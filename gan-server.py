@@ -5,12 +5,15 @@ import sys
 import time
 import pickle
 import json
+import base64
+import struct
 import numpy as np
-import dnnlib
-import dnnlib.tflib
 import PIL.Image
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+
+import dnnlib
+import dnnlib.tflib
 
 import config
 
@@ -39,8 +42,9 @@ class Handler(BaseHTTPRequestHandler):
 		global Gs, Gi
 
 		model = Gi if queries.get('instantaneous') else Gs
+		seed = int(queries.get('seed', [0])[0])
 
-		rnd = np.random.RandomState(0)
+		rnd = np.random.RandomState(seed)
 		latents = rnd.randn(1, model.input_shape[1])
 
 		t0 = time.time()
@@ -59,12 +63,45 @@ class Handler(BaseHTTPRequestHandler):
 		self.end_headers()
 		self.wfile.write(fp.getvalue())
 
+
+	def handGenerate(self):
+		queries = parse_qs(urlparse(self.path).query, keep_blank_values = True)
+
+		global Gs, Gi
+
+		model = Gi if queries.get('instantaneous') else Gs
+
+		latent_len = model.input_shape[1]
+		latents = np.array(struct.unpack('f' * latent_len, base64.b64decode(queries.get('latents')[0]))).reshape([1, latent_len])
+
+		truncation_psi = float(queries.get('psi', [0.7])[0])
+		randomize_noise = False if queries.get('no_rnd_noise') else True
+
+		t0 = time.time()
+
+		# Generate image.
+		fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
+		images = model.run(latents, None, truncation_psi = truncation_psi, randomize_noise = randomize_noise, output_transform = fmt)
+
+		print('test time cost:', time.time() - t0)
+
+		# encode to PNG
+		fp = io.BytesIO()
+		PIL.Image.fromarray(images[0], 'RGB').save(fp, PIL.Image.registered_extensions()['.png'])
+
+		self.send_response(200)
+		self.end_headers()
+		self.wfile.write(fp.getvalue())
+
+
 	def do_GET(self):
 		url = urlparse(self.path)
 
 		if url.path == '/test':
 			self.handTest()
 			return
+		if url.path == '/generate':
+			return self.handGenerate()
 		if url.path == '/spec':
 			global model_name
 			global Gs
