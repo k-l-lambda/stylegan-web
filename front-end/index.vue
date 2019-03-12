@@ -1,19 +1,20 @@
 <template>
-	<body>
+	<div>
 		<header>
+			<span class="model">{{model}}</span>
 			&Psi; <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <em class="value">{{psi}}</em>
 		</header>
 		<aside>
-			<ul v-if="features">
+			<ol v-if="features">
 				<li v-for="(feature, index) of features" :key="index">
-					<input type="range" v-model.lazy="feature.normalized" :min="-1" :max="1" step="any" /> <em class="value">{{feature.value.toPrecision(4)}}</em>
+					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" /> <em class="value">{{feature.value.toPrecision(4)}}</em>
 				</li>
-			</ul>
+			</ol>
 		</aside>
 		<article>
 			<img v-if="latentsBytes" :src="`/generate?psi=${psi}&latents=${latentsBytes}`" />
 		</article>
-	</body>
+	</div>
 </template>
 
 <script>
@@ -74,14 +75,48 @@
 </script>
 
 <style>
+	html
+	{
+		overflow: hidden;
+	}
+
+	header
+	{
+		height: 2em;
+	}
+
 	aside, article
 	{
 		display: inline-block;
 		vertical-align: top;
+		height: calc(100vh - 2em);
 	}
 
-	.value
+	aside
 	{
+		overflow-y: auto;
 		font-size: 9px;
+	}
+
+	/*ol
+	{
+		padding: 0;
+	}
+
+	li
+	{
+		list-style: none;
+	}*/
+
+	.feature-bar
+	{
+		width: 240px;
+	}
+
+	.model
+	{
+		font-size: 20px;
+		font-weight: bold;
+		margin: 0 1em;
 	}
 </style>
