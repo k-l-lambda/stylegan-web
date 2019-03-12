@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"build": "rollup -c rollup.config.js",
+		"dev": "rollup -c -w rollup.config.js",
 		"start": "python ./gan-server.py"
 	},
 	"devDependencies": {
