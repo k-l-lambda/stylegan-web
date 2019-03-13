@@ -2,7 +2,7 @@
 	<div>
 		<header>
 			<span class="model">{{model}}</span>
-			&Psi; <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <em class="value">{{psi}}</em>
+			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <em class="value">{{psi}}</em>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -55,7 +55,7 @@
 				if (!this.features)
 					return null;
 
-				return btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer)));
+				return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer))));
 			},
 		},
 
@@ -89,7 +89,7 @@
 	{
 		display: inline-block;
 		vertical-align: top;
-		height: calc(100vh - 2em);
+		height: calc(100vh - 2em - 20px);
 	}
 
 	aside

@@ -1,5 +1,10 @@
 
 
+2019.3.13	K.L.	<k.l.lambda@gmail.com>
+
+	>	index.vue: fixed base64 encoding error.
+
+
 2019.3.12	K.L.	<k.l.lambda@gmail.com>
 
 	>	index.vue: refined styles.
