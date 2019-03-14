@@ -3,6 +3,7 @@
 		<header>
 			<span class="model">{{model}}</span>
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <em class="value">{{psi}}</em>
+			<button @click="randomizeLatents">Randomize</button>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -12,12 +13,20 @@
 			</ol>
 		</aside>
 		<article>
-			<img v-if="latentsBytes" :src="`/generate?psi=${psi}&latents=${latentsBytes}`" />
+			<img v-if="latentsBytes" class="result" :src="`/generate?psi=${psi}&latents=${latentsBytes}`" />
 		</article>
 	</div>
 </template>
 
 <script>
+	function randn_bm() {
+		const u = 1 - Math.random();
+		const v = 1 - Math.random();
+
+		return Math.sqrt( -2 * Math.log( u ) ) * Math.cos( 2 * Math.PI * v );
+	}
+	
+	
 	class Feature {
 		constructor (value) {
 			this.value = value;
@@ -31,6 +40,11 @@
 
 		set normalized (v) {
 			this.value = Math.atanh(v);
+		}
+
+
+		randomize () {
+			this.value = randn_bm();
 		}
 	};
 
@@ -70,6 +84,14 @@
 			Object.assign(this, spec);
 
 			this.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));
+		},
+
+
+		methods: {
+			randomizeLatents() {
+				if (this.features)
+					this.features.forEach(f => f.randomize());
+			},
 		},
 	};
 </script>
@@ -118,5 +140,11 @@
 		font-size: 20px;
 		font-weight: bold;
 		margin: 0 1em;
+	}
+
+	.result
+	{
+		height: 100%;
+		width: auto;
 	}
 </style>

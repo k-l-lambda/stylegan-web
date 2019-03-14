@@ -1,4 +1,13 @@
 
+TODO:
+	generator arguments store
+
+
+
+2019.3.14	K.L.	<k.l.lambda@gmail.com>
+
+	+	index.vue: features randomize added.
+
 
 2019.3.13	K.L.	<k.l.lambda@gmail.com>
 
