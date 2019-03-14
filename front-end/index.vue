@@ -5,6 +5,7 @@
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
+			<a :href="tag">tag</a>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -69,16 +70,36 @@
 
 
 		computed: {
-			latentsBytes () {
-				if (!this.features)
-					return null;
+			latentsBytes: {
+				get () {
+					if (!this.features)
+						return null;
 
-				return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer))));
+					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer))));
+				},
+
+				set (value) {
+					const str = atob(decodeURIComponent(value));
+					//console.log("str:", str);
+
+					const uint8 = str.split("").map(c => c.charCodeAt(0));
+					const values = new Float32Array(new Uint8Array(uint8).buffer);
+
+					values.forEach((value, i) => {
+						if (this.features && this.features[i])
+							this.features[i].value = value;
+					});
+				},
 			},
 
 
 			imageURL () {
 				return `/generate?psi=${this.psi}&latents=${this.latentsBytes}`;
+			},
+
+
+			tag () {
+				return `#psi=${this.psi}&latents=${this.latentsBytes}`;
 			},
 		},
 
@@ -93,6 +114,11 @@
 			Object.assign(this, spec);
 
 			this.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));
+
+			window.onhashchange = () => this.loadHash();
+
+			if (location.hash)
+				this.loadHash();
 		},
 
 
@@ -106,6 +132,22 @@
 			zeroFeatures() {
 				if (this.features)
 					this.features.forEach(f => f.value = 0);
+			},
+
+
+			loadHash () {
+				const dict = location.hash.substr(1).split("&").reduce((dict, pair) => {
+					const sections = pair.split("=");
+					dict[sections[0]] = sections[1];
+
+					return dict;
+				}, {});
+				//console.log("dict:", dict);
+
+				this.psi = Number(dict.psi);
+
+				if (dict.latents)
+					this.latentsBytes = dict.latents;
 			},
 		},
 
