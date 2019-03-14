@@ -2,18 +2,20 @@
 	<div>
 		<header>
 			<span class="model">{{model}}</span>
-			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <em class="value">{{psi}}</em>
-			<button @click="randomizeLatents">Randomize</button>
+			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
+			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
+			<button @click="zeroFeatures">Zero</button>
 		</header>
 		<aside>
 			<ol v-if="features">
 				<li v-for="(feature, index) of features" :key="index">
-					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" /> <em class="value">{{feature.value.toPrecision(4)}}</em>
+					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" />
+					<input class="value" type="number" v-model.number="feature.value" step="0.001" />
 				</li>
 			</ol>
 		</aside>
-		<article>
-			<img v-if="latentsBytes" class="result" :src="`/generate?psi=${psi}&latents=${latentsBytes}`" />
+		<article :class="{loading}">
+			<img v-if="latentsBytes" class="result" :src="imageURL" @load="loading = false" />
 		</article>
 	</div>
 </template>
@@ -43,8 +45,8 @@
 		}
 
 
-		randomize () {
-			this.value = randn_bm();
+		randomize (intensity) {
+			this.value += randn_bm() * intensity;
 		}
 	};
 
@@ -60,6 +62,8 @@
 				latents_dimensions: null,
 				features: null,
 				psi: 0.7,
+				loading: false,
+				randomIntensity: 0,
 			};
 		},
 
@@ -70,6 +74,11 @@
 					return null;
 
 				return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer))));
+			},
+
+
+			imageURL () {
+				return `/generate?psi=${this.psi}&latents=${this.latentsBytes}`;
 			},
 		},
 
@@ -88,9 +97,22 @@
 
 
 		methods: {
-			randomizeLatents() {
+			randomizeFeatures() {
 				if (this.features)
-					this.features.forEach(f => f.randomize());
+					this.features.forEach(f => f.randomize(Math.exp(this.randomIntensity)));
+			},
+
+
+			zeroFeatures() {
+				if (this.features)
+					this.features.forEach(f => f.value = 0);
+			},
+		},
+
+
+		watch: {
+			imageURL () {
+				this.loading = true;
 			},
 		},
 	};
@@ -146,5 +168,16 @@
 	{
 		height: 100%;
 		width: auto;
+	}
+
+	.value
+	{
+		border: 0;
+		width: 4em;
+	}
+
+	.loading img
+	{
+		opacity: 0.7;
 	}
 </style>

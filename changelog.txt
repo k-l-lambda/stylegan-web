@@ -6,10 +6,16 @@ TODO:
 
 2019.3.14	K.L.	<k.l.lambda@gmail.com>
 
+	+	index.vue: zero and randomization intensity added.
+
 	+	index.vue: features randomize added.
 
 
 2019.3.13	K.L.	<k.l.lambda@gmail.com>
+
+	*	Base64 padding fix:
+			latents_b64 = queries.get('latents')[0]
+			latents_b64 += "=" * ((4 - len(latents_b64) % 4) % 4)
 
 	>	index.vue: fixed base64 encoding error.
 
