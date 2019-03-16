@@ -5,7 +5,7 @@
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
-			<a :href="tag">tag</a>
+			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -28,8 +28,26 @@
 
 		return Math.sqrt( -2 * Math.log( u ) ) * Math.cos( 2 * Math.PI * v );
 	}
-	
-	
+
+
+	function decodeLatentsBytes (code) {
+		const str = atob(decodeURIComponent(code));
+
+		const uint8 = str.split("").map(c => c.charCodeAt(0));
+		return new Float32Array(new Uint8Array(uint8).buffer);
+	}
+
+
+	function parseQueries (str) {
+		return str.substr(1).split("&").reduce((dict, pair) => {
+			const sections = pair.split("=");
+			dict[sections[0]] = sections[1];
+
+			return dict;
+		}, {});
+	}
+
+
 	class Feature {
 		constructor (value) {
 			this.value = value;
@@ -79,11 +97,7 @@
 				},
 
 				set (value) {
-					const str = atob(decodeURIComponent(value));
-					//console.log("str:", str);
-
-					const uint8 = str.split("").map(c => c.charCodeAt(0));
-					const values = new Float32Array(new Uint8Array(uint8).buffer);
+					const values = decodeLatentsBytes(value);
 
 					values.forEach((value, i) => {
 						if (this.features && this.features[i])
@@ -136,18 +150,55 @@
 
 
 			loadHash () {
-				const dict = location.hash.substr(1).split("&").reduce((dict, pair) => {
-					const sections = pair.split("=");
-					dict[sections[0]] = sections[1];
-
-					return dict;
-				}, {});
+				const dict = parseQueries(location.hash);
 				//console.log("dict:", dict);
 
 				this.psi = Number(dict.psi);
 
 				if (dict.latents)
 					this.latentsBytes = dict.latents;
+			},
+
+
+			normalizeFeatures () {
+				const length = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
+
+				if (length > 0)
+					this.features.forEach(f => f.value /= length);
+			},
+
+
+			rotateFeatures (target, theta) {
+				console.assert(target.length === this.features.length);
+
+				this.normalizeFeatures();
+
+				const dot = Math.min(1, Math.max(-1, target.reduce((sum, t, i) => sum + t * this.features[i].value, 0)));
+				//console.assert(Math.abs(dot) <= 1, "unexpect dot:", dot, target);
+
+				const sinOmega = Math.sqrt(1 - dot * dot);
+				const sinTheta = Math.sin(theta);
+				if (sinOmega < sinTheta) {
+					this.features.forEach((f, i) => f.value = target[i]);
+					return;
+				}
+
+				const side = target.map((t, i) => t - this.features[i].value * dot);
+				const relative = side.map(v => v * sinTheta / sinOmega);
+
+				const cosTheta = Math.cos(theta);
+				this.features.forEach((f, i) => f.value = f.value * cosTheta + relative[i]);
+			},
+
+			slerpToHash () {
+				const targetLatents = parseQueries(location.hash).latents;
+				if (targetLatents) {
+					const target = decodeLatentsBytes(targetLatents);
+					const length = Math.sqrt(target.reduce((sum, value) => sum + value * value, 0));
+					const normalizedTarget = target.map(v => v / length);
+
+					this.rotateFeatures(normalizedTarget, Math.PI * 0.04);
+				}
 			},
 		},
 
