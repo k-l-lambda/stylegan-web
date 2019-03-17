@@ -93,7 +93,9 @@
 					if (!this.features)
 						return null;
 
-					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value)).buffer))));
+					const length = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
+
+					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value / length)).buffer))));
 				},
 
 				set (value) {
