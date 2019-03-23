@@ -6,6 +6,7 @@
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
 			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
+			<button @click="discriminate">discriminate</button>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -192,6 +193,7 @@
 				this.features.forEach((f, i) => f.value = f.value * cosTheta + relative[i]);
 			},
 
+
 			slerpToHash () {
 				const targetLatents = parseQueries(location.hash).latents;
 				if (targetLatents) {
@@ -201,6 +203,21 @@
 
 					this.rotateFeatures(normalizedTarget, Math.PI * 0.04);
 				}
+			},
+
+
+			async discriminate () {
+				const response = await fetch(this.imageURL);
+				const blob = await response.blob();
+
+				const form = new FormData();
+				form.append("image", blob);
+				const res2 = await fetch("/discriminate", {
+					method: "POST",
+					body: form,
+				});
+
+				console.log("discriminate:", await res2.text());
 			},
 		},
 

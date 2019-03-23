@@ -11,6 +11,7 @@ import numpy as np
 import PIL.Image
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+import cgi
 
 import dnnlib
 import dnnlib.tflib
@@ -94,15 +95,36 @@ class Handler(BaseHTTPRequestHandler):
 		self.wfile.write(fp.getvalue())
 
 
+	def handDiscriminate(self):
+		global Di
+
+		ctype, pdict = cgi.parse_header(self.headers.get('Content-Type'))
+		pdict['boundary'] = bytes(pdict['boundary'], 'utf-8')
+		vars = cgi.parse_multipart(self.rfile, pdict)
+		#print('handDiscriminate:', vars.get('image')[0])
+		#image = PIL.Image.frombytes(data = vars.get('image')[0], decoder_name = 'png')
+		stream = io.BytesIO(vars.get('image')[0])
+		image = PIL.Image.open(stream)
+		#print('handDiscriminate:', image)
+		image_array = np.array(image)
+		#print('image shape:', image_array.shape, Di.num_inputs, Gs.num_inputs, Di.input_shape)
+		result = Di.run(image_array.reshape([1, 3, 1024, 1024]), None)
+		print('handDiscriminate:', result)
+
+		self.send_response(200)
+		self.end_headers()
+		self.wfile.write(str(result[0][0]).encode('utf-8'))
+
+
 	def do_GET(self):
 		url = urlparse(self.path)
 
 		if url.path == '/test':
 			self.handTest()
 			return
-		if url.path == '/generate':
+		elif url.path == '/generate':
 			return self.handGenerate()
-		if url.path == '/spec':
+		elif url.path == '/spec':
 			global model_name
 			global Gs
 
@@ -135,6 +157,13 @@ class Handler(BaseHTTPRequestHandler):
 			self.wfile.write(b'no handler for path: %s' % self.path.encode('ascii'))
 
 
+	def do_POST(self):
+		url = urlparse(self.path)
+
+		if url.path == '/discriminate':
+			return self.handDiscriminate()
+
+
 def main(argv):
 	#print('argv:', argv)
 	global model_name
@@ -153,7 +182,7 @@ def main(argv):
 	print('Loading model %s ...' % model_name)
 
 	with dnnlib.util.open_url(model_url, cache_dir = config.cache_dir) as f:
-		global Gs, Gi
+		global Gs, Gi, Di
 		Gi, Di, Gs = pickle.load(f)
 		#print('models i:', Gi.input_shape, Di.input_shape)		[, 512]					[, 3, 1024, 1024]
 		#print('models o:', Gi.output_shape, Di.output_shape)	[, 3, 1024, 1024]		[, 1]
