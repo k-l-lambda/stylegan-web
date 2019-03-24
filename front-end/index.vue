@@ -3,6 +3,7 @@
 		<header>
 			<span class="model">{{model}}</span>
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
+			<input type="checkbox" v-model="noise" title="with random noise" />
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
 			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
@@ -87,6 +88,7 @@
 				randomIntensity: 0,
 				discriminateResult: null,
 				pasteUrl: null,
+				noise: true,
 			};
 		},
 
@@ -114,7 +116,7 @@
 
 
 			imageURL () {
-				return `/generate?psi=${this.psi}&latents=${this.latentsBytes}`;
+				return `/generate?psi=${this.psi}${this.noise ? '' : '&no_rnd_noise=1'}&latents=${this.latentsBytes}`;
 			},
 
 
