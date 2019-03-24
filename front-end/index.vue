@@ -7,6 +7,7 @@
 			<button @click="zeroFeatures">Zero</button>
 			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
 			<button @click="discriminate">discriminate</button>
+			<span v-if="discriminateResult">{{discriminateResult.toFixed(4)}}</span>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -17,7 +18,7 @@
 			</ol>
 		</aside>
 		<article :class="{loading}">
-			<img v-if="latentsBytes" class="result" :src="imageURL" @load="loading = false" />
+			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
 		</article>
 	</div>
 </template>
@@ -84,6 +85,8 @@
 				psi: 0.7,
 				loading: false,
 				randomIntensity: 0,
+				discriminateResult: null,
+				pasteUrl: null,
 			};
 		},
 
@@ -136,6 +139,8 @@
 
 			if (location.hash)
 				this.loadHash();
+
+			document.onpaste = event => this.onPaste(event);
 		},
 
 
@@ -207,7 +212,8 @@
 
 
 			async discriminate () {
-				const response = await fetch(this.imageURL);
+				const url = this.pasteUrl || this.imageURL;
+				const response = await fetch(url);
 				const blob = await response.blob();
 
 				const form = new FormData();
@@ -217,7 +223,24 @@
 					body: form,
 				});
 
-				console.log("discriminate:", await res2.text());
+				this.discriminateResult = Number(await res2.text());
+
+				console.log("discriminate:", this.discriminateResult);
+			},
+
+
+			async onPaste (event) {
+				//console.log("onPaste:", [...event.clipboardData.items].map(i => i.type));
+				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
+				if (image) {
+					//console.log("image:", image.getAsFile());
+					const buffer = await new Promise(resolve => {
+						const reader = new FileReader();
+						reader.onload = event => resolve(event.target.result);
+						reader.readAsArrayBuffer(image.getAsFile());
+					});
+					this.pasteUrl = URL.createObjectURL(new Blob([buffer], {type: image.type}));
+				}
 			},
 		},
 
@@ -225,6 +248,8 @@
 		watch: {
 			imageURL () {
 				this.loading = true;
+				this.discriminateResult = null;
+				this.pasteUrl = null;
 			},
 		},
 	};
