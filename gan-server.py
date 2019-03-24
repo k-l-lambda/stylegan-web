@@ -76,13 +76,14 @@ class Handler(BaseHTTPRequestHandler):
 		latents = np.array(struct.unpack('f' * latent_len, base64.b64decode(queries.get('latents')[0]))).reshape([1, latent_len])
 
 		truncation_psi = float(queries.get('psi', [0.7])[0])
+		use_noise = False if queries.get('no_noise') else True
 		randomize_noise = False if queries.get('no_rnd_noise') else True
 
 		t0 = time.time()
 
 		# Generate image.
 		fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
-		images = model.run(latents, None, truncation_psi = truncation_psi, randomize_noise = randomize_noise, output_transform = fmt)
+		images = model.run(latents, None, truncation_psi = truncation_psi, use_noise = use_noise, randomize_noise = randomize_noise, output_transform = fmt)
 
 		print('test time cost:', time.time() - t0)
 

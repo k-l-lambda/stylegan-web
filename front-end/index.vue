@@ -116,7 +116,7 @@
 
 
 			imageURL () {
-				return `/generate?psi=${this.psi}${this.noise ? '' : '&no_rnd_noise=1'}&latents=${this.latentsBytes}`;
+				return `/generate?psi=${this.psi}${this.noise ? '' : '&no_noise=1'}&latents=${this.latentsBytes}`;
 			},
 
 
