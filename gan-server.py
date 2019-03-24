@@ -106,14 +106,60 @@ class Handler(BaseHTTPRequestHandler):
 		stream = io.BytesIO(vars.get('image')[0])
 		image = PIL.Image.open(stream)
 		#print('handDiscriminate:', image)
-		image_array = np.array(image)
-		#print('image shape:', image_array.shape, Di.num_inputs, Gs.num_inputs, Di.input_shape)
-		result = Di.run(image_array.reshape([1, 3, 1024, 1024]), None)
+		image_array = np.array(image).swapaxes(0, 1)
+		shape = [-1 if n is None else n for n in Di.input_shape]
+
+		#print('image shape:', image_array.shape, array2.shape, Di.input_shape)
+		result = Di.run(image_array.reshape(shape), None)
 		print('handDiscriminate:', result)
+
+		a3 = np.flip(image_array, 1)
+		result = Di.run(a3.reshape(shape), None)
+		print('result2:', result)
+
+		a3 = np.flip(image_array, 0)
+		result = Di.run(a3.reshape(shape), None)
+		print('result3:', result)
+
+		a3 = np.flip(image_array, [0, 1])
+		result = Di.run(a3.reshape(shape), None)
+		print('result5:', result)
+
+		a3 = np.flip(image_array, [0, 1, 2])
+		result = Di.run(a3.reshape(shape), None)
+		print('result6:', result)
+
+		a3 = np.flip(image_array, [0, 2])
+		result = Di.run(a3.reshape(shape), None)
+		print('result6.1:', result)
+
+		a3 = np.flip(image_array, 0)
+		result = Di.run(a3.reshape(shape), None)
+		print('result7:', result)
+
+		a3 = image_array.swapaxes(1, 2)
+		result8 = Di.run(a3.reshape(shape), None)
+		print('result8:', result8)
+
+		a3 = np.flip(image_array.swapaxes(1, 2), 1)
+		result = Di.run(a3.reshape(shape), None)
+		print('result9:', result)
+
+		a3 = np.flip(image_array.swapaxes(1, 2), 2)
+		result = Di.run(a3.reshape(shape), None)
+		print('result9.1:', result)
+
+		a3 = np.flip(image_array.swapaxes(1, 2), [0, 1])
+		result = Di.run(a3.reshape(shape), None)
+		print('result10:', result)
+
+		a3 = np.flip(image_array.swapaxes(1, 2), 0)
+		result = Di.run(a3.reshape(shape), None)
+		print('result11:', result)
 
 		self.send_response(200)
 		self.end_headers()
-		self.wfile.write(str(result[0][0]).encode('utf-8'))
+		self.wfile.write(str(result8[0][0]).encode('utf-8'))
 
 
 	def do_GET(self):

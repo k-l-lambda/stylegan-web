@@ -1,7 +1,12 @@
 
 TODO:
-	handDiscriminate: flip image tensor axies
+	paste image and discriminate
 
+
+
+2019.3.24	K.L.	<k.l.lambda@gmail.com>
+
+	+	gan-server.py: axes flip discriminate test added.
 
 
 2019.3.23	K.L.	<k.l.lambda@gmail.com>
