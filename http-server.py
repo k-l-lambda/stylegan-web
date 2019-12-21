@@ -12,7 +12,6 @@ import struct
 import numpy as np
 import tensorflow as tf
 from threading import Lock
-#import threading
 
 import dnnlib.tflib
 
@@ -70,7 +69,6 @@ def root():
 
 @app.route('/spec', methods=['GET'])
 def spec():
-	#print('spec.pid:', threading.get_ident())
 	global model_name
 	model = loadModel()
 
@@ -79,11 +77,10 @@ def spec():
 
 @app.route('/generate', methods=['GET'])
 def generate():
-	#print('generate.pid:', threading.get_ident())
 	latentsStr = flask.request.args.get('latents')
 	psi = float(flask.request.args.get('psi', 0.5))
 	#use_noise = bool(flask.request.args.get('use_noise', True))
-	randomize_noise = bool(flask.request.args.get('randomize_noise', True))
+	randomize_noise = int(flask.request.args.get('randomize_noise', 1))
 
 	global g_Session
 	print('g_Session.1:', g_Session)
@@ -97,9 +94,8 @@ def generate():
 
 	# Generate image.
 	fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
-	#print('parameters:', latents, psi, use_noise, randomize_noise, fmt)
 	with g_Session.as_default():
-		images = model.run(latents, None, truncation_psi = psi, randomize_noise = randomize_noise, output_transform = fmt)
+		images = model.run(latents, None, truncation_psi = psi, randomize_noise = randomize_noise != 0, output_transform = fmt)
 
 	print('generation cost:', time.time() - t0)
 
