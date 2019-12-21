@@ -1,10 +1,14 @@
 ## Requirements
 
+### Python
+
+Install requirement libraries with pip, reference to [requirements.txt](./requirements.txt).
+
 ### For Windows
 
 * MSVC
 
-	NOTE: Visual Studio 2019 is not compatible with CUDA 10.0.
+	**NOTE**: Visual Studio 2019 is not compatible with CUDA 10.0.
 
 	Append the actual msvc binary directory in *dnnlib/tflib/custom_ops.py*, the array of *compiler_bindir_search_path*. For example:
 
@@ -23,7 +27,7 @@
 
 * Tips for tensorflow 1.15
 
-	Make symbolic link in python installation fold *Python36\Lib\site-packages\tensorflow_core*:
+	*NVCC* compiling may encounter C++ including path issue. Solution: make a symbolic link in python installation fold `Python36\Lib\site-packages\tensorflow_core`:
 
 	```.bash
 	mklink /J tensorflow tensorflow_core

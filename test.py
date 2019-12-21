@@ -1,11 +1,9 @@
 ﻿
 """Minimal script for generating an image using pre-trained StyleGAN2 generator."""
 
-import os
 import pickle
 import numpy as np
 import PIL.Image
-import dnnlib
 import dnnlib.tflib as tflib
 import time
 
