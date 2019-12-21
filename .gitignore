@@ -7,3 +7,4 @@ results
 node_modules
 dist/*.bundle.js
 yarn.lock
+example.png
