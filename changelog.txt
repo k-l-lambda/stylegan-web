@@ -1,9 +1,14 @@
 
 TODO:
+	mutex in loadModel
 
 
 
 2019.12.21	K.L.	<k.l.lambda@gmail.com>
+
+	>	http-server.py: use single thread Flask to fix tensorflow variable missing issue.
+
+	*!	Flask multi-thread result in tensorflow variable missing, when model run parameter changed, in dnnlib.Network.get_output_for.
 
 	+	http-server.py: image generation implemented.
 
