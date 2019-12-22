@@ -83,7 +83,7 @@
 				model: null,
 				latents_dimensions: null,
 				features: null,
-				psi: 0.7,
+				psi: 0.5,
 				loading: false,
 				randomIntensity: 0,
 				discriminateResult: null,
