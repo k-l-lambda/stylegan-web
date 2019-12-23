@@ -34,11 +34,10 @@ def main():
 
 		print('t4:', time.time() - t0)
 
-	#print('Gs:', Gs)
 	proj = Projector()
 	proj.set_network(Gs, lpips)
 
-	image = PIL.Image.open('./images/seed0000-target.png')
+	image = PIL.Image.open('./images/example.png')
 	#image = image.resize((Di.input_shape[2], Di.input_shape[3]), PIL.Image.ANTIALIAS)
 	image_array = np.array(image).swapaxes(0, 2).swapaxes(1, 2)
 	image_array = misc.adjust_dynamic_range(image_array, [0, 255], [-1, 1])
