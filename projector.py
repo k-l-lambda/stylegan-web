@@ -105,7 +105,7 @@ class Projector:
         # Loss graph.
         self._info('Building loss graph...')
         self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
-        print('_target_images_var:', self._target_images_var.shape)
+        #print('_target_images_var:', self._target_images_var.shape)
         self._lpips = lpips
         if self._lpips is None:
             self._lpips = misc.load_pkl('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2') # vgg16_zhang_perceptual.pkl
@@ -146,6 +146,14 @@ class Projector:
         pres.images = self.get_images()
         return pres
 
+    def runSteps(self, num_steps = None):
+        if num_steps > 0:
+            self.num_steps = num_steps
+
+        while self._cur_step < self.num_steps:
+            self.step()
+            yield self._cur_step
+
     def start(self, target_images):
         assert self._Gs is not None
 
@@ -154,7 +162,7 @@ class Projector:
         target_images = np.asarray(target_images, dtype='float32')
         target_images = (target_images + 1) * (255 / 2)
         sh = target_images.shape
-        print('sh:', sh)
+        #print('sh:', sh)
         assert sh[0] == self._minibatch_size
         if sh[2] > self._target_images_var.shape[2]:
             factor = sh[2] // self._target_images_var.shape[2]

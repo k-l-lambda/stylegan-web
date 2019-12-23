@@ -54,7 +54,7 @@ def main():
 	print('t7:', time.time() - t0)
 
 	# Save image.
-	PIL.Image.fromarray(images[0], 'RGB').save('./example.png')		# 0.60s
+	PIL.Image.fromarray(images[0], 'RGB').save('./images/example.png')		# 0.60s
 
 	print('t8:', time.time() - t0)
 
