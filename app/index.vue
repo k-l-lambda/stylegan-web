@@ -1,5 +1,5 @@
 <template>
-	<div @paste="onPaste">
+	<div>
 		<header>
 			<span class="model">{{model}}</span>
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
@@ -7,8 +7,6 @@
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
 			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
-			<button @click="discriminate">discriminate</button>
-			<span v-if="discriminateResult">{{discriminateResult.toFixed(4)}}</span>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -87,7 +85,6 @@
 				psi: 0.5,
 				loading: false,
 				randomIntensity: 0,
-				discriminateResult: null,
 				pasteUrl: null,
 				noise: true,
 			};
@@ -130,9 +127,7 @@
 		async mounted () {
 			window.$main = this;
 
-			//document.onpaste = event => this.onPaste(event);
-
-			/*const res = await fetch("/spec");
+			const res = await fetch("/spec");
 			const spec = await res.json();
 			console.log("spec:", spec);
 
@@ -143,7 +138,7 @@
 			window.onhashchange = () => this.loadHash();
 
 			if (location.hash)
-				this.loadHash();*/
+				this.loadHash();
 		},
 
 
@@ -214,7 +209,7 @@
 			},
 
 
-			async discriminate () {
+			/*async discriminate () {
 				const url = this.pasteUrl || this.imageURL;
 				const response = await fetch(url);
 				const blob = await response.blob();
@@ -229,10 +224,10 @@
 				this.discriminateResult = Number(await res2.text());
 
 				console.log("project:", this.discriminateResult);
-			},
+			},*/
 
 
-			async onPaste (event) {
+			/*async onPaste (event) {
 				console.log("onPaste:", event);
 				console.log("onPaste:", [...event.clipboardData.items].map(i => i.type));
 				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
@@ -245,14 +240,13 @@
 					});
 					this.pasteUrl = URL.createObjectURL(new Blob([buffer], {type: image.type}));
 				}
-			},
+			},*/
 		},
 
 
 		watch: {
 			imageURL () {
 				this.loading = true;
-				this.discriminateResult = null;
 				this.pasteUrl = null;
 			},
 		},

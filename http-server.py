@@ -12,9 +12,11 @@ import struct
 import numpy as np
 import tensorflow as tf
 from threading import Lock
+import json
 
 import dnnlib.tflib
 from training import misc
+from projector import Projector
 
 
 
@@ -81,7 +83,7 @@ def loadLpips():
 			dnnlib.tflib.init_tf()
 			g_Session = tf.get_default_session()
 
-		print('Loading model %s ...' % model_name)
+		print('Loading model lpips ...')
 
 		with open(model_path, 'rb') as f:
 			with g_Session.as_default():
@@ -183,15 +185,18 @@ def project():
 				dlatents = proj.get_dlatents()
 				images = proj.get_images()
 				pilImage = misc.convert_to_pil_image(misc.create_image_grid(images), drange = [-1,1])
+
 				fp = io.BytesIO()
-				PIL.Image.fromarray(pilImage, 'RGB').save(fp, PIL.Image.registered_extensions()['.png'])
+				pilImage.save(fp, PIL.Image.registered_extensions()['.png'])
 
-				imgUrl = 'data:image/png;base64,' % base64.b64encode(fp.getvalue())
-				latentCodes = map(lambda latents: base64.b64encode(struct.pack('f' * latents.shape[0])), dlatents.reshape((-1, dlatents[2])))
+				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue())
 
-				return dict(img = imgUrl, latentCodes = latentCodes)
+				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
+				latentCodes = list(map(lambda latents: base64.b64encode(struct.pack('f' * latents.shape[0], *latents)).decode('ascii'), latentsList))
 
-	return flask.Response(gen(), mimetype='json')
+				return json.dumps(dict(img = imgUrl, latentCodes = latentCodes))
+
+	return flask.Response(gen(), mimetype='application/json')
 
 
 def main(argv):
