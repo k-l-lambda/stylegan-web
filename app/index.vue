@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div @paste="onPaste">
 		<header>
 			<span class="model">{{model}}</span>
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
@@ -20,6 +20,7 @@
 		</aside>
 		<article :class="{loading}">
 			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
+			<img v-if="pasteUrl" class="result" :src="pasteUrl" @load="loading = false" />
 		</article>
 	</div>
 </template>
@@ -127,9 +128,11 @@
 
 
 		async mounted () {
-			window.__main = this;
+			window.$main = this;
 
-			const res = await fetch("/spec");
+			//document.onpaste = event => this.onPaste(event);
+
+			/*const res = await fetch("/spec");
 			const spec = await res.json();
 			console.log("spec:", spec);
 
@@ -140,9 +143,7 @@
 			window.onhashchange = () => this.loadHash();
 
 			if (location.hash)
-				this.loadHash();
-
-			document.onpaste = event => this.onPaste(event);
+				this.loadHash();*/
 		},
 
 
@@ -219,20 +220,21 @@
 				const blob = await response.blob();
 
 				const form = new FormData();
-				form.append("image", blob);
-				const res2 = await fetch("/discriminate", {
+				form.append("image", new File([blob], {type: "image/png"}));
+				const res2 = await fetch("/project", {
 					method: "POST",
 					body: form,
 				});
 
 				this.discriminateResult = Number(await res2.text());
 
-				console.log("discriminate:", this.discriminateResult);
+				console.log("project:", this.discriminateResult);
 			},
 
 
 			async onPaste (event) {
-				//console.log("onPaste:", [...event.clipboardData.items].map(i => i.type));
+				console.log("onPaste:", event);
+				console.log("onPaste:", [...event.clipboardData.items].map(i => i.type));
 				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
 				if (image) {
 					//console.log("image:", image.getAsFile());

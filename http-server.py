@@ -92,6 +92,7 @@ def loadLpips():
 
 
 def loadProjector():
+	global g_Projector
 	if g_Projector:
 		return g_Projector
 
@@ -110,6 +111,11 @@ app = flask.Flask(__name__, static_url_path = '', static_folder = './dist')
 @app.route('/')
 def root():
 	return app.send_static_file('index.html')
+
+
+@app.route('/projector/')
+def projector():
+	return app.send_static_file('projector.html')
 
 
 @app.route('/spec', methods=['GET'])

@@ -5,6 +5,8 @@ TODO:
 
 2019.12.23	K.L.	<k.l.lambda@gmail.com>
 
+	+	app: entry of projector created.
+
 	+	http-server.py: handler of project added.
 
 	+	test-projector.py: progressively projecting implemneted.

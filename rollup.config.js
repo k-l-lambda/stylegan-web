@@ -7,12 +7,15 @@ import alias from "rollup-plugin-alias";
 
 
 
-export default [{
-	input: "./front-end/index.js",
+export default [
+	"index",
+	"projector",
+].map(entry => ({
+	input: `./app/${entry}.js`,
 
 	output: {
 		format: "iife",
-		file: path.posix.join("dist", "index.bundle.js"),
+		file: path.posix.join("dist", `${entry}.bundle.js`),
 	},
 
 	plugins: [
@@ -26,4 +29,4 @@ export default [{
 			vue: require.resolve("vue/dist/vue.esm.js"),
 		}),
 	],
-}];
+}));
