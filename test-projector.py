@@ -22,8 +22,7 @@ def main():
 	print('t1:', time.time() - t0)
 
 	# Load pre-trained network.
-	with open('./models/stylegan2-car-config-f.pkl', 'rb') as f:
-		#print('f:', f)
+	with open('./models/stylegan2-ffhq-config-f.pkl', 'rb') as f:
 		print('t2:', time.time() - t0)
 
 		_G, _D, Gs = pickle.load(f)	 # 13.09s
@@ -44,9 +43,6 @@ def main():
 	image_array = np.array(image).swapaxes(0, 2).swapaxes(1, 2)
 	image_array = misc.adjust_dynamic_range(image_array, [0, 255], [-1, 1])
 
-	#pres = proj.run([image_array])
-	#print('pres:', pres)
-
 	print('t5:', time.time() - t0)
 
 	proj.start([image_array])
@@ -54,7 +50,6 @@ def main():
 		print('\rstep: %d' % step, end = '', flush = True)
 		if step % 10 == 0:
 			results = proj.get_images()
-			#PIL.Image.fromarray(results[0].swapaxes(0, 2), 'RGB').save('./images/project-%d.png' % step)
 			pilImage = misc.convert_to_pil_image(misc.create_image_grid(results), drange = [-1,1])
 			pilImage.save('./images/project-%d.png' % step)
 
