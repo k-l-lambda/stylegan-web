@@ -22,15 +22,33 @@
 			console.warn("project fetch failed:", await response.text());
 			throw new Error("project fetch failed");
 		}
+
+		const SEPARATOR = "\n\n";
+		let textBuffer = "";
+		const yieldSegment = () => {
+			const si = textBuffer.indexOf(SEPARATOR);
+			if (si >= 0) {
+				const result = textBuffer.substr(0, si);
+				textBuffer = textBuffer.substr(si + SEPARATOR.length);
+
+				return result;
+			}
+		};
+
 		const reader = response.body.getReader();
 		while (true) {
 			const {done, value} = await reader.read();
 			//console.log("read:", done, value);
 			if (value) {
-				const text = Array.from(value).map(b => String.fromCharCode(b)).join("");
+				textBuffer += Array.from(value).map(b => String.fromCharCode(b)).join("");
 
-				// TODO: yield when read separator
-				yield JSON.parse(text);
+				while(true) {
+					const segment = yieldSegment();
+					if (segment)
+						yield JSON.parse(segment);
+					else
+						break;
+				}
 			}
 			if (done)
 				break;

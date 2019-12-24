@@ -3,6 +3,11 @@ TODO:
 
 
 
+2019.12.24	K.L.	<k.l.lambda@gmail.com>
+
+	+	http-server.py: project handler implemented.
+
+
 2019.12.23	K.L.	<k.l.lambda@gmail.com>
 
 	+	projector.vue: generator fetching of projectImage added.

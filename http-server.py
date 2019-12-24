@@ -180,7 +180,7 @@ def project():
 		proj = loadProjector()
 		proj.start([image_array])
 		for step in proj.runSteps(steps):
-			#print('\rstep: %d' % step, end = '', flush = True)
+			print('\rProjecting: %d / %d' % (step, steps), end = '', flush = True)
 			if step % yieldInterval == 0:
 				dlatents = proj.get_dlatents()
 				images = proj.get_images()
@@ -189,14 +189,14 @@ def project():
 				fp = io.BytesIO()
 				pilImage.save(fp, PIL.Image.registered_extensions()['.png'])
 
-				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue())
+				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue()).decode('ascii')
 
 				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
 				latentCodes = list(map(lambda latents: base64.b64encode(struct.pack('f' * latents.shape[0], *latents)).decode('ascii'), latentsList))
 
-				return json.dumps(dict(img = imgUrl, latentCodes = latentCodes))
+				yield json.dumps(dict(img = imgUrl, latentCodes = latentCodes)) + '\n\n'
 
-	return flask.Response(gen(), mimetype='application/json')
+	return flask.Response(gen(), mimetype='text/plain')
 
 
 def main(argv):
