@@ -31,6 +31,14 @@ g_Session = None
 g_LoadingMutex = Lock()
 
 
+def encodeLatents(latents):
+	return base64.b64encode(struct.pack('f' * latents.shape[0], *latents))
+
+
+def decodeLatents(code, len = 512):
+	return np.array(struct.unpack('f' * len, base64.b64decode(code)))
+
+
 def loadGs():
 	with g_LoadingMutex:
 		global g_Gs
@@ -136,12 +144,12 @@ def generate():
 	randomize_noise = int(flask.request.args.get('randomize_noise', 1))
 
 	global g_Session
-	print('g_Session.1:', g_Session)
+	#print('g_Session.1:', g_Session)
 
 	model = loadGs()
 
 	latent_len = model.input_shape[1]
-	latents = np.array(struct.unpack('f' * latent_len, base64.b64decode(latentsStr))).reshape([1, latent_len])
+	latents = decodeLatents(latentsStr, latent_len).reshape([1, latent_len])
 
 	t0 = time.time()
 
@@ -193,7 +201,7 @@ def project():
 				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue()).decode('ascii')
 
 				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
-				latentCodes = list(map(lambda latents: base64.b64encode(struct.pack('f' * latents.shape[0], *latents)).decode('ascii'), latentsList))
+				latentCodes = list(map(lambda latents: encodeLatents(latents).decode('ascii'), latentsList))
 
 				yield json.dumps(dict(step = step, img = imgUrl, latentCodes = latentCodes)) + '\n\n'
 

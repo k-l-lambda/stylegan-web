@@ -4,8 +4,8 @@
 	"scripts": {
 		"build": "rollup -c rollup.config.js",
 		"dev": "rollup -c -w rollup.config.js",
-		"start": "python ./http-server.py",
-		"start3": "python3 ./http-server.py"
+		"start": "python ./http_server.py",
+		"start3": "python3 ./http_server.py"
 	},
 	"devDependencies": {
 		"rollup": "^1.6.0",
