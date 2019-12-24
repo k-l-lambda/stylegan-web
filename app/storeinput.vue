@@ -8,6 +8,7 @@
 			:min="range && range.min"
 			:max="range && range.max"
 			:step="range && range.step"
+			:disabled="disabled"
 		/>
 	</span>
 </template>
@@ -35,6 +36,8 @@
 
 			localKey: String,
 			sessionKey: String,
+
+			disabled: Boolean,
 		},
 
 

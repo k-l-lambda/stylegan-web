@@ -181,6 +181,7 @@ def project():
 		proj.start([image_array])
 		for step in proj.runSteps(steps):
 			print('\rProjecting: %d / %d' % (step, steps), end = '', flush = True)
+
 			if step % yieldInterval == 0:
 				dlatents = proj.get_dlatents()
 				images = proj.get_images()
@@ -194,9 +195,11 @@ def project():
 				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
 				latentCodes = list(map(lambda latents: base64.b64encode(struct.pack('f' * latents.shape[0], *latents)).decode('ascii'), latentsList))
 
-				yield json.dumps(dict(img = imgUrl, latentCodes = latentCodes)) + '\n\n'
+				yield json.dumps(dict(step = step, img = imgUrl, latentCodes = latentCodes)) + '\n\n'
 
-	return flask.Response(gen(), mimetype='text/plain')
+		print('\rProjecting finished.%s' % (' ' * 8))
+
+	return flask.Response(gen(), mimetype = 'text/plain')
 
 
 def main(argv):
