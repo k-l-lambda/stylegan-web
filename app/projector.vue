@@ -1,9 +1,9 @@
 <template>
-	<div @paste="onPaste" class="projector">
+	<div @paste="onPaste" class="projector" @wheel="onWheel">
 		<aside>
 			<p>
-				<StoreInput v-model="projectSteps" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
-				<StoreInput v-model="projectYieldInterval" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
+				<StoreInput v-model="projectSteps" type="number" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
+				<StoreInput v-model="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
 				<button :disabled="running" @click="project">Project</button>
@@ -21,9 +21,14 @@
 			<div class="target">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<img v-if="targetUrl" :src="targetUrl" />
+				<span v-if="targetUrl" class="arrow">&#x1f844;</span>
+				<img v-if="focusResultUrl" :src="focusResultUrl" />
 			</div>
 			<div class="yielding">
-				<span v-for="(item, i) of projectedSequence" :key="i" class="item">
+				<span v-for="(item, i) of reversedProjectedSequence" :key="i" class="item"
+					:class="{focus: (projectedSequence.length - i - 1) === focusIndex}"
+					@mouseenter="focusIndex = projectedSequence.length - i - 1"
+				>
 					<sup class="index">{{item.step}}.</sup>
 					<img :src="item.img" />
 				</span>
@@ -100,6 +105,7 @@
 				projectSteps: 200,
 				projectYieldInterval: 10,
 				running: false,
+				focusIndex: 0,
 			};
 		},
 
@@ -110,6 +116,18 @@
 					return 0;
 
 				return this.projectedSequence[this.projectedSequence.length - 1].step;
+			},
+
+
+			reversedProjectedSequence() {
+				return this.projectedSequence.slice().reverse();
+			},
+
+
+			focusResultUrl() {
+				const item = this.projectedSequence && this.projectedSequence[this.focusIndex];
+
+				return item && item.img;
 			},
 		},
 
@@ -136,6 +154,14 @@
 			},
 
 
+			onWheel(event) {
+				//console.log("onWheel:", event);
+
+				this.focusIndex += event.deltaY > 0 ? -1 : 1;
+				this.focusIndex = Math.max(Math.min(this.focusIndex, this.projectedSequence.length - 1), 0);
+			},
+
+
 			async project() {
 				const url = this.targetUrl;
 				const response = await fetch(url);
@@ -152,6 +178,7 @@
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
 						//console.log("project value:", value);
 						this.projectedSequence.push(result);
+						this.focusIndex = this.projectedSequence.length - 1;
 					}
 				}
 				catch(error) {
@@ -159,6 +186,15 @@
 				}
 
 				this.running = false;
+			},
+		},
+
+
+		watch: {
+			focusIndex() {
+				const focusItem = document.querySelector(".item.focus");
+				if (focusItem)
+					focusItem.scrollIntoView();
 			},
 		},
 	};
@@ -187,14 +223,32 @@
 		padding: 2em;
 	}
 
+	aside p
+	{
+		text-align: center;
+	}
+
 	.target
 	{
 		text-align: center;
 	}
 
+	.target > *
+	{
+		vertical-align: middle;
+	}
+
 	.target img
 	{
 		max-height: 60vh;
+		max-width: 30vw;
+	}
+
+	.target .arrow
+	{
+		font-size: 36px;
+		display: inline-block;
+		margin: 0 2em;
 	}
 
 	.yielding
@@ -202,6 +256,14 @@
 		padding: 12px 0;
 		overflow-x: auto;
 		white-space: nowrap;
+		line-height: 260px;
+	}
+
+	.yielding .item
+	{
+		display: inline-block;
+		line-height: normal;
+		transition: .3s all;
 	}
 
 	.yielding .item .index
@@ -211,13 +273,23 @@
 
 	.yielding .item img
 	{
-		max-width: 200px;
+		width: 200px;
 		vertical-align: middle;
+	}
+
+	.yielding .item.focus
+	{
+		transform: scale(1.1);
+	}
+
+	.yielding .item.focus img
+	{
+		outline: 4px solid lightgreen;
 	}
 
 	.yielding .item + .item::before
 	{
-		content: "\2b95";
+		content: "\1f844";
 		vertical-align: middle;
 		display: inline-block;
 		margin-left: 1em;
@@ -230,7 +302,7 @@
 		width: 100%;
 		height: 1.2em;
 		text-align: center;
-		border: 1px solid #000a;
+		border: 1px solid #0003;
 	}
 
 	.progress-bar .fill
