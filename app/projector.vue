@@ -16,22 +16,27 @@
 					</span>
 				</span>
 			</p>
+			<p v-if="focusResult">
+				<a :href="focusResult.editorUrl" target="editor">Edit</a>
+			</p>
 		</aside>
 		<article>
 			<div class="target">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<img v-if="targetUrl" :src="targetUrl" />
 				<span v-if="targetUrl" class="arrow">&#x1f844;</span>
-				<img v-if="focusResultUrl" :src="focusResultUrl" />
+				<img v-if="focusResult" :src="focusResult.img" />
 			</div>
 			<div class="yielding">
-				<span v-for="(item, i) of reversedProjectedSequence" :key="i" class="item"
+				<a v-for="(item, i) of reversedProjectedSequence" :key="i" class="item"
 					:class="{focus: (projectedSequence.length - i - 1) === focusIndex}"
 					@mouseenter="focusIndex = projectedSequence.length - i - 1"
+					:href="generatorLinkFromLatents(item.latentCodes[0])"
+					target="_blank"
 				>
 					<sup class="index">{{item.step}}.</sup>
 					<img :src="item.img" />
-				</span>
+				</a>
 			</div>
 		</article>
 	</div>
@@ -124,10 +129,15 @@
 			},
 
 
-			focusResultUrl() {
+			focusResult() {
 				const item = this.projectedSequence && this.projectedSequence[this.focusIndex];
+				if (item)
+					return {
+						img: item.img,
+						editorUrl: `/#psi=0.5&latents=${encodeURIComponent(item.latentCodes[0])}`,
+					};
 
-				return item && item.img;
+				return null;
 			},
 		},
 
@@ -187,6 +197,11 @@
 
 				this.running = false;
 			},
+
+
+			generatorLinkFromLatents(latents, psi = 0.5) {
+				return `/generate?psi=${psi}&latents=${encodeURIComponent(latents)}`;
+			},
 		},
 
 
@@ -231,6 +246,7 @@
 	.target
 	{
 		text-align: center;
+		padding: 20px;
 	}
 
 	.target > *
@@ -264,6 +280,8 @@
 		display: inline-block;
 		line-height: normal;
 		transition: .3s all;
+		text-decoration: none;
+		color: black;
 	}
 
 	.yielding .item .index
