@@ -24,20 +24,8 @@
 </template>
 
 <script>
-	function randn_bm() {
-		const u = 1 - Math.random();
-		const v = 1 - Math.random();
+	import {randn_bm, decodeLatentsBytes} from "./latentCode.js"
 
-		return Math.sqrt( -2 * Math.log( u ) ) * Math.cos( 2 * Math.PI * v );
-	}
-
-
-	function decodeLatentsBytes (code) {
-		const str = atob(decodeURIComponent(code));
-
-		const uint8 = str.split("").map(c => c.charCodeAt(0));
-		return new Float32Array(new Uint8Array(uint8).buffer);
-	}
 
 
 	function parseQueries (str) {

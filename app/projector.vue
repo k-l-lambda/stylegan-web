@@ -51,6 +51,8 @@
 <script>
 	import StoreInput from "./storeinput.vue";
 
+	import * as LatentCode from "./latentCode.js";
+
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -198,7 +200,17 @@
 				try {
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
 						//console.log("project value:", value);
-						this.projectedSequence.push(result);
+						const latents = LatentCode.decodeLatentsBytes(result.latentCodes[0]);
+
+						const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
+						const deltaAngle = lastItem ? LatentCode.angleBetween(latents, lastItem.latents) : null;
+						console.log("deltaAngle:", deltaAngle);
+
+						this.projectedSequence.push({
+							...result,
+							latents,
+							//deltaAngle,
+						});
 						this.focusIndex = this.projectedSequence.length - 1;
 					}
 				}
