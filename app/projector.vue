@@ -1,5 +1,11 @@
 <template>
-	<div @paste="onPaste" class="projector" @wheel="onWheel">
+	<div class="projector"
+		@paste="onPaste"
+		@wheel="onWheel"
+		@drop.prevent="onDropFiles"
+		@dragover.prevent="drageHover = true"
+		@drageleave="drageHover = false"
+	>
 		<aside>
 			<p>
 				<StoreInput v-model="projectSteps" type="number" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
@@ -21,7 +27,7 @@
 			</p>
 		</aside>
 		<article>
-			<div class="target">
+			<div class="target" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<img v-if="targetUrl" :src="targetUrl" />
 				<span v-if="targetUrl" class="arrow">&#x1f844;</span>
@@ -111,6 +117,7 @@
 				projectYieldInterval: 10,
 				running: false,
 				focusIndex: 0,
+				drageHover: false,
 			};
 		},
 
@@ -153,13 +160,7 @@
 
 				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
 				if (image) {
-					//console.log("image:", image.getAsFile());
-					const buffer = await new Promise(resolve => {
-						const reader = new FileReader();
-						reader.onload = event => resolve(event.target.result);
-						reader.readAsArrayBuffer(image.getAsFile());
-					});
-					this.targetUrl = URL.createObjectURL(new Blob([buffer], {type: image.type}));
+					this.targetUrl = URL.createObjectURL(image.getAsFile());
 				}
 			},
 
@@ -169,6 +170,16 @@
 
 				this.focusIndex += event.deltaY > 0 ? -1 : 1;
 				this.focusIndex = Math.max(Math.min(this.focusIndex, this.projectedSequence.length - 1), 0);
+			},
+
+
+			async onDropFiles(event) {
+				this.drageHover = false;
+
+				const file = event.dataTransfer.files[0];
+				if (file && /^image/.test(file.type)) {
+					this.targetUrl = URL.createObjectURL(file);
+				}
 			},
 
 
@@ -336,5 +347,11 @@
 	.progress-bar .desc
 	{
 		text-shadow: 1px 1px 1px #fffc;
+	}
+
+	div.hover
+	{
+		background-color: #dfd;
+		outline: 1em solid lightgreen;
 	}
 </style>
