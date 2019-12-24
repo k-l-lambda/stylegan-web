@@ -141,7 +141,7 @@ def generate():
 	latentsStr = flask.request.args.get('latents')
 	psi = float(flask.request.args.get('psi', 0.5))
 	#use_noise = bool(flask.request.args.get('use_noise', True))
-	randomize_noise = int(flask.request.args.get('randomize_noise', 1))
+	randomize_noise = int(flask.request.args.get('randomize_noise', 0))
 
 	global g_Session
 	#print('g_Session.1:', g_Session)
@@ -167,6 +167,9 @@ def generate():
 	return flask.Response(fp.getvalue(), mimetype = 'image/png')
 
 
+LPIPS_IMAGE_SHAPE = tuple(map(int, os.environ.get('LPIPS_IMAGE_SHAPE', '256,256').split(',')))
+
+
 @app.route('/project', methods=['POST'])
 def project():
 	steps = int(flask.request.args.get('steps', 1000))
@@ -176,8 +179,7 @@ def project():
 	if not imageFile:
 		flask.abort(400, 'image field is requested.')
 
-	image = PIL.Image.open(imageFile.stream)
-	#image.save('./test.png')
+	image = PIL.Image.open(imageFile.stream).resize(LPIPS_IMAGE_SHAPE, PIL.Image.ANTIALIAS)
 
 	image_array = np.array(image)[:, :, :3].swapaxes(0, 2).swapaxes(1, 2)
 	image_array = misc.adjust_dynamic_range(image_array, [0, 255], [-1, 1])

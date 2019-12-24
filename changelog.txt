@@ -1,9 +1,12 @@
 
 TODO:
+	favicon
 
 
 
 2019.12.24	K.L.	<k.l.lambda@gmail.com>
+
+	+	http_server.py: resize target image in project handler.
 
 	+	latentCode.js created.
 
