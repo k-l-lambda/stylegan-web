@@ -279,8 +279,7 @@
 
 	.target img
 	{
-		max-height: 60vh;
-		max-width: 30vw;
+		width: min(60vh, 30vw);
 	}
 
 	.target .arrow

@@ -1,5 +1,6 @@
 
 TODO:
+	option to trim displayed projected sequence by delta angle.
 
 
 
