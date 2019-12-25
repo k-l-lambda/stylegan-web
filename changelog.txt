@@ -1,11 +1,12 @@
 
 TODO:
 	switch to lerp when generate form W instead of Z
-	option to trim displayed projected sequence by delta offset.
 
 
 
 2019.12.25	K.L.	<k.l.lambda@gmail.com>
+
+	>	projector.vue: refined layouts.
 
 	+	projector.vue: result package loading implemented.
 

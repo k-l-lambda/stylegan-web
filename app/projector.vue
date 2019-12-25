@@ -9,6 +9,7 @@
 		<aside>
 			<p>
 				<StoreInput v-model="projectSteps" type="number" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
+				/
 				<StoreInput v-model="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
@@ -202,6 +203,8 @@
 			onWheel(event) {
 				//console.log("onWheel:", event);
 
+				const oldFocusIndex = this.focusIndex;
+
 				const direction = event.deltaY > 0 ? -1 : 1;
 
 				this.focusIndex += direction;
@@ -209,6 +212,9 @@
 					this.focusIndex += direction;
 
 				this.focusIndex = Math.max(Math.min(this.focusIndex, this.projectedSequence.length - 1), 0);
+
+				if (this.focusIndex !== oldFocusIndex)
+					event.preventDefault();
 			},
 
 
@@ -258,7 +264,8 @@
 							key: !this.lastKeyItem || distance > MOVEMENT_THRESHOLD,
 							index: this.projectedSequence.length,
 						});
-						this.focusIndex = this.projectedSequence.length - 1;
+						if (this.focusIndex === this.projectedSequence.length - 2)
+							this.focusIndex = this.projectedSequence.length - 1;
 					}
 				}
 				catch(error) {
@@ -279,6 +286,8 @@
 
 				const TARGET_FILE_NAME = "target.png";
 
+				const spec = await (await fetch("/spec")).json();
+
 				const target = await (await fetch(this.targetUrl)).blob();
 				pack.file(TARGET_FILE_NAME, target);
 
@@ -289,6 +298,7 @@
 
 				const manifest = {
 					usage: "stylegan-web-projector",
+					model: spec.model,
 					targetName: this.targetName,
 					targetFile: TARGET_FILE_NAME,
 					results: [
@@ -314,6 +324,8 @@
 					return;
 				}
 
+				console.log(`Loading package "${file.name}" with model`, manifest.model);
+
 				const target = await pack.file(manifest.targetFile || "target.png").async("blob");
 				if (!target)
 					throw new Error("bad projector package, no target file.");
@@ -331,6 +343,8 @@
 
 					this.focusIndex = this.projectedSequence.length - 1;
 				}
+
+				console.log("Done.");
 			},
 		},
 
@@ -338,8 +352,13 @@
 		watch: {
 			focusIndex() {
 				const focusItem = document.querySelector(".item.focus");
-				if (focusItem)
-					focusItem.scrollIntoView();
+				if (focusItem) {
+					//focusItem.scrollIntoView();
+					const rect = focusItem.getBoundingClientRect();
+					const visible = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+					if (!visible)
+						focusItem.scrollIntoView();
+				}
 			},
 
 
@@ -351,6 +370,11 @@
 </script>
 
 <style>
+	html
+	{
+		overflow: hidden;
+	}
+
 	body
 	{
 		position: absolute;
@@ -418,9 +442,11 @@
 
 	.yielding
 	{
+		max-height: calc(100vh - 4em - min(60vh, 30vw));
+		width: calc(100% - 24px);
 		padding: 12px;
-		overflow-x: auto;
-		white-space: nowrap;
+		overflow-y: auto;
+		/*white-space: nowrap;*/
 		line-height: 260px;
 	}
 
