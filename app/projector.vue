@@ -203,13 +203,12 @@
 						const latents = LatentCode.decodeLatentsBytes(result.latentCodes[0]);
 
 						const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
-						const deltaAngle = lastItem ? LatentCode.angleBetween(latents, lastItem.latents) : null;
-						console.log("deltaAngle:", deltaAngle);
+						const deltaMovement = lastItem ? LatentCode.distanceBetween(latents, lastItem.latents) : null;
+						console.log("deltaMovement:", deltaMovement);
 
 						this.projectedSequence.push({
 							...result,
 							latents,
-							//deltaAngle,
 						});
 						this.focusIndex = this.projectedSequence.length - 1;
 					}
