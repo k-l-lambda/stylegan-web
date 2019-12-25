@@ -23,7 +23,11 @@
 				</span>
 			</p>
 			<p v-if="focusResult">
-				<a :href="focusResult.editorUrl" target="editor">Edit</a>
+				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
+			</p>
+			<p>
+				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
+				<input type="checkbox" v-model="showAll" />show all
 			</p>
 		</aside>
 		<article>
@@ -34,9 +38,9 @@
 				<img v-if="focusResult" :src="focusResult.img" />
 			</div>
 			<div class="yielding">
-				<a v-for="(item, i) of reversedProjectedSequence" :key="i" class="item"
-					:class="{focus: (projectedSequence.length - i - 1) === focusIndex}"
-					@mouseenter="focusIndex = projectedSequence.length - i - 1"
+				<a v-for="item of shownProjectedSequence" :key="item.index" class="item"
+					:class="{focus: item.index === focusIndex}"
+					@mouseenter="focusIndex = item.index"
 					:href="generatorLinkFromLatents(item.latentCodes[0])"
 					target="_blank"
 				>
@@ -53,6 +57,9 @@
 
 	import * as LatentCode from "./latentCode.js";
 
+
+
+	const MOVEMENT_THRESHOLD = 40;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -120,6 +127,7 @@
 				running: false,
 				focusIndex: 0,
 				drageHover: false,
+				showAll: false,
 			};
 		},
 
@@ -138,10 +146,21 @@
 			},
 
 
+			shownProjectedSequence() {
+				return this.showAll ? this.reversedProjectedSequence : this.reversedProjectedSequence.filter((item, i) => i === 0 || item.key);
+			},
+
+
+			lastKeyItem() {
+				return this.reversedProjectedSequence.find(item => item.key);
+			},
+
+
 			focusResult() {
 				const item = this.projectedSequence && this.projectedSequence[this.focusIndex];
 				if (item)
 					return {
+						step: item.step,
 						img: item.img,
 						editorUrl: `/#fromW=1&psi=0.5&latents=${encodeURIComponent(item.latentCodes[0])}`,
 					};
@@ -170,7 +189,12 @@
 			onWheel(event) {
 				//console.log("onWheel:", event);
 
-				this.focusIndex += event.deltaY > 0 ? -1 : 1;
+				const direction = event.deltaY > 0 ? -1 : 1;
+
+				this.focusIndex += direction;
+				while (!this.showAll && this.projectedSequence[this.focusIndex] && !this.projectedSequence[this.focusIndex].key)
+					this.focusIndex += direction;
+
 				this.focusIndex = Math.max(Math.min(this.focusIndex, this.projectedSequence.length - 1), 0);
 			},
 
@@ -206,9 +230,13 @@
 						const deltaMovement = lastItem ? LatentCode.distanceBetween(latents, lastItem.latents) : null;
 						console.log("deltaMovement:", deltaMovement);
 
+						const distance = this.lastKeyItem && LatentCode.distanceBetween(latents, this.lastKeyItem.latents);
+
 						this.projectedSequence.push({
 							...result,
 							latents,
+							key: !this.lastKeyItem || distance > MOVEMENT_THRESHOLD,
+							index: this.projectedSequence.length,
 						});
 						this.focusIndex = this.projectedSequence.length - 1;
 					}
@@ -290,7 +318,7 @@
 
 	.yielding
 	{
-		padding: 12px 0;
+		padding: 12px;
 		overflow-x: auto;
 		white-space: nowrap;
 		line-height: 260px;

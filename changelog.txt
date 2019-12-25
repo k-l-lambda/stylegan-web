@@ -7,6 +7,8 @@ TODO:
 
 2019.12.25	K.L.	<k.l.lambda@gmail.com>
 
+	+	projector.vue: added option to hide trivial sequence items.
+
 	>	index.vue: refined feature bars.
 
 	>	index.vue: refined controls.
