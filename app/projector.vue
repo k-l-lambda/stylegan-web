@@ -24,8 +24,9 @@
 			</p>
 			<p v-if="focusResult">
 				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
+				<button title="save target &amp; result" class="icon" @click="save">&#x1f4be;</button>
 			</p>
-			<p>
+			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
 				<input type="checkbox" v-model="showAll" />show all
 			</p>
@@ -54,6 +55,8 @@
 </template>
 
 <script>
+	import JSZip from "jszip";
+
 	import StoreInput from "./storeinput.vue";
 
 	import * as LatentCode from "./latentCode.js";
@@ -106,6 +109,14 @@
 			if (done)
 				break;
 		}
+	};
+
+
+	const downloadUrl = (url, filename) => {
+		const a = document.createElement("a");
+		a.setAttribute("download", filename);
+		a.href = url;
+		a.click();
 	};
 
 
@@ -218,8 +229,7 @@
 
 
 			async project() {
-				const url = this.targetUrl;
-				const response = await fetch(url);
+				const response = await fetch(this.targetUrl);
 				const target = await response.blob();
 				if (!target) {
 					console.warn("target image is null.");
@@ -259,6 +269,35 @@
 
 			generatorLinkFromLatents(latents, psi = 0.5) {
 				return `/generate?fromW=1&psi=${psi}&latents=${encodeURIComponent(latents)}`;
+			},
+
+
+			async save () {
+				const pack = new JSZip();
+
+				const target = await (await fetch(this.targetUrl)).blob();
+				pack.file("target.png", target);
+
+				const focusItem = this.projectedSequence && this.projectedSequence[this.focusIndex];
+
+				const resultImage = await (await fetch(focusItem.img)).blob();
+				pack.file(`result-${focusItem.step}.png`, resultImage);
+
+				const manifest = {
+					usage: "stylegan-web-projector",
+					targetName: this.targetName,
+					results: [
+						{
+							step: focusItem.step,
+							latentCode: focusItem.latentCodes[0],
+						},
+					],
+				};
+				const manifestBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
+				pack.file("manifest.json", manifestBlob);
+
+				const packBlob = await pack.generateAsync({type: "blob"});
+				downloadUrl(URL.createObjectURL(packBlob), `${this.targetName}.projector.zip`);
 			},
 		},
 
@@ -304,6 +343,21 @@
 	aside p
 	{
 		text-align: center;
+	}
+
+	button.icon
+	{
+		background: transparent;
+		border: 0;
+		outline: 0;
+		display: inline-block;
+		margin: 0 1em;
+		cursor: pointer;
+	}
+
+	button.icon:hover
+	{
+		transform: scale(1.2);
 	}
 
 	.target

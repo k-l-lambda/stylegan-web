@@ -27,6 +27,7 @@ export default [
 		vue(),
 		alias({
 			vue: require.resolve("vue/dist/vue.runtime.esm.js"),
+			jszip: require.resolve("jszip/dist/jszip.min.js"),
 		}),
 	],
 }));
