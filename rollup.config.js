@@ -26,7 +26,7 @@ export default [
 		commonjs(),
 		vue(),
 		alias({
-			vue: require.resolve("vue/dist/vue.esm.js"),
+			vue: require.resolve("vue/dist/vue.runtime.esm.js"),
 		}),
 	],
 }));
