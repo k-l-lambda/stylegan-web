@@ -194,6 +194,11 @@
 			async onPaste(event) {
 				//console.log("onPaste:", event);
 
+				if (this.running) {
+					console.warn("Projector running, please wait.");
+					return;
+				}
+
 				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
 				if (image)
 					this.loadTargetFile(image.getAsFile());
@@ -220,6 +225,11 @@
 
 			async onDropFiles(event) {
 				this.drageHover = false;
+
+				if (this.running) {
+					console.warn("Projector running, please wait.");
+					return;
+				}
 
 				const file = event.dataTransfer.files[0];
 				if (file)
