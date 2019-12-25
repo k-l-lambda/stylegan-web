@@ -1,13 +1,13 @@
 <template>
 	<div>
 		<header>
-			<span class="model">{{model}}</span>
+			<h2 class="model" title="model name">{{model}}</h2>
 			<span :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
 				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
 				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
 			</span>
-			<input type="checkbox" v-model="fromW" :title="`generate from ${fromW ? 'W' : 'Z'}`" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
+			<input type="checkbox" v-model="fromW" title="generate from W" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
 			<input type="checkbox" v-model="noise" title="with random noise" />noise
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
 			<button @click="randomizeFeatures">Randomize</button>
@@ -44,6 +44,9 @@
 	}
 
 
+	let featureNormalFactor = 12;
+
+
 	class Feature {
 		constructor (value) {
 			this.value = value;
@@ -51,12 +54,12 @@
 
 
 		get normalized () {
-			return Math.tanh(this.value);
+			return Math.tanh(this.value / featureNormalFactor);
 		}
 
 
 		set normalized (v) {
-			this.value = Math.atanh(v);
+			this.value = Math.atanh(v) * featureNormalFactor;
 		}
 
 
@@ -78,7 +81,7 @@
 				features: null,
 				psi: 0.5,
 				loading: false,
-				randomIntensity: 0,
+				randomIntensity: -3,
 				pasteUrl: null,
 				noise: true,
 				fromW: false,
@@ -247,6 +250,11 @@
 				this.loading = true;
 				this.pasteUrl = null;
 			},
+
+
+			fromW (value) {
+				featureNormalFactor = value ? 12 : 0.4;
+			},
 		},
 	};
 </script>
@@ -261,6 +269,11 @@
 	header
 	{
 		height: 2em;
+	}
+
+	header h2
+	{
+		display: inline;
 	}
 
 	aside, article
