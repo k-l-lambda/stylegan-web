@@ -25,6 +25,7 @@ load_dotenv()
 
 
 g_Gs = None
+g_Synthesis = None
 g_Lpips = None
 g_Projector = None
 g_Session = None
@@ -41,9 +42,9 @@ def decodeLatents(code, len = 512):
 
 def loadGs():
 	with g_LoadingMutex:
-		global g_Gs
+		global g_Gs, g_Synthesis
 		if g_Gs:
-			return g_Gs
+			return g_Gs, g_Synthesis
 
 		global model_name
 
@@ -70,7 +71,13 @@ def loadGs():
 				#images = Gs.run(np.zeros((1, Gs.input_shape[1])), None, truncation_psi = 0.7, output_transform = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True))
 				#print('images:', g_Session, images)
 
-	return g_Gs
+				#print('Gs.components.synthesis.input_shape:', Gs.components.synthesis.input_shape)
+				global g_dLatentsIn
+				g_dLatentsIn = tf.placeholder(tf.float32, [1, Gs.input_shape[1]])
+				dlatents_expr = tf.tile(tf.reshape(g_dLatentsIn, [1, 1, Gs.input_shape[1]]), [1, Gs.components.synthesis.input_shape[1], 1])
+				g_Synthesis = Gs.components.synthesis.get_output_for(dlatents_expr, randomize_noise = False)
+
+	return g_Gs, g_Synthesis
 
 
 def loadLpips():
@@ -106,7 +113,7 @@ def loadProjector():
 	if g_Projector:
 		return g_Projector
 
-	gs = loadGs()
+	gs, _ = loadGs()
 	lpips = loadLpips()
 
 	g_Projector = Projector()
@@ -131,7 +138,7 @@ def projector():
 @app.route('/spec', methods=['GET'])
 def spec():
 	global model_name
-	model = loadGs()
+	model, _ = loadGs()
 
 	return dict(model = model_name, latents_dimensions = model.input_shape[1])
 
@@ -142,13 +149,14 @@ def generate():
 	psi = float(flask.request.args.get('psi', 0.5))
 	#use_noise = bool(flask.request.args.get('use_noise', True))
 	randomize_noise = int(flask.request.args.get('randomize_noise', 0))
+	fromW = int(flask.request.args.get('fromW', 0))
 
 	global g_Session
 	#print('g_Session.1:', g_Session)
 
-	model = loadGs()
+	gs, synthesis = loadGs()
 
-	latent_len = model.input_shape[1]
+	latent_len = gs.input_shape[1]
 	latents = decodeLatents(latentsStr, latent_len).reshape([1, latent_len])
 
 	t0 = time.time()
@@ -156,13 +164,20 @@ def generate():
 	# Generate image.
 	fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
 	with g_Session.as_default():
-		images = model.run(latents, None, truncation_psi = psi, randomize_noise = randomize_noise != 0, output_transform = fmt)
+		if fromW != 0:
+			print('latentsStr:', latentsStr)
+			global g_dLatentsIn
+			images = dnnlib.tflib.run(synthesis, {g_dLatentsIn: latents})
+			image = misc.convert_to_pil_image(misc.create_image_grid(images), drange = [-1,1])
+		else:
+			images = gs.run(latents, None, truncation_psi = psi, randomize_noise = randomize_noise != 0, output_transform = fmt)
+			image = PIL.Image.fromarray(images[0], 'RGB')
 
 	print('generation cost:', time.time() - t0)
 
 	# encode to PNG
 	fp = io.BytesIO()
-	PIL.Image.fromarray(images[0], 'RGB').save(fp, PIL.Image.registered_extensions()['.png'])
+	image.save(fp, PIL.Image.registered_extensions()['.png'])
 
 	return flask.Response(fp.getvalue(), mimetype = 'image/png')
 

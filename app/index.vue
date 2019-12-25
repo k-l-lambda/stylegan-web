@@ -3,8 +3,10 @@
 		<header>
 			<span class="model">{{model}}</span>
 			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
-			<input type="checkbox" v-model="noise" title="with random noise" />
-			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" /> <button @click="randomizeFeatures">Randomize</button>
+			<input type="checkbox" v-model="fromW" title="generate from W" />{{fromW ? "W" : "Z"}}>
+			<input type="checkbox" v-model="noise" title="with random noise" />noise
+			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
+			<button @click="randomizeFeatures">Randomize</button>
 			<button @click="zeroFeatures">Zero</button>
 			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
 		</header>
@@ -75,6 +77,7 @@
 				randomIntensity: 0,
 				pasteUrl: null,
 				noise: true,
+				fromW: false,
 			};
 		},
 
@@ -85,9 +88,10 @@
 					if (!this.features)
 						return null;
 
-					const length = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
+					const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
+					const featureValues = this.features.map(f => f.value * normalized);
 
-					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.features.map(f => f.value / length)).buffer))));
+					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(featureValues).buffer))));
 				},
 
 				set (value) {
@@ -102,12 +106,12 @@
 
 
 			imageURL () {
-				return `/generate?psi=${this.psi}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;
+				return `/generate?${this.fromW ? "fromW=1&" : ""}psi=${this.psi}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;
 			},
 
 
 			tag () {
-				return `#psi=${this.psi}&latents=${this.latentsBytes}`;
+				return `#${this.fromW ? "fromW=1&" : ""}psi=${this.psi}&latents=${this.latentsBytes}`;
 			},
 		},
 
@@ -151,6 +155,8 @@
 
 				if (dict.latents)
 					this.latentsBytes = dict.latents;
+
+				this.fromW = dict.fromW ? true : false;
 			},
 
 
@@ -245,6 +251,7 @@
 	html
 	{
 		overflow: hidden;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	}
 
 	header

@@ -143,7 +143,7 @@
 				if (item)
 					return {
 						img: item.img,
-						editorUrl: `/#psi=0.5&latents=${encodeURIComponent(item.latentCodes[0])}`,
+						editorUrl: `/#fromW=1&psi=0.5&latents=${encodeURIComponent(item.latentCodes[0])}`,
 					};
 
 				return null;
@@ -223,7 +223,7 @@
 
 
 			generatorLinkFromLatents(latents, psi = 0.5) {
-				return `/generate?psi=${psi}&latents=${encodeURIComponent(latents)}`;
+				return `/generate?fromW=1&psi=${psi}&latents=${encodeURIComponent(latents)}`;
 			},
 		},
 
