@@ -7,6 +7,8 @@ TODO:
 
 2019.12.25	K.L.	<k.l.lambda@gmail.com>
 
+	+	projector.vue: result package loading implemented.
+
 	+	projector.vue: result package saving implemented.
 
 	+	projector.vue: added option to hide trivial sequence items.

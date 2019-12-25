@@ -219,6 +219,8 @@
 				if (file)
 					if (/^image/.test(file.type))
 						this.loadTargetFile(file);
+					else if (/zip/.test(file.type))
+						this.loadPackage(file);
 			},
 
 
@@ -267,16 +269,18 @@
 			},
 
 
-			generatorLinkFromLatents(latents, psi = 0.5) {
-				return `/generate?fromW=1&psi=${psi}&latents=${encodeURIComponent(latents)}`;
+			generatorLinkFromLatents(latents) {
+				return `/generate?fromW=1&latents=${encodeURIComponent(latents)}`;
 			},
 
 
 			async save () {
 				const pack = new JSZip();
 
+				const TARGET_FILE_NAME = "target.png";
+
 				const target = await (await fetch(this.targetUrl)).blob();
-				pack.file("target.png", target);
+				pack.file(TARGET_FILE_NAME, target);
 
 				const focusItem = this.projectedSequence && this.projectedSequence[this.focusIndex];
 
@@ -286,6 +290,7 @@
 				const manifest = {
 					usage: "stylegan-web-projector",
 					targetName: this.targetName,
+					targetFile: TARGET_FILE_NAME,
 					results: [
 						{
 							step: focusItem.step,
@@ -298,6 +303,34 @@
 
 				const packBlob = await pack.generateAsync({type: "blob"});
 				downloadUrl(URL.createObjectURL(packBlob), `${this.targetName}.projector.zip`);
+			},
+
+
+			async loadPackage(file) {
+				const pack = await JSZip.loadAsync(file);
+				const manifest = JSON.parse(await pack.file("manifest.json").async("text"));
+				if (manifest.usage !== "stylegan-web-projector") {
+					console.warn("unsupported package type:", manifest.usage);
+					return;
+				}
+
+				const target = await pack.file(manifest.targetFile || "target.png").async("blob");
+				if (!target)
+					throw new Error("bad projector package, no target file.");
+
+				this.targetUrl = URL.createObjectURL(target);
+				this.targetName = manifest.targetName;
+
+				if (manifest.results) {
+					this.projectedSequence = manifest.results.map((result, index) => ({
+						index,
+						step: result.step,
+						latentCodes: [result.latentCode],
+						img: this.generatorLinkFromLatents(result.latentCode),
+					}));
+
+					this.focusIndex = this.projectedSequence.length - 1;
+				}
 			},
 		},
 
