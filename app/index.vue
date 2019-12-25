@@ -2,8 +2,12 @@
 	<div>
 		<header>
 			<span class="model">{{model}}</span>
-			<!--&Psi; not work?-->{{'\u03a8:'}} <input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" /> <input class="value" type="number" v-model.number="psi" step="0.001" />
-			<input type="checkbox" v-model="fromW" title="generate from W" />{{fromW ? "W" : "Z"}}>
+			<span :class="{disabled: fromW}">
+				<!--&Psi; not work?-->&#x03a8;:
+				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
+				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
+			</span>
+			<input type="checkbox" v-model="fromW" :title="`generate from ${fromW ? 'W' : 'Z'}`" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
 			<input type="checkbox" v-model="noise" title="with random noise" />noise
 			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
 			<button @click="randomizeFeatures">Randomize</button>
@@ -106,12 +110,12 @@
 
 
 			imageURL () {
-				return `/generate?${this.fromW ? "fromW=1&" : ""}psi=${this.psi}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;
+				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;
 			},
 
 
 			tag () {
-				return `#${this.fromW ? "fromW=1&" : ""}psi=${this.psi}&latents=${this.latentsBytes}`;
+				return `#${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}&latents=${this.latentsBytes}`;
 			},
 		},
 
@@ -272,15 +276,10 @@
 		font-size: 9px;
 	}
 
-	/*ol
+	.disabled
 	{
-		padding: 0;
+		color: #0006;
 	}
-
-	li
-	{
-		list-style: none;
-	}*/
 
 	.feature-bar
 	{
