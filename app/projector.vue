@@ -33,6 +33,7 @@
 		<article>
 			<div class="target" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
+				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
 				<img v-if="targetUrl" :src="targetUrl" />
 				<span v-if="targetUrl" class="arrow">&#x1f844;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
@@ -121,6 +122,7 @@
 		data() {
 			return {
 				targetUrl: null,
+				targetName: null,
 				projectedSequence: [],
 				projectSteps: 200,
 				projectYieldInterval: 10,
@@ -172,6 +174,7 @@
 
 		created() {
 			window.$main = this;
+			this.originTitle = document.title;
 		},
 
 
@@ -180,9 +183,8 @@
 				//console.log("onPaste:", event);
 
 				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
-				if (image) {
-					this.targetUrl = URL.createObjectURL(image.getAsFile());
-				}
+				if (image)
+					this.loadTargetFile(image.getAsFile());
 			},
 
 
@@ -203,9 +205,15 @@
 				this.drageHover = false;
 
 				const file = event.dataTransfer.files[0];
-				if (file && /^image/.test(file.type)) {
-					this.targetUrl = URL.createObjectURL(file);
-				}
+				if (file)
+					if (/^image/.test(file.type))
+						this.loadTargetFile(file);
+			},
+
+
+			loadTargetFile(file) {
+				this.targetUrl = URL.createObjectURL(file);
+				this.targetName = file.name.replace(/\.\w+$/, "");
 			},
 
 
@@ -260,6 +268,11 @@
 				const focusItem = document.querySelector(".item.focus");
 				if (focusItem)
 					focusItem.scrollIntoView();
+			},
+
+
+			targetName(value) {
+				document.title = value ? `${this.originTitle} - ${value}` : this.originTitle;
 			},
 		},
 	};
