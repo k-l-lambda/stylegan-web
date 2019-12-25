@@ -2,17 +2,28 @@
 	<div>
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
-			<span :class="{disabled: fromW}">
+			<section>
+				<input type="checkbox" v-model="fromW" title="generate from W" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
+			</section>
+			<section :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
 				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
 				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
-			</span>
-			<input type="checkbox" v-model="fromW" title="generate from W" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
-			<input type="checkbox" v-model="noise" title="with random noise" />noise
-			<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
-			<button @click="randomizeFeatures">Randomize</button>
-			<button @click="zeroFeatures">Zero</button>
-			<a :href="tag">tag</a>	<button @click="slerpToHash">slerp</button>
+			</section>
+			<section>
+				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
+			</section>
+			<section>
+				<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
+				<button @click="randomizeFeatures">Randomize</button>
+			</section>
+			<section>
+				<button @click="zeroFeatures">Zero</button>
+			</section>
+			<section>
+				<a :href="tag">tag</a>
+				<button @click="slerpToHash">Slerp</button>
+			</section>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -269,6 +280,7 @@
 	header
 	{
 		height: 2em;
+		margin: 20px 0;
 	}
 
 	header h2
@@ -276,11 +288,17 @@
 		display: inline;
 	}
 
+	header section
+	{
+		display: inline-block;
+		margin: 0 .6em;
+	}
+
 	aside, article
 	{
 		display: inline-block;
 		vertical-align: top;
-		height: calc(100vh - 2em - 20px);
+		height: calc(100vh - 69px);
 	}
 
 	aside
