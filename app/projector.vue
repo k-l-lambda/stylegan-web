@@ -226,9 +226,9 @@
 						//console.log("project value:", value);
 						const latents = LatentCode.decodeLatentsBytes(result.latentCodes[0]);
 
-						const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
+						/*const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
 						const deltaMovement = lastItem ? LatentCode.distanceBetween(latents, lastItem.latents) : null;
-						console.log("deltaMovement:", deltaMovement);
+						console.log("deltaMovement:", deltaMovement);*/
 
 						const distance = this.lastKeyItem && LatentCode.distanceBetween(latents, this.lastKeyItem.latents);
 
