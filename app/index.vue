@@ -2,40 +2,40 @@
 	<div>
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
-			<section>
+			<fieldset>
 				<select v-model="fromW" class="latant-type" :title="`generate from ${fromW ? 'W' : 'Z'}`">
 					<option :value="false">Z</option>
 					<option :value="true">W</option>
 				</select>&gt;
-			</section>
-			<section :class="{disabled: fromW}">
+			</fieldset>
+			<fieldset :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
 				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
 				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
-			</section>
-			<section>
+			</fieldset>
+			<fieldset>
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
-			</section>
-			<section>
+			</fieldset>
+			<fieldset>
 				<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
 				<button @click="randomizeFeatures">Randomize</button>
-			</section>
-			<section>
+			</fieldset>
+			<fieldset>
 				<button @click="zeroFeatures">Zero</button>
-			</section>
-			<section>
+			</fieldset>
+			<fieldset>
 				<a :href="tag">TAG</a>
-			</section>
-			<section v-if="hashLatents && !fromW">
+			</fieldset>
+			<fieldset v-if="hashLatents && !fromW">
 				<em :title="`${latentDistance} RAD`">{{(latentDistance * 180 / Math.PI).toPrecision(4)}}&deg;</em>
 				-<StoreInput v-model.number="slerpStep" localKey="explorerSlerpStep" :styleObj="{width: '1.6em', border: 0}" />&deg;
 				<button @click="slerpToHash" :disabled="!latentDistance" title="Slerp towards to hash tag">Slerp</button>
-			</section>
-			<section v-if="hashLatents && fromW">
+			</fieldset>
+			<fieldset v-if="hashLatents && fromW">
 				<em :title="`${latentDistance}`">{{latentDistance.toPrecision(4)}}</em>
 				&times;<StoreInput v-model.number="lerpFactor" localKey="explorerLerpStep" :styleObj="{width: '2em', border: 0}" />
 				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
-			</section>
+			</fieldset>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -311,10 +311,12 @@
 		display: inline;
 	}
 
-	header section
+	header fieldset
 	{
 		display: inline-block;
 		margin: 0 .6em;
+		border: 0;
+		padding: 0;
 	}
 
 	.latant-type

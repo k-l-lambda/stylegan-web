@@ -37,7 +37,7 @@
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
 				<img v-if="targetUrl" :src="targetUrl" />
-				<span v-if="targetUrl" class="arrow">&#x1f844;</span>
+				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
 			</div>
 			<div class="yielding">
@@ -64,7 +64,7 @@
 
 
 
-	const MOVEMENT_THRESHOLD = 40;
+	const MOVEMENT_THRESHOLD = 4;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -492,7 +492,7 @@
 
 	.yielding .item + .item::before
 	{
-		content: "\1f844";
+		content: "\25c4";
 		vertical-align: middle;
 		display: inline-block;
 		margin-left: 1em;
