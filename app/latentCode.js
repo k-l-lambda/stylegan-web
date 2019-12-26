@@ -32,7 +32,7 @@ function angleBetween(v1, v2) {
 
 
 function distanceBetween(v1, v2) {
-	return v1.reduce((sum, x, i) => sum + Math.abs(x - v2[i]), 0);
+	return Math.sqrt(v1.reduce((sum, x, i) => sum + (x - v2[i]) ** 2, 0));
 }
 
 

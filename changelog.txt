@@ -1,10 +1,11 @@
 
 TODO:
-	switch to lerp when generate form W instead of Z
 
 
 
 2019.12.26	K.L.	<k.l.lambda@gmail.com>
+
+	+	index.vue: lerp latents in W space implemented.
 
 	+	index.vue: refined latent type control.
 

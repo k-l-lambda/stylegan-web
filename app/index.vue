@@ -32,6 +32,8 @@
 				<button @click="slerpToHash" :disabled="!latentDistance" title="Slerp towards to hash tag">Slerp</button>
 			</section>
 			<section v-if="hashLatents && fromW">
+				<em :title="`${latentDistance}`">{{latentDistance.toPrecision(4)}}</em>
+				&times;<StoreInput v-model.number="lerpFactor" localKey="explorerLerpStep" :styleObj="{width: '2em', border: 0}" />
 				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
 			</section>
 		</header>
@@ -57,7 +59,6 @@
 
 
 
-	window.LatentCode = LatentCode;
 	function parseQueries (str) {
 		return str.substr(1).split("&").reduce((dict, pair) => {
 			const sections = pair.split("=");
@@ -116,6 +117,7 @@
 				fromW: false,
 				hashLatents: null,
 				slerpStep: 10,
+				lerpFactor: 0.8,
 			};
 		},
 
@@ -141,7 +143,7 @@
 
 
 			featureVector () {
-				const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
+				const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
 				return this.features.map(f => f.value * normalized);
 			},
 
@@ -203,17 +205,16 @@
 				const dict = parseQueries(location.hash);
 				//console.log("dict:", dict);
 
-				this.psi = Number(dict.psi);
+				const psi = Number(dict.psi);
+				if (Number.isFinite(psi))
+					this.psi = psi;
 
-				this.hashLatents = null;
-
-				if (dict.latents) {
+				if (dict.latents)
 					this.latentsBytes = dict.latents;
 
-					this.hashLatents = LatentCode.normalize(LatentCode.decodeLatentsBytes(dict.latents));
-				}
-
 				this.fromW = dict.fromW ? true : false;
+
+				this.updateHashLatents();
 			},
 
 
@@ -257,7 +258,17 @@
 
 
 			lerpToHash () {
-				// TODO:
+				this.features.forEach((f, i) => f.value = f.value * this.lerpFactor + this.hashLatents[i] * (1 - this.lerpFactor));
+			},
+
+
+			updateHashLatents() {
+				if (this.latentsBytes) {
+					const lvec = LatentCode.decodeLatentsBytes(this.latentsBytes);
+					this.hashLatents = this.fromW ? lvec : LatentCode.normalize(lvec);
+				}
+				else
+					this.hashLatents = null;
 			},
 		},
 
@@ -271,6 +282,8 @@
 
 			fromW (value) {
 				featureNormalFactor = value ? 12 : 0.4;
+
+				this.updateHashLatents();
 			},
 		},
 	};
