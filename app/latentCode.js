@@ -27,7 +27,7 @@ function angleBetween(v1, v2) {
 
 	const dotProduct = nv1.reduce((sum, x, i) => sum + x * nv2[i], 0);
 
-	return Math.acos(dotProduct);
+	return Math.acos(Math.max(Math.min(dotProduct, 1), -1));
 }
 
 

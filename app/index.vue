@@ -24,8 +24,15 @@
 				<button @click="zeroFeatures">Zero</button>
 			</section>
 			<section>
-				<a :href="tag">tag</a>
-				<button @click="slerpToHash">Slerp</button>
+				<a :href="tag">TAG</a>
+			</section>
+			<section v-if="hashLatents && !fromW">
+				<em :title="`${latentDistance} RAD`">{{(latentDistance * 180 / Math.PI).toPrecision(4)}}&deg;</em>
+				-<StoreInput v-model.number="slerpStep" localKey="explorerSlerpStep" :styleObj="{width: '1.6em', border: 0}" />&deg;
+				<button @click="slerpToHash" :disabled="!latentDistance" title="Slerp towards to hash tag">Slerp</button>
+			</section>
+			<section v-if="hashLatents && fromW">
+				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
 			</section>
 		</header>
 		<aside>
@@ -44,10 +51,13 @@
 </template>
 
 <script>
-	import {randn_bm, decodeLatentsBytes} from "./latentCode.js"
+	import StoreInput from "./storeinput.vue";
+
+	import * as LatentCode from "./latentCode.js"
 
 
 
+	window.LatentCode = LatentCode;
 	function parseQueries (str) {
 		return str.substr(1).split("&").reduce((dict, pair) => {
 			const sections = pair.split("=");
@@ -78,7 +88,7 @@
 
 
 		randomize (intensity) {
-			this.value += randn_bm() * intensity;
+			this.value += LatentCode.randn_bm() * intensity;
 		}
 	};
 
@@ -86,6 +96,11 @@
 
 	export default {
 		name: "index",
+
+
+		components: {
+			StoreInput,
+		},
 
 
 		data () {
@@ -99,6 +114,8 @@
 				pasteUrl: null,
 				noise: true,
 				fromW: false,
+				hashLatents: null,
+				slerpStep: 10,
 			};
 		},
 
@@ -109,20 +126,23 @@
 					if (!this.features)
 						return null;
 
-					const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
-					const featureValues = this.features.map(f => f.value * normalized);
-
-					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(featureValues).buffer))));
+					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.featureVector).buffer))));
 				},
 
 				set (value) {
-					const values = decodeLatentsBytes(value);
+					const values = LatentCode.decodeLatentsBytes(value);
 
 					values.forEach((value, i) => {
 						if (this.features && this.features[i])
 							this.features[i].value = value;
 					});
 				},
+			},
+
+
+			featureVector () {
+				const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0)) || 1;
+				return this.features.map(f => f.value * normalized);
 			},
 
 
@@ -133,6 +153,17 @@
 
 			tag () {
 				return `#${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}&latents=${this.latentsBytes}`;
+			},
+
+
+			latentDistance() {
+				if (!this.hashLatents)
+					return NaN;
+
+				if (this.fromW)
+					return LatentCode.distanceBetween(this.featureVector, this.hashLatents);
+				else
+					return LatentCode.angleBetween(this.featureVector, this.hashLatents);
 			},
 		},
 
@@ -174,8 +205,13 @@
 
 				this.psi = Number(dict.psi);
 
-				if (dict.latents)
+				this.hashLatents = null;
+
+				if (dict.latents) {
 					this.latentsBytes = dict.latents;
+
+					this.hashLatents = LatentCode.normalize(LatentCode.decodeLatentsBytes(dict.latents));
+				}
 
 				this.fromW = dict.fromW ? true : false;
 			},
@@ -215,47 +251,14 @@
 			slerpToHash () {
 				const targetLatents = parseQueries(location.hash).latents;
 				if (targetLatents) {
-					const target = decodeLatentsBytes(targetLatents);
-					const length = Math.sqrt(target.reduce((sum, value) => sum + value * value, 0));
-					const normalizedTarget = target.map(v => v / length);
-
-					this.rotateFeatures(normalizedTarget, Math.PI * 0.04);
+					this.rotateFeatures(this.hashLatents, this.slerpStep * Math.PI / 180);
 				}
 			},
 
 
-			/*async discriminate () {
-				const url = this.pasteUrl || this.imageURL;
-				const response = await fetch(url);
-				const blob = await response.blob();
-
-				const form = new FormData();
-				form.append("image", new File([blob], {type: "image/png"}));
-				const res2 = await fetch("/project", {
-					method: "POST",
-					body: form,
-				});
-
-				this.discriminateResult = Number(await res2.text());
-
-				console.log("project:", this.discriminateResult);
-			},*/
-
-
-			/*async onPaste (event) {
-				console.log("onPaste:", event);
-				console.log("onPaste:", [...event.clipboardData.items].map(i => i.type));
-				const image = [...event.clipboardData.items].filter(item => item.type.match(/image/))[0];
-				if (image) {
-					//console.log("image:", image.getAsFile());
-					const buffer = await new Promise(resolve => {
-						const reader = new FileReader();
-						reader.onload = event => resolve(event.target.result);
-						reader.readAsArrayBuffer(image.getAsFile());
-					});
-					this.pasteUrl = URL.createObjectURL(new Blob([buffer], {type: image.type}));
-				}
-			},*/
+			lerpToHash () {
+				// TODO:
+			},
 		},
 
 

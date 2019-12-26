@@ -1,5 +1,5 @@
 <template>
-	<span>
+	<span class="storeinput">
 		<input
 			:type="type"
 			v-model.lazy="innerValue"
@@ -84,3 +84,10 @@
 		},
 	};
 </script>
+
+<style scoped>
+	.storeinput
+	{
+		position: relative;
+	}
+</style>
