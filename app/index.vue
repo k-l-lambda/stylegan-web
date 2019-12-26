@@ -3,7 +3,10 @@
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
 			<section>
-				<input type="checkbox" v-model="fromW" title="generate from W" /><strong>{{fromW ? "W" : "Z"}}</strong>&gt;
+				<select v-model="fromW" class="latant-type" :title="`generate from ${fromW ? 'W' : 'Z'}`">
+					<option :value="false">Z</option>
+					<option :value="true">W</option>
+				</select>&gt;
 			</section>
 			<section :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
@@ -293,6 +296,19 @@
 		display: inline-block;
 		margin: 0 .6em;
 	}
+
+	.latant-type
+	{
+		border: 0;
+		font-weight: bold;
+		-webkit-appearance: none;
+		cursor: pointer;
+	}
+
+	/*.latant-type:hover
+	{
+		-webkit-appearance: menulist;
+	}*/
 
 	aside, article
 	{
