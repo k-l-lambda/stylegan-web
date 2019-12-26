@@ -143,8 +143,15 @@
 
 
 			featureVector () {
-				const normalized = this.fromW ? 1 : 1 / Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
+				const normalized = this.fromW ? 1 : 1 / this.featureMagnitude;
 				return this.features.map(f => f.value * normalized);
+			},
+
+
+			featureMagnitude() {
+				const result = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
+
+				return result || 1e-9;
 			},
 
 
@@ -219,10 +226,7 @@
 
 
 			normalizeFeatures () {
-				const length = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
-
-				if (length > 0)
-					this.features.forEach(f => f.value /= length);
+				this.features.forEach(f => f.value /= this.featureMagnitude);
 			},
 
 
