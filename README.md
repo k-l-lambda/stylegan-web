@@ -4,6 +4,29 @@
 
 Install requirement libraries with pip, reference to [requirements.txt](./requirements.txt).
 
+### Network Files
+
+Before run the web server, pre-trained network files must be placed in folder *models*. You can download network files following to [StyleGAN2's code](https://github.com/NVlabs/stylegan2/blob/master/pretrained_networks.py).
+
+For memory reason, only one Gs model can be loaded when running the webserver. Create a file with name *.env.local* to config chosen model name and network file paths. Network file name-paths config in key-value style, e. g.
+
+<a name="model-paths-example"></a>
+```.env
+MODEL_NAME=ffhq
+
+MODEL_PATH_ffhq=./models/stylegan2-ffhq-config-f.pkl
+MODEL_PATH_cat=./models/stylegan2-cat-config-f.pkl
+...
+```
+
+Alternately you can choose model by node script argument, e. g.
+
+```.bash
+yarn start cat
+```
+
+The network *LPIPS* is required when use image projector, the default path is `./models/vgg16_zhang_perceptual.pkl`, [download link](https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2).
+
 ### For Windows
 
 * MSVC
@@ -32,3 +55,16 @@ Install requirement libraries with pip, reference to [requirements.txt](./requir
 	```.bash
 	mklink /J tensorflow tensorflow_core
 	```
+
+## Environment Configurations
+
+Create a file named *.env.local* to set environment variables. Avaiable env list:
+
+Key						| Description							| Default Value
+:--						| :--									| :--
+HTTP_HOST				| Web server host.						| 127.0.0.1
+HTTP_PORT				| Web server port.						| 8186
+MODEL_NAME				| Name for the Gs model to load, this can be overwrite by the first argument of node script *[start](./package.json#L7)*.	| ffhq
+MODEL_PATH_LPIPS		| File path for LPIPS model.			| ./models/vgg16_zhang_perceptual.pkl
+MODEL_PATH_*			| Gs network file path dictionary. See [examples](#model-paths-example).	|
+REGULARIZE_NOISE_WEIGHT	| Projector training hyperparameter.	| 1e5
