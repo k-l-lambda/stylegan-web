@@ -3,6 +3,11 @@ TODO:
 
 
 
+2019.12.27	K.L.	<k.l.lambda@gmail.com>
+
+	+	http_server.py: added env variable of REGULARIZE_NOISE_WEIGHT.
+
+
 2019.12.26	K.L.	<k.l.lambda@gmail.com>
 
 	>	projector.vue: adjusted movement threshold.

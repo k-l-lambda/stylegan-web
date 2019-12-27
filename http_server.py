@@ -117,6 +117,7 @@ def loadProjector():
 	lpips = loadLpips()
 
 	g_Projector = Projector()
+	g_Projector.regularize_noise_weight = float(os.environ.get('REGULARIZE_NOISE_WEIGHT', 1e5))
 	g_Projector.set_network(gs, lpips)
 
 	return g_Projector
@@ -189,6 +190,7 @@ LPIPS_IMAGE_SHAPE = tuple(map(int, os.environ.get('LPIPS_IMAGE_SHAPE', '256,256'
 def project():
 	steps = int(flask.request.args.get('steps', 1000))
 	yieldInterval = int(flask.request.args.get('yieldInterval', 10))
+	#regularizeNoiseWeight = float(flask.request.args.get('regularizeNoiseWeight', 1e5))
 
 	imageFile = flask.request.files.get('image')
 	if not imageFile:
@@ -203,6 +205,7 @@ def project():
 
 	def gen():
 		proj = loadProjector()
+		#proj.regularize_noise_weight = regularizeNoiseWeight
 		proj.start([image_array])
 		for step in proj.runSteps(steps):
 			print('\rProjecting: %d / %d' % (step, steps), end = '', flush = True)
