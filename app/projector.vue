@@ -274,7 +274,7 @@
 							key: !this.lastKeyItem || distance > MOVEMENT_THRESHOLD,
 							index: this.projectedSequence.length,
 						});
-						if (this.focusIndex === this.projectedSequence.length - 2)
+						if (this.focusIndex >= this.projectedSequence.length - 2)
 							this.focusIndex = this.projectedSequence.length - 1;
 					}
 				}

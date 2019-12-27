@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div @paste="onPaste">
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
 			<fieldset>
@@ -25,6 +25,7 @@
 			</fieldset>
 			<fieldset>
 				<a :href="tag">TAG</a>
+				<button @click="copyLatentCode" title="copy latent code">&#x2398;</button>
 			</fieldset>
 			<fieldset v-if="hashLatents && !fromW">
 				<em :title="`${latentDistance} RAD`">{{(latentDistance * 180 / Math.PI).toPrecision(4)}}&deg;</em>
@@ -273,6 +274,29 @@
 				}
 				else
 					this.hashLatents = null;
+			},
+
+
+			copyLatentCode() {
+				navigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));
+				console.log("Latent code copied in clipboard.");
+			},
+
+
+			async onPaste(event) {
+				//console.log("onPaste:", [...event.clipboardData.items]);
+				const text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));
+				//console.log("text:", text);
+				try {
+					// check if text is valid latent code
+					const origin = atob(text);
+					if (origin.length !== 512 * 4)
+						throw new Error("invalid latent code");
+
+					this.latentsBytes = text;
+				}
+				catch(_) {
+				}
 			},
 		},
 
