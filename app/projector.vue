@@ -444,6 +444,11 @@
 		width: min(60vh, 30vw);
 	}
 
+	.target img:first-of-type
+	{
+		height: min(60vh, 30vw);
+	}
+
 	.target .arrow
 	{
 		font-size: 36px;
