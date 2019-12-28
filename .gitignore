@@ -5,7 +5,7 @@ results
 .suo
 .vs
 node_modules
-dist/*.bundle.js
+#dist/*.bundle.js
 yarn.lock
 example.png
 *.local
