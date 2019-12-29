@@ -50,11 +50,13 @@
 			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
 			<img v-if="pasteUrl" class="result" :src="pasteUrl" @load="loading = false" />
 		</article>
+		<Navigator />
 	</div>
 </template>
 
 <script>
 	import StoreInput from "./storeinput.vue";
+	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js"
 
@@ -102,6 +104,7 @@
 
 		components: {
 			StoreInput,
+			Navigator,
 		},
 
 
@@ -324,6 +327,11 @@
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	}
 
+	body
+	{
+		white-space: nowrap;
+	}
+
 	header
 	{
 		height: 2em;
@@ -360,7 +368,7 @@
 	{
 		display: inline-block;
 		vertical-align: top;
-		height: calc(100vh - 69px);
+		height: calc(100vh - 72px);
 	}
 
 	aside

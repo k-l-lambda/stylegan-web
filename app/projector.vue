@@ -51,6 +51,7 @@
 					<img :src="item.img" />
 				</a>
 			</div>
+			<Navigator />
 		</article>
 	</div>
 </template>
@@ -59,6 +60,7 @@
 	import JSZip from "jszip";
 
 	import StoreInput from "./storeinput.vue";
+	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js";
 
@@ -128,6 +130,7 @@
 
 		components: {
 			StoreInput,
+			Navigator,
 		},
 
 
