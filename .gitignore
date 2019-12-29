@@ -9,3 +9,4 @@ dist/*.bundle.js
 yarn.lock
 example.png
 *.local
+documents
