@@ -8,11 +8,6 @@
 					<option :value="true">W</option>
 				</select>&gt;
 			</fieldset>
-			<fieldset :class="{disabled: fromW}">
-				<!--&Psi; not work?-->&#x03a8;:
-				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
-				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
-			</fieldset>
 			<fieldset>
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
 			</fieldset>
@@ -37,6 +32,11 @@
 				&times;<StoreInput v-model.number="lerpFactor" localKey="explorerLerpStep" :styleObj="{width: '2em', border: 0}" />
 				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
 			</fieldset>
+			<fieldset :class="{disabled: fromW}">
+				<!--&Psi; not work?-->&#x03a8;:
+				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
+				<input v-show="!fromW" type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" />
+			</fieldset>
 		</header>
 		<aside>
 			<ol v-if="features">
@@ -50,6 +50,7 @@
 			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
 			<img v-if="pasteUrl" class="result" :src="pasteUrl" @load="loading = false" />
 		</article>
+		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 		<Navigator />
 	</div>
 </template>
@@ -114,6 +115,7 @@
 				latents_dimensions: null,
 				features: null,
 				psi: 0.5,
+				initializing: false,
 				loading: false,
 				randomIntensity: -3,
 				pasteUrl: null,
@@ -184,9 +186,12 @@
 		async mounted () {
 			window.$main = this;
 
+			this.initializing = true;
 			const res = await fetch("/spec");
 			const spec = await res.json();
 			console.log("spec:", spec);
+
+			this.initializing = false;
 
 			Object.assign(this, spec);
 
@@ -282,7 +287,7 @@
 
 			copyLatentCode() {
 				navigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));
-				console.log("Latent code copied in clipboard.");
+				console.log("Latent code copied into clipboard.");
 			},
 
 
@@ -409,5 +414,19 @@
 	.loading img
 	{
 		opacity: 0.7;
+	}
+
+	.initializing
+	{
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		font-size: 10vh;
+		padding: 30vh 2em 0;
+		white-space: normal;
+		background-color: #ccca;
+		color: #444c;
 	}
 </style>
