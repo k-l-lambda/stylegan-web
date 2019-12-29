@@ -8718,6 +8718,87 @@
       undefined
     );
 
+  //
+  //
+  //
+  //
+  //
+  //
+
+  var script$1 = {
+  	name: "navigator",
+
+
+  	data() {
+  		return {
+  			links: [
+  				{
+  					href: "/",
+  					name: "EXPLORER",
+  				},
+  				{
+  					href: "/projector/",
+  					name: "PROJECTOR",
+  				},
+  			],
+  			pathname: location.pathname,
+  		};
+  	},
+  };
+
+  /* script */
+  const __vue_script__$1 = script$1;
+
+  /* template */
+  var __vue_render__$1 = function() {
+    var _vm = this;
+    var _h = _vm.$createElement;
+    var _c = _vm._self._c || _h;
+    return _c(
+      "header",
+      _vm._l(_vm.links, function(link) {
+        return _c(
+          "a",
+          {
+            class: { focus: link.href === _vm.pathname },
+            attrs: { href: link.href }
+          },
+          [_vm._v(_vm._s(link.name))]
+        )
+      }),
+      0
+    )
+  };
+  var __vue_staticRenderFns__$1 = [];
+  __vue_render__$1._withStripped = true;
+
+    /* style */
+    const __vue_inject_styles__$1 = function (inject) {
+      if (!inject) return
+      inject("data-v-90a1da1a_0", { source: "\nheader[data-v-90a1da1a]\n{\n\tposition: fixed;\n\tleft: 0;\n\ttop: 0;\n\tmargin: 0;\n\tpadding: 0 0.4em;\n\tfont-size: 10px;\n\theight: unset;\n\tcolor: white;\n\tbackground: #333;\n\tborder-bottom-right-radius: 1em;\n}\nheader > a[data-v-90a1da1a]\n{\n\tdisplay: inline-block;\n\tpadding: 0 1em;\n\tcolor: inherit;\n\ttext-decoration: none;\n\tborder-width: 2px;\n\tborder-color: transparent;\n}\nheader > a[data-v-90a1da1a]:hover\n{\n\tbackground: #c00;\n}\nheader > a.focus[data-v-90a1da1a]\n{\n\tborder-bottom: 2px solid white;\n\tfont-weight: bold;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\navigator.vue"],"names":[],"mappings":";AA8BA;;CAEA,eAAA;CACA,OAAA;CACA,MAAA;CACA,SAAA;CACA,gBAAA;CACA,eAAA;CACA,aAAA;CACA,YAAA;CACA,gBAAA;CACA,+BAAA;AACA;AAEA;;CAEA,qBAAA;CACA,cAAA;CACA,cAAA;CACA,qBAAA;CACA,iBAAA;CACA,yBAAA;AACA;AAEA;;CAEA,gBAAA;AACA;AAEA;;CAEA,8BAAA;CACA,iBAAA;AACA","file":"navigator.vue","sourcesContent":["<template>\r\n\t<header>\r\n\t\t<a v-for=\"link of links\" :href=\"link.href\" :class=\"{focus: link.href === pathname}\">{{link.name}}</a>\r\n\t</header>\r\n</template>\r\n\r\n<script>\r\n\texport default {\r\n\t\tname: \"navigator\",\r\n\r\n\r\n\t\tdata() {\r\n\t\t\treturn {\r\n\t\t\t\tlinks: [\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\thref: \"/\",\r\n\t\t\t\t\t\tname: \"EXPLORER\",\r\n\t\t\t\t\t},\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\thref: \"/projector/\",\r\n\t\t\t\t\t\tname: \"PROJECTOR\",\r\n\t\t\t\t\t},\r\n\t\t\t\t],\r\n\t\t\t\tpathname: location.pathname,\r\n\t\t\t};\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style scoped>\r\n\theader\r\n\t{\r\n\t\tposition: fixed;\r\n\t\tleft: 0;\r\n\t\ttop: 0;\r\n\t\tmargin: 0;\r\n\t\tpadding: 0 0.4em;\r\n\t\tfont-size: 10px;\r\n\t\theight: unset;\r\n\t\tcolor: white;\r\n\t\tbackground: #333;\r\n\t\tborder-bottom-right-radius: 1em;\r\n\t}\r\n\r\n\theader > a\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tpadding: 0 1em;\r\n\t\tcolor: inherit;\r\n\t\ttext-decoration: none;\r\n\t\tborder-width: 2px;\r\n\t\tborder-color: transparent;\r\n\t}\r\n\r\n\theader > a:hover\r\n\t{\r\n\t\tbackground: #c00;\r\n\t}\r\n\r\n\theader > a.focus\r\n\t{\r\n\t\tborder-bottom: 2px solid white;\r\n\t\tfont-weight: bold;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
+
+    };
+    /* scoped */
+    const __vue_scope_id__$1 = "data-v-90a1da1a";
+    /* module identifier */
+    const __vue_module_identifier__$1 = undefined;
+    /* functional template */
+    const __vue_is_functional_template__$1 = false;
+    /* style inject SSR */
+    
+
+    
+    var Navigator = normalizeComponent_1(
+      { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
+      __vue_inject_styles__$1,
+      __vue_script__$1,
+      __vue_scope_id__$1,
+      __vue_is_functional_template__$1,
+      __vue_module_identifier__$1,
+      browser,
+      undefined
+    );
+
   function randn_bm() {
   	const u = 1 - Math.random();
   	const v = 1 - Math.random();
@@ -8767,7 +8848,7 @@
   }
 
 
-  let featureNormalFactor = 12;
+  let featureNormalFactor = 0.6;
 
 
   class Feature {
@@ -8792,12 +8873,13 @@
   }
 
 
-  var script$1 = {
+  var script$2 = {
   	name: "index",
 
 
   	components: {
   		StoreInput,
+  		Navigator,
   	},
 
 
@@ -8807,6 +8889,7 @@
   			latents_dimensions: null,
   			features: null,
   			psi: 0.5,
+  			initializing: false,
   			loading: false,
   			randomIntensity: -3,
   			pasteUrl: null,
@@ -8871,15 +8954,22 @@
   			else
   				return angleBetween(this.featureVector, this.hashLatents);
   		},
+
+  		asideScales() {
+  			return this.fromW ? [-10, 0, 10] : [-1, 0, 1];
+  		},
   	},
 
 
   	async mounted () {
   		window.$main = this;
 
+  		this.initializing = true;
   		const res = await fetch("/spec");
   		const spec = await res.json();
   		console.log("spec:", spec);
+
+  		this.initializing = false;
 
   		Object.assign(this, spec);
 
@@ -8975,7 +9065,7 @@
 
   		copyLatentCode() {
   			navigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));
-  			console.log("Latent code copied in clipboard.");
+  			console.log("Latent code copied into clipboard.");
   		},
 
 
@@ -8994,6 +9084,11 @@
   			catch(_) {
   			}
   		},
+
+
+  		featureNormalFactor() {
+  			return featureNormalFactor;
+  		},
   	},
 
 
@@ -9005,7 +9100,7 @@
 
 
   		fromW (value) {
-  			featureNormalFactor = value ? 12 : 0.4;
+  			featureNormalFactor = value ? 12 : 0.6;
 
   			this.updateHashLatents();
   		},
@@ -9013,405 +9108,480 @@
   };
 
   /* script */
-  const __vue_script__$1 = script$1;
+  const __vue_script__$2 = script$2;
 
   /* template */
-  var __vue_render__$1 = function() {
+  var __vue_render__$2 = function() {
     var _vm = this;
     var _h = _vm.$createElement;
     var _c = _vm._self._c || _h;
-    return _c("div", { on: { paste: _vm.onPaste } }, [
-      _c("header", [
-        _c("h2", { staticClass: "model", attrs: { title: "model name" } }, [
-          _vm._v(_vm._s(_vm.model))
-        ]),
-        _vm._v(" "),
-        _c("fieldset", [
-          _c(
-            "select",
-            {
+    return _c(
+      "div",
+      { on: { paste: _vm.onPaste } },
+      [
+        _c("header", [
+          _c("h2", { staticClass: "model", attrs: { title: "model name" } }, [
+            _vm._v(_vm._s(_vm.model))
+          ]),
+          _vm._v(" "),
+          _c("fieldset", [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.fromW,
+                    expression: "fromW"
+                  }
+                ],
+                staticClass: "latant-type",
+                attrs: { title: "generate from " + (_vm.fromW ? "W" : "Z") },
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value;
+                        return val
+                      });
+                    _vm.fromW = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0];
+                  }
+                }
+              },
+              [
+                _c("option", { domProps: { value: false } }, [_vm._v("Z")]),
+                _vm._v(" "),
+                _c("option", { domProps: { value: true } }, [_vm._v("W")])
+              ]
+            ),
+            _vm._v(">\n\t\t")
+          ]),
+          _vm._v(" "),
+          _c("fieldset", [
+            _c("input", {
               directives: [
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.fromW,
-                  expression: "fromW"
+                  value: _vm.noise,
+                  expression: "noise"
                 }
               ],
-              staticClass: "latant-type",
-              attrs: { title: "generate from " + (_vm.fromW ? "W" : "Z") },
+              attrs: {
+                type: "checkbox",
+                title: "with random noise",
+                disabled: _vm.fromW
+              },
+              domProps: {
+                checked: Array.isArray(_vm.noise)
+                  ? _vm._i(_vm.noise, null) > -1
+                  : _vm.noise
+              },
               on: {
                 change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value;
-                      return val
-                    });
-                  _vm.fromW = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0];
-                }
-              }
-            },
-            [
-              _c("option", { domProps: { value: false } }, [_vm._v("Z")]),
-              _vm._v(" "),
-              _c("option", { domProps: { value: true } }, [_vm._v("W")])
-            ]
-          ),
-          _vm._v(">\n\t\t")
-        ]),
-        _vm._v(" "),
-        _c("fieldset", { class: { disabled: _vm.fromW } }, [
-          _vm._v("Ψ:\n\t\t\t"),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model.lazy",
-                value: _vm.psi,
-                expression: "psi",
-                modifiers: { lazy: true }
-              }
-            ],
-            style: { width: "600px" },
-            attrs: {
-              type: "range",
-              min: -2,
-              max: 2,
-              step: "any",
-              disabled: _vm.fromW
-            },
-            domProps: { value: _vm.psi },
-            on: {
-              change: function($event) {
-                _vm.psi = $event.target.value;
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model.number",
-                value: _vm.psi,
-                expression: "psi",
-                modifiers: { number: true }
-              }
-            ],
-            staticClass: "value",
-            attrs: { type: "number", step: "0.001", disabled: _vm.fromW },
-            domProps: { value: _vm.psi },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.psi = _vm._n($event.target.value);
-              },
-              blur: function($event) {
-                return _vm.$forceUpdate()
-              }
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("fieldset", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.noise,
-                expression: "noise"
-              }
-            ],
-            attrs: {
-              type: "checkbox",
-              title: "with random noise",
-              disabled: _vm.fromW
-            },
-            domProps: {
-              checked: Array.isArray(_vm.noise)
-                ? _vm._i(_vm.noise, null) > -1
-                : _vm.noise
-            },
-            on: {
-              change: function($event) {
-                var $$a = _vm.noise,
-                  $$el = $event.target,
-                  $$c = $$el.checked ? true : false;
-                if (Array.isArray($$a)) {
-                  var $$v = null,
-                    $$i = _vm._i($$a, $$v);
-                  if ($$el.checked) {
-                    $$i < 0 && (_vm.noise = $$a.concat([$$v]));
+                  var $$a = _vm.noise,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false;
+                  if (Array.isArray($$a)) {
+                    var $$v = null,
+                      $$i = _vm._i($$a, $$v);
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.noise = $$a.concat([$$v]));
+                    } else {
+                      $$i > -1 &&
+                        (_vm.noise = $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
+                    }
                   } else {
-                    $$i > -1 &&
-                      (_vm.noise = $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
+                    _vm.noise = $$c;
                   }
-                } else {
-                  _vm.noise = $$c;
                 }
               }
-            }
-          }),
-          _vm._v("noise\n\t\t")
-        ]),
-        _vm._v(" "),
-        _c("fieldset", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model.number",
-                value: _vm.randomIntensity,
-                expression: "randomIntensity",
-                modifiers: { number: true }
-              }
-            ],
-            attrs: {
-              type: "range",
-              min: "-14",
-              max: "2",
-              step: "0.1",
-              title: "Intensity: " + Math.exp(_vm.randomIntensity)
-            },
-            domProps: { value: _vm.randomIntensity },
-            on: {
-              __r: function($event) {
-                _vm.randomIntensity = _vm._n($event.target.value);
-              },
-              blur: function($event) {
-                return _vm.$forceUpdate()
-              }
-            }
-          }),
-          _vm._v(_vm._s(Math.exp(_vm.randomIntensity).toFixed(4)) + "\n\t\t\t"),
-          _c("button", { on: { click: _vm.randomizeFeatures } }, [
-            _vm._v("Randomize")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("fieldset", [
-          _c("button", { on: { click: _vm.zeroFeatures } }, [_vm._v("Zero")])
-        ]),
-        _vm._v(" "),
-        _c("fieldset", [
-          _c("a", { attrs: { href: _vm.tag } }, [_vm._v("TAG")]),
+            }),
+            _vm._v("noise\n\t\t")
+          ]),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              attrs: { title: "copy latent code" },
-              on: { click: _vm.copyLatentCode }
-            },
-            [_vm._v("⎘")]
-          )
-        ]),
-        _vm._v(" "),
-        _vm.hashLatents && !_vm.fromW
-          ? _c(
-              "fieldset",
+          _c("fieldset", [
+            _c(
+              "span",
+              {
+                attrs: {
+                  title: "Randomize intensity: " + Math.exp(_vm.randomIntensity)
+                }
+              },
               [
-                _c("em", { attrs: { title: _vm.latentDistance + " RAD" } }, [
-                  _vm._v(
-                    _vm._s(
-                      ((_vm.latentDistance * 180) / Math.PI).toPrecision(4)
-                    ) + "°"
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.number",
+                      value: _vm.randomIntensity,
+                      expression: "randomIntensity",
+                      modifiers: { number: true }
+                    }
+                  ],
+                  attrs: { type: "range", min: "-14", max: "2", step: "0.1" },
+                  domProps: { value: _vm.randomIntensity },
+                  on: {
+                    __r: function($event) {
+                      _vm.randomIntensity = _vm._n($event.target.value);
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
+                  }
+                }),
+                _vm._v(
+                  "\n\t\t\t\t" +
+                    _vm._s(Math.exp(_vm.randomIntensity).toFixed(4)) +
+                    "\n\t\t\t"
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c("button", { on: { click: _vm.randomizeFeatures } }, [
+              _vm._v("Randomize")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("fieldset", [
+            _c("button", { on: { click: _vm.zeroFeatures } }, [_vm._v("Zero")])
+          ]),
+          _vm._v(" "),
+          _c("fieldset", [
+            _c("a", { attrs: { href: _vm.tag } }, [_vm._v("TAG")]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                attrs: { title: "copy latent code" },
+                on: { click: _vm.copyLatentCode }
+              },
+              [_vm._v("⎘")]
+            )
+          ]),
+          _vm._v(" "),
+          _vm.hashLatents && !_vm.fromW
+            ? _c(
+                "fieldset",
+                [
+                  _c("em", { attrs: { title: _vm.latentDistance + " RAD" } }, [
+                    _vm._v(
+                      _vm._s(
+                        ((_vm.latentDistance * 180) / Math.PI).toPrecision(4)
+                      ) + "°"
+                    )
+                  ]),
+                  _vm._v("\n\t\t\t-"),
+                  _c("StoreInput", {
+                    attrs: {
+                      localKey: "explorerSlerpStep",
+                      styleObj: { width: "1.6em", border: 0 }
+                    },
+                    model: {
+                      value: _vm.slerpStep,
+                      callback: function($$v) {
+                        _vm.slerpStep = _vm._n($$v);
+                      },
+                      expression: "slerpStep"
+                    }
+                  }),
+                  _vm._v("°\n\t\t\t"),
+                  _c(
+                    "button",
+                    {
+                      attrs: {
+                        disabled: !_vm.latentDistance,
+                        title: "Slerp towards to hash tag"
+                      },
+                      on: { click: _vm.slerpToHash }
+                    },
+                    [_vm._v("Slerp")]
                   )
-                ]),
-                _vm._v("\n\t\t\t-"),
-                _c("StoreInput", {
-                  attrs: {
-                    localKey: "explorerSlerpStep",
-                    styleObj: { width: "1.6em", border: 0 }
-                  },
-                  model: {
-                    value: _vm.slerpStep,
-                    callback: function($$v) {
-                      _vm.slerpStep = _vm._n($$v);
-                    },
-                    expression: "slerpStep"
-                  }
-                }),
-                _vm._v("°\n\t\t\t"),
-                _c(
-                  "button",
-                  {
+                ],
+                1
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.hashLatents && _vm.fromW
+            ? _c(
+                "fieldset",
+                [
+                  _c("em", { attrs: { title: "" + _vm.latentDistance } }, [
+                    _vm._v(_vm._s(_vm.latentDistance.toPrecision(4)))
+                  ]),
+                  _vm._v("\n\t\t\t×"),
+                  _c("StoreInput", {
                     attrs: {
-                      disabled: !_vm.latentDistance,
-                      title: "Slerp towards to hash tag"
+                      localKey: "explorerLerpStep",
+                      styleObj: { width: "2em", border: 0 }
                     },
-                    on: { click: _vm.slerpToHash }
-                  },
-                  [_vm._v("Slerp")]
-                )
-              ],
-              1
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.hashLatents && _vm.fromW
-          ? _c(
-              "fieldset",
-              [
-                _c("em", { attrs: { title: "" + _vm.latentDistance } }, [
-                  _vm._v(_vm._s(_vm.latentDistance.toPrecision(4)))
-                ]),
-                _vm._v("\n\t\t\t×"),
-                _c("StoreInput", {
-                  attrs: {
-                    localKey: "explorerLerpStep",
-                    styleObj: { width: "2em", border: 0 }
-                  },
-                  model: {
-                    value: _vm.lerpFactor,
-                    callback: function($$v) {
-                      _vm.lerpFactor = _vm._n($$v);
-                    },
-                    expression: "lerpFactor"
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    attrs: { title: "Lerp towards to hash tag" },
-                    on: { click: _vm.lerpToHash }
-                  },
-                  [_vm._v("Lerp")]
-                )
-              ],
-              1
-            )
-          : _vm._e()
-      ]),
-      _vm._v(" "),
-      _c("aside", [
-        _vm.features
-          ? _c(
-              "ol",
-              _vm._l(_vm.features, function(feature, index) {
-                return _c("li", { key: index }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model.lazy",
-                        value: feature.normalized,
-                        expression: "feature.normalized",
-                        modifiers: { lazy: true }
-                      }
-                    ],
-                    staticClass: "feature-bar",
-                    attrs: {
-                      type: "range",
-                      min: -0.99999999,
-                      max: 0.99999999,
-                      step: "any"
-                    },
-                    domProps: { value: feature.normalized },
-                    on: {
-                      change: function($event) {
-                        return _vm.$set(
-                          feature,
-                          "normalized",
-                          $event.target.value
-                        )
-                      }
+                    model: {
+                      value: _vm.lerpFactor,
+                      callback: function($$v) {
+                        _vm.lerpFactor = _vm._n($$v);
+                      },
+                      expression: "lerpFactor"
                     }
                   }),
                   _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model.number",
-                        value: feature.value,
-                        expression: "feature.value",
-                        modifiers: { number: true }
-                      }
-                    ],
-                    staticClass: "value",
-                    attrs: { type: "number", step: "0.001" },
-                    domProps: { value: feature.value },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(feature, "value", _vm._n($event.target.value));
-                      },
-                      blur: function($event) {
-                        return _vm.$forceUpdate()
-                      }
-                    }
-                  })
+                  _c(
+                    "button",
+                    {
+                      attrs: { title: "Lerp towards to hash tag" },
+                      on: { click: _vm.lerpToHash }
+                    },
+                    [_vm._v("Lerp")]
+                  )
+                ],
+                1
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _c("fieldset", { class: { disabled: _vm.fromW } }, [
+            _vm._v("Ψ:\n\t\t\t"),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.psi,
+                  expression: "psi",
+                  modifiers: { number: true }
+                }
+              ],
+              staticClass: "value",
+              attrs: { type: "number", step: "0.001", disabled: _vm.fromW },
+              domProps: { value: _vm.psi },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.psi = _vm._n($event.target.value);
+                },
+                blur: function($event) {
+                  return _vm.$forceUpdate()
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", { staticClass: "psi-bar" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: !_vm.fromW,
+                    expression: "!fromW"
+                  },
+                  {
+                    name: "model",
+                    rawName: "v-model.lazy",
+                    value: _vm.psi,
+                    expression: "psi",
+                    modifiers: { lazy: true }
+                  }
+                ],
+                attrs: { type: "range", min: -2, max: 2, step: "any" },
+                domProps: { value: _vm.psi },
+                on: {
+                  change: function($event) {
+                    _vm.psi = $event.target.value;
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("span", { staticClass: "scales" }, [
+                _c("span", { style: { left: "25%" } }, [
+                  _vm._v("\n\t\t\t\t\t\t▲"),
+                  _c("br"),
+                  _vm._v("-1\n\t\t\t\t\t")
+                ]),
+                _vm._v(" "),
+                _c("span", { style: { left: "50%" } }, [
+                  _vm._v("\n\t\t\t\t\t\t▲"),
+                  _c("br"),
+                  _vm._v("0\n\t\t\t\t\t")
+                ]),
+                _vm._v(" "),
+                _c("span", { style: { left: "75%" } }, [
+                  _vm._v("\n\t\t\t\t\t\t▲"),
+                  _c("br"),
+                  _vm._v("1\n\t\t\t\t\t")
                 ])
+              ])
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("aside", [
+          _c("p", [
+            _c(
+              "span",
+              { staticClass: "scales" },
+              _vm._l(_vm.asideScales, function(scale) {
+                return _c(
+                  "span",
+                  {
+                    key: scale,
+                    style: {
+                      left:
+                        (Math.tanh(scale / _vm.featureNormalFactor()) + 1) * 50 +
+                        "%"
+                    }
+                  },
+                  [_vm._v("\n\t\t\t\t\t" + _vm._s(scale)), _c("br"), _vm._v(" ▾")]
+                )
               }),
               0
             )
-          : _vm._e()
-      ]),
-      _vm._v(" "),
-      _c("article", { class: { loading: _vm.loading } }, [
-        _vm.latentsBytes
-          ? _c("img", {
-              staticClass: "result",
-              attrs: { src: _vm.pasteUrl || _vm.imageURL },
-              on: {
-                load: function($event) {
-                  _vm.loading = false;
-                }
-              }
-            })
-          : _vm._e(),
+          ]),
+          _vm._v(" "),
+          _vm.features
+            ? _c(
+                "ol",
+                _vm._l(_vm.features, function(feature, index) {
+                  return _c("li", { key: index }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model.lazy",
+                          value: feature.normalized,
+                          expression: "feature.normalized",
+                          modifiers: { lazy: true }
+                        }
+                      ],
+                      staticClass: "feature-bar",
+                      attrs: {
+                        type: "range",
+                        min: -0.99999999,
+                        max: 0.99999999,
+                        step: "any"
+                      },
+                      domProps: { value: feature.normalized },
+                      on: {
+                        change: function($event) {
+                          return _vm.$set(
+                            feature,
+                            "normalized",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model.number",
+                          value: feature.value,
+                          expression: "feature.value",
+                          modifiers: { number: true }
+                        }
+                      ],
+                      staticClass: "value",
+                      attrs: { type: "number", step: "0.001" },
+                      domProps: { value: feature.value },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(feature, "value", _vm._n($event.target.value));
+                        },
+                        blur: function($event) {
+                          return _vm.$forceUpdate()
+                        }
+                      }
+                    })
+                  ])
+                }),
+                0
+              )
+            : _vm._e()
+        ]),
         _vm._v(" "),
-        _vm.pasteUrl
-          ? _c("img", {
-              staticClass: "result",
-              attrs: { src: _vm.pasteUrl },
-              on: {
-                load: function($event) {
-                  _vm.loading = false;
+        _c("article", { class: { loading: _vm.loading } }, [
+          _vm.latentsBytes
+            ? _c("img", {
+                staticClass: "result",
+                attrs: { src: _vm.pasteUrl || _vm.imageURL },
+                on: {
+                  load: function($event) {
+                    _vm.loading = false;
+                  }
                 }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.pasteUrl
+            ? _c("img", {
+                staticClass: "result",
+                attrs: { src: _vm.pasteUrl },
+                on: {
+                  load: function($event) {
+                    _vm.loading = false;
+                  }
+                }
+              })
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.initializing,
+                expression: "initializing"
               }
-            })
-          : _vm._e()
-      ])
-    ])
+            ],
+            staticClass: "initializing"
+          },
+          [_vm._v("Model initializing, wait a moment...")]
+        ),
+        _vm._v(" "),
+        _c("Navigator")
+      ],
+      1
+    )
   };
-  var __vue_staticRenderFns__$1 = [];
-  __vue_render__$1._withStripped = true;
+  var __vue_staticRenderFns__$2 = [];
+  __vue_render__$2._withStripped = true;
 
     /* style */
-    const __vue_inject_styles__$1 = function (inject) {
+    const __vue_inject_styles__$2 = function (inject) {
       if (!inject) return
-      inject("data-v-602a68e4_0", { source: "\nhtml\n{\n\toverflow: hidden;\n\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\nheader\n{\n\theight: 2em;\n\tmargin: 20px 0;\n}\nheader h2\n{\n\tdisplay: inline;\n}\nheader fieldset\n{\n\tdisplay: inline-block;\n\tmargin: 0 .6em;\n\tborder: 0;\n\tpadding: 0;\n}\n.latant-type\n{\n\tborder: 0;\n\tfont-weight: bold;\n\t-webkit-appearance: none;\n\tcursor: pointer;\n}\n\n/*.latant-type:hover\n{\n\t-webkit-appearance: menulist;\n}*/\naside, article\n{\n\tdisplay: inline-block;\n\tvertical-align: top;\n\theight: calc(100vh - 69px);\n}\naside\n{\n\toverflow-y: auto;\n\tfont-size: 9px;\n}\n.disabled\n{\n\tcolor: #0006;\n}\n.feature-bar\n{\n\twidth: 240px;\n}\n.model\n{\n\tfont-size: 20px;\n\tfont-weight: bold;\n\tmargin: 0 1em;\n}\n.result\n{\n\theight: 100%;\n\twidth: auto;\n}\n.value\n{\n\tborder: 0;\n\twidth: 4em;\n}\n.loading img\n{\n\topacity: 0.7;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\index.vue"],"names":[],"mappings":";AAgUA;;CAEA,gBAAA;CACA,4DAAA;AACA;AAEA;;CAEA,WAAA;CACA,cAAA;AACA;AAEA;;CAEA,eAAA;AACA;AAEA;;CAEA,qBAAA;CACA,cAAA;CACA,SAAA;CACA,UAAA;AACA;AAEA;;CAEA,SAAA;CACA,iBAAA;CACA,wBAAA;CACA,eAAA;AACA;;AAEA;;;EAGA;AAEA;;CAEA,qBAAA;CACA,mBAAA;CACA,0BAAA;AACA;AAEA;;CAEA,gBAAA;CACA,cAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,eAAA;CACA,iBAAA;CACA,aAAA;AACA;AAEA;;CAEA,YAAA;CACA,WAAA;AACA;AAEA;;CAEA,SAAA;CACA,UAAA;AACA;AAEA;;CAEA,YAAA;AACA","file":"index.vue","sourcesContent":["<template>\r\n\t<div @paste=\"onPaste\">\r\n\t\t<header>\r\n\t\t\t<h2 class=\"model\" title=\"model name\">{{model}}</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<select v-model=\"fromW\" class=\"latant-type\" :title=\"`generate from ${fromW ? 'W' : 'Z'}`\">\r\n\t\t\t\t\t<option :value=\"false\">Z</option>\r\n\t\t\t\t\t<option :value=\"true\">W</option>\r\n\t\t\t\t</select>&gt;\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset :class=\"{disabled: fromW}\">\r\n\t\t\t\t<!--&Psi; not work?-->&#x03a8;:\r\n\t\t\t\t<input type=\"range\" v-model.lazy=\"psi\" :min=\"-2\" :max=\"2\" step=\"any\" :style=\"{width: '600px'}\" :disabled=\"fromW\" />\r\n\t\t\t\t<input class=\"value\" type=\"number\" v-model.number=\"psi\" step=\"0.001\" :disabled=\"fromW\" />\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<input type=\"checkbox\" v-model=\"noise\" title=\"with random noise\" :disabled=\"fromW\" />noise\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<input type=\"range\" min=\"-14\" max=\"2\" step=\"0.1\" v-model.number=\"randomIntensity\" :title=\"`Intensity: ${Math.exp(randomIntensity)}`\" />{{Math.exp(randomIntensity).toFixed(4)}}\r\n\t\t\t\t<button @click=\"randomizeFeatures\">Randomize</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<button @click=\"zeroFeatures\">Zero</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<a :href=\"tag\">TAG</a>\r\n\t\t\t\t<button @click=\"copyLatentCode\" title=\"copy latent code\">&#x2398;</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset v-if=\"hashLatents && !fromW\">\r\n\t\t\t\t<em :title=\"`${latentDistance} RAD`\">{{(latentDistance * 180 / Math.PI).toPrecision(4)}}&deg;</em>\r\n\t\t\t\t-<StoreInput v-model.number=\"slerpStep\" localKey=\"explorerSlerpStep\" :styleObj=\"{width: '1.6em', border: 0}\" />&deg;\r\n\t\t\t\t<button @click=\"slerpToHash\" :disabled=\"!latentDistance\" title=\"Slerp towards to hash tag\">Slerp</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset v-if=\"hashLatents && fromW\">\r\n\t\t\t\t<em :title=\"`${latentDistance}`\">{{latentDistance.toPrecision(4)}}</em>\r\n\t\t\t\t&times;<StoreInput v-model.number=\"lerpFactor\" localKey=\"explorerLerpStep\" :styleObj=\"{width: '2em', border: 0}\" />\r\n\t\t\t\t<button @click=\"lerpToHash\" title=\"Lerp towards to hash tag\">Lerp</button>\r\n\t\t\t</fieldset>\r\n\t\t</header>\r\n\t\t<aside>\r\n\t\t\t<ol v-if=\"features\">\r\n\t\t\t\t<li v-for=\"(feature, index) of features\" :key=\"index\">\r\n\t\t\t\t\t<input type=\"range\" class=\"feature-bar\" v-model.lazy=\"feature.normalized\" :min=\"-0.99999999\" :max=\"0.99999999\" step=\"any\" />\r\n\t\t\t\t\t<input class=\"value\" type=\"number\" v-model.number=\"feature.value\" step=\"0.001\" />\r\n\t\t\t\t</li>\r\n\t\t\t</ol>\r\n\t\t</aside>\r\n\t\t<article :class=\"{loading}\">\r\n\t\t\t<img v-if=\"latentsBytes\" class=\"result\" :src=\"pasteUrl || imageURL\" @load=\"loading = false\" />\r\n\t\t\t<img v-if=\"pasteUrl\" class=\"result\" :src=\"pasteUrl\" @load=\"loading = false\" />\r\n\t\t</article>\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport StoreInput from \"./storeinput.vue\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\tfunction parseQueries (str) {\r\n\t\treturn str.substr(1).split(\"&\").reduce((dict, pair) => {\r\n\t\t\tconst sections = pair.split(\"=\");\r\n\t\t\tdict[sections[0]] = sections[1];\r\n\r\n\t\t\treturn dict;\r\n\t\t}, {});\r\n\t}\r\n\r\n\r\n\tlet featureNormalFactor = 12;\r\n\r\n\r\n\tclass Feature {\r\n\t\tconstructor (value) {\r\n\t\t\tthis.value = value;\r\n\t\t}\r\n\r\n\r\n\t\tget normalized () {\r\n\t\t\treturn Math.tanh(this.value / featureNormalFactor);\r\n\t\t}\r\n\r\n\r\n\t\tset normalized (v) {\r\n\t\t\tthis.value = Math.atanh(v) * featureNormalFactor;\r\n\t\t}\r\n\r\n\r\n\t\trandomize (intensity) {\r\n\t\t\tthis.value += LatentCode.randn_bm() * intensity;\r\n\t\t}\r\n\t};\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"index\",\r\n\r\n\r\n\t\tcomponents: {\r\n\t\t\tStoreInput,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tmodel: null,\r\n\t\t\t\tlatents_dimensions: null,\r\n\t\t\t\tfeatures: null,\r\n\t\t\t\tpsi: 0.5,\r\n\t\t\t\tloading: false,\r\n\t\t\t\trandomIntensity: -3,\r\n\t\t\t\tpasteUrl: null,\r\n\t\t\t\tnoise: true,\r\n\t\t\t\tfromW: false,\r\n\t\t\t\thashLatents: null,\r\n\t\t\t\tslerpStep: 10,\r\n\t\t\t\tlerpFactor: 0.8,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.features)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.featureVector).buffer))));\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tconst values = LatentCode.decodeLatentsBytes(value);\r\n\r\n\t\t\t\t\tvalues.forEach((value, i) => {\r\n\t\t\t\t\t\tif (this.features && this.features[i])\r\n\t\t\t\t\t\t\tthis.features[i].value = value;\r\n\t\t\t\t\t});\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfeatureVector () {\r\n\t\t\t\tconst normalized = this.fromW ? 1 : 1 / this.featureMagnitude;\r\n\t\t\t\treturn this.features.map(f => f.value * normalized);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfeatureMagnitude() {\r\n\t\t\t\tconst result = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));\r\n\r\n\t\t\t\treturn result || 1e-9;\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn `/generate?${this.fromW ? \"fromW=1\" : \"psi=\" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\ttag () {\r\n\t\t\t\treturn `#${this.fromW ? \"fromW=1\" : \"psi=\" + this.psi.toString()}&latents=${this.latentsBytes}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentDistance() {\r\n\t\t\t\tif (!this.hashLatents)\r\n\t\t\t\t\treturn NaN;\r\n\r\n\t\t\t\tif (this.fromW)\r\n\t\t\t\t\treturn LatentCode.distanceBetween(this.featureVector, this.hashLatents);\r\n\t\t\t\telse\r\n\t\t\t\t\treturn LatentCode.angleBetween(this.featureVector, this.hashLatents);\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tasync mounted () {\r\n\t\t\twindow.$main = this;\r\n\r\n\t\t\tconst res = await fetch(\"/spec\");\r\n\t\t\tconst spec = await res.json();\r\n\t\t\tconsole.log(\"spec:\", spec);\r\n\r\n\t\t\tObject.assign(this, spec);\r\n\r\n\t\t\tthis.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));\r\n\r\n\t\t\twindow.onhashchange = () => this.loadHash();\r\n\r\n\t\t\tif (location.hash)\r\n\t\t\t\tthis.loadHash();\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\trandomizeFeatures() {\r\n\t\t\t\tif (this.features)\r\n\t\t\t\t\tthis.features.forEach(f => f.randomize(Math.exp(this.randomIntensity)));\r\n\t\t\t},\r\n\r\n\r\n\t\t\tzeroFeatures() {\r\n\t\t\t\tif (this.features)\r\n\t\t\t\t\tthis.features.forEach(f => f.value = 0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tloadHash () {\r\n\t\t\t\tconst dict = parseQueries(location.hash);\r\n\t\t\t\t//console.log(\"dict:\", dict);\r\n\r\n\t\t\t\tconst psi = Number(dict.psi);\r\n\t\t\t\tif (Number.isFinite(psi))\r\n\t\t\t\t\tthis.psi = psi;\r\n\r\n\t\t\t\tif (dict.latents)\r\n\t\t\t\t\tthis.latentsBytes = dict.latents;\r\n\r\n\t\t\t\tthis.fromW = dict.fromW ? true : false;\r\n\r\n\t\t\t\tthis.updateHashLatents();\r\n\t\t\t},\r\n\r\n\r\n\t\t\tnormalizeFeatures () {\r\n\t\t\t\tthis.features.forEach(f => f.value /= this.featureMagnitude);\r\n\t\t\t},\r\n\r\n\r\n\t\t\trotateFeatures (target, theta) {\r\n\t\t\t\tconsole.assert(target.length === this.features.length);\r\n\r\n\t\t\t\tthis.normalizeFeatures();\r\n\r\n\t\t\t\tconst dot = Math.min(1, Math.max(-1, target.reduce((sum, t, i) => sum + t * this.features[i].value, 0)));\r\n\t\t\t\t//console.assert(Math.abs(dot) <= 1, \"unexpect dot:\", dot, target);\r\n\r\n\t\t\t\tconst sinOmega = Math.sqrt(1 - dot * dot);\r\n\t\t\t\tconst sinTheta = Math.sin(theta);\r\n\t\t\t\tif (sinOmega < sinTheta) {\r\n\t\t\t\t\tthis.features.forEach((f, i) => f.value = target[i]);\r\n\t\t\t\t\treturn;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tconst side = target.map((t, i) => t - this.features[i].value * dot);\r\n\t\t\t\tconst relative = side.map(v => v * sinTheta / sinOmega);\r\n\r\n\t\t\t\tconst cosTheta = Math.cos(theta);\r\n\t\t\t\tthis.features.forEach((f, i) => f.value = f.value * cosTheta + relative[i]);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tslerpToHash () {\r\n\t\t\t\tconst targetLatents = parseQueries(location.hash).latents;\r\n\t\t\t\tif (targetLatents) {\r\n\t\t\t\t\tthis.rotateFeatures(this.hashLatents, this.slerpStep * Math.PI / 180);\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlerpToHash () {\r\n\t\t\t\tthis.features.forEach((f, i) => f.value = f.value * this.lerpFactor + this.hashLatents[i] * (1 - this.lerpFactor));\r\n\t\t\t},\r\n\r\n\r\n\t\t\tupdateHashLatents() {\r\n\t\t\t\tif (this.latentsBytes) {\r\n\t\t\t\t\tconst lvec = LatentCode.decodeLatentsBytes(this.latentsBytes);\r\n\t\t\t\t\tthis.hashLatents = this.fromW ? lvec : LatentCode.normalize(lvec);\r\n\t\t\t\t}\r\n\t\t\t\telse\r\n\t\t\t\t\tthis.hashLatents = null;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tcopyLatentCode() {\r\n\t\t\t\tnavigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));\r\n\t\t\t\tconsole.log(\"Latent code copied in clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync onPaste(event) {\r\n\t\t\t\t//console.log(\"onPaste:\", [...event.clipboardData.items]);\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\t//console.log(\"text:\", text);\r\n\t\t\t\ttry {\r\n\t\t\t\t\t// check if text is valid latent code\r\n\t\t\t\t\tconst origin = atob(text);\r\n\t\t\t\t\tif (origin.length !== 512 * 4)\r\n\t\t\t\t\t\tthrow new Error(\"invalid latent code\");\r\n\r\n\t\t\t\t\tthis.latentsBytes = text;\r\n\t\t\t\t}\r\n\t\t\t\tcatch(_) {\r\n\t\t\t\t}\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.loading = true;\r\n\t\t\t\tthis.pasteUrl = null;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfromW (value) {\r\n\t\t\t\tfeatureNormalFactor = value ? 12 : 0.4;\r\n\r\n\t\t\t\tthis.updateHashLatents();\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style>\r\n\thtml\r\n\t{\r\n\t\toverflow: hidden;\r\n\t\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n\t}\r\n\r\n\theader\r\n\t{\r\n\t\theight: 2em;\r\n\t\tmargin: 20px 0;\r\n\t}\r\n\r\n\theader h2\r\n\t{\r\n\t\tdisplay: inline;\r\n\t}\r\n\r\n\theader fieldset\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tmargin: 0 .6em;\r\n\t\tborder: 0;\r\n\t\tpadding: 0;\r\n\t}\r\n\r\n\t.latant-type\r\n\t{\r\n\t\tborder: 0;\r\n\t\tfont-weight: bold;\r\n\t\t-webkit-appearance: none;\r\n\t\tcursor: pointer;\r\n\t}\r\n\r\n\t/*.latant-type:hover\r\n\t{\r\n\t\t-webkit-appearance: menulist;\r\n\t}*/\r\n\r\n\taside, article\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tvertical-align: top;\r\n\t\theight: calc(100vh - 69px);\r\n\t}\r\n\r\n\taside\r\n\t{\r\n\t\toverflow-y: auto;\r\n\t\tfont-size: 9px;\r\n\t}\r\n\r\n\t.disabled\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.feature-bar\r\n\t{\r\n\t\twidth: 240px;\r\n\t}\r\n\r\n\t.model\r\n\t{\r\n\t\tfont-size: 20px;\r\n\t\tfont-weight: bold;\r\n\t\tmargin: 0 1em;\r\n\t}\r\n\r\n\t.result\r\n\t{\r\n\t\theight: 100%;\r\n\t\twidth: auto;\r\n\t}\r\n\r\n\t.value\r\n\t{\r\n\t\tborder: 0;\r\n\t\twidth: 4em;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
+      inject("data-v-35b5efbe_0", { source: "\nhtml\n{\n\toverflow: hidden;\n\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\nbody\n{\n\twhite-space: nowrap;\n}\nheader\n{\n\theight: 2em;\n\tmargin: 20px 0;\n}\nheader h2\n{\n\tdisplay: inline;\n}\nheader fieldset\n{\n\tdisplay: inline-block;\n\tmargin: 0 .6em;\n\tborder: 0;\n\tpadding: 0;\n}\n.latant-type\n{\n\tborder: 0;\n\tfont-weight: bold;\n\t-webkit-appearance: none;\n\tcursor: pointer;\n}\n\n/*.latant-type:hover\n{\n\t-webkit-appearance: menulist;\n}*/\naside, article\n{\n\tdisplay: inline-block;\n\tvertical-align: top;\n\theight: calc(100vh - 72px);\n}\naside\n{\n\toverflow-y: auto;\n\tfont-size: 9px;\n}\naside > *\n{\n\tpadding-left: 3em;\n}\n.disabled\n{\n\tcolor: #0006;\n}\n.feature-bar, aside .scales\n{\n\twidth: 240px;\n}\n.model\n{\n\tfont-size: 20px;\n\tfont-weight: bold;\n\tmargin: 0 1em;\n}\n.result\n{\n\theight: 100%;\n\twidth: auto;\n}\n.value\n{\n\tborder: 0;\n\twidth: 4.1em;\n}\n.loading img\n{\n\topacity: 0.7;\n}\n.initializing\n{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tbottom: 0;\n\tright: 0;\n\tfont-size: 10vh;\n\tpadding: 30vh 2em 0;\n\twhite-space: normal;\n\tbackground-color: #ccca;\n\tcolor: #444c;\n}\n.scales > span\n{\n\tposition: absolute;\n\ttext-align: center;\n\ttransform: translateX(-50%);\n\tpointer-events: none;\n}\n.psi-bar\n{\n\tdisplay: inline-block;\n\twidth: 600px;\n\tposition: relative;\n}\n.psi-bar input\n{\n\twidth: 100%;\n}\n.psi-bar .scales > span\n{\n\tfont-size: 9px;\n\tbottom: -8px;\n\tcolor: #ccc;\n}\naside .scales\n{\n\tposition: absolute;\n\tdisplay: inline-block;\n\theight: 2em;\n\tpointer-events: none;\n\tmargin: 0;\n\ttransform: translateY(-3em);\n\tcolor: #ccc;\n}\n\n/*.scales .line\n{\n\ttransform: scale(1000);\n}*/\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\index.vue"],"names":[],"mappings":";AAwWA;;CAEA,gBAAA;CACA,4DAAA;AACA;AAEA;;CAEA,mBAAA;AACA;AAEA;;CAEA,WAAA;CACA,cAAA;AACA;AAEA;;CAEA,eAAA;AACA;AAEA;;CAEA,qBAAA;CACA,cAAA;CACA,SAAA;CACA,UAAA;AACA;AAEA;;CAEA,SAAA;CACA,iBAAA;CACA,wBAAA;CACA,eAAA;AACA;;AAEA;;;EAGA;AAEA;;CAEA,qBAAA;CACA,mBAAA;CACA,0BAAA;AACA;AAEA;;CAEA,gBAAA;CACA,cAAA;AACA;AAEA;;CAEA,iBAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,eAAA;CACA,iBAAA;CACA,aAAA;AACA;AAEA;;CAEA,YAAA;CACA,WAAA;AACA;AAEA;;CAEA,SAAA;CACA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,kBAAA;CACA,MAAA;CACA,OAAA;CACA,SAAA;CACA,QAAA;CACA,eAAA;CACA,mBAAA;CACA,mBAAA;CACA,uBAAA;CACA,YAAA;AACA;AAEA;;CAEA,kBAAA;CACA,kBAAA;CACA,2BAAA;CACA,oBAAA;AACA;AAEA;;CAEA,qBAAA;CACA,YAAA;CACA,kBAAA;AACA;AAEA;;CAEA,WAAA;AACA;AAEA;;CAEA,cAAA;CACA,YAAA;CACA,WAAA;AACA;AAEA;;CAEA,kBAAA;CACA,qBAAA;CACA,WAAA;CACA,oBAAA;CACA,SAAA;CACA,2BAAA;CACA,WAAA;AACA;;AAEA;;;EAGA","file":"index.vue","sourcesContent":["<template>\r\n\t<div @paste=\"onPaste\">\r\n\t\t<header>\r\n\t\t\t<h2 class=\"model\" title=\"model name\">{{model}}</h2>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<select v-model=\"fromW\" class=\"latant-type\" :title=\"`generate from ${fromW ? 'W' : 'Z'}`\">\r\n\t\t\t\t\t<option :value=\"false\">Z</option>\r\n\t\t\t\t\t<option :value=\"true\">W</option>\r\n\t\t\t\t</select>&gt;\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<input type=\"checkbox\" v-model=\"noise\" title=\"with random noise\" :disabled=\"fromW\" />noise\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<span :title=\"`Randomize intensity: ${Math.exp(randomIntensity)}`\">\r\n\t\t\t\t\t<input type=\"range\" min=\"-14\" max=\"2\" step=\"0.1\" v-model.number=\"randomIntensity\" />\r\n\t\t\t\t\t{{Math.exp(randomIntensity).toFixed(4)}}\r\n\t\t\t\t</span>\r\n\t\t\t\t<button @click=\"randomizeFeatures\">Randomize</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<button @click=\"zeroFeatures\">Zero</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset>\r\n\t\t\t\t<a :href=\"tag\">TAG</a>\r\n\t\t\t\t<button @click=\"copyLatentCode\" title=\"copy latent code\">&#x2398;</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset v-if=\"hashLatents && !fromW\">\r\n\t\t\t\t<em :title=\"`${latentDistance} RAD`\">{{(latentDistance * 180 / Math.PI).toPrecision(4)}}&deg;</em>\r\n\t\t\t\t-<StoreInput v-model.number=\"slerpStep\" localKey=\"explorerSlerpStep\" :styleObj=\"{width: '1.6em', border: 0}\" />&deg;\r\n\t\t\t\t<button @click=\"slerpToHash\" :disabled=\"!latentDistance\" title=\"Slerp towards to hash tag\">Slerp</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset v-if=\"hashLatents && fromW\">\r\n\t\t\t\t<em :title=\"`${latentDistance}`\">{{latentDistance.toPrecision(4)}}</em>\r\n\t\t\t\t&times;<StoreInput v-model.number=\"lerpFactor\" localKey=\"explorerLerpStep\" :styleObj=\"{width: '2em', border: 0}\" />\r\n\t\t\t\t<button @click=\"lerpToHash\" title=\"Lerp towards to hash tag\">Lerp</button>\r\n\t\t\t</fieldset>\r\n\t\t\t<fieldset :class=\"{disabled: fromW}\">\r\n\t\t\t\t<!--&Psi; not work?-->&#x03a8;:\r\n\t\t\t\t<input class=\"value\" type=\"number\" v-model.number=\"psi\" step=\"0.001\" :disabled=\"fromW\" />\r\n\t\t\t\t<span class=\"psi-bar\">\r\n\t\t\t\t\t<input v-show=\"!fromW\" type=\"range\" v-model.lazy=\"psi\" :min=\"-2\" :max=\"2\" step=\"any\" />\r\n\t\t\t\t\t<span class=\"scales\">\r\n\t\t\t\t\t\t<span :style=\"{left: '25%'}\">\r\n\t\t\t\t\t\t\t&#x25b2;<br/>-1\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t<span :style=\"{left: '50%'}\">\r\n\t\t\t\t\t\t\t&#x25b2;<br/>0\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t\t<span :style=\"{left: '75%'}\">\r\n\t\t\t\t\t\t\t&#x25b2;<br/>1\r\n\t\t\t\t\t\t</span>\r\n\t\t\t\t\t</span>\r\n\t\t\t\t</span>\r\n\t\t\t</fieldset>\r\n\t\t</header>\r\n\t\t<aside>\r\n\t\t\t<p>\r\n\t\t\t\t<span class=\"scales\">\r\n\t\t\t\t\t<span v-for=\"scale of asideScales\" :key=\"scale\" :style=\"{left: `${(Math.tanh(scale / featureNormalFactor()) + 1) * 50}%`}\">\r\n\t\t\t\t\t\t{{scale}}<br/> &#x25be;<!--span class=\"line\">&#xff5c;</span-->\r\n\t\t\t\t\t</span>\r\n\t\t\t\t</span>\r\n\t\t\t</p>\r\n\t\t\t<ol v-if=\"features\">\r\n\t\t\t\t<li v-for=\"(feature, index) of features\" :key=\"index\">\r\n\t\t\t\t\t<input type=\"range\" class=\"feature-bar\" v-model.lazy=\"feature.normalized\" :min=\"-0.99999999\" :max=\"0.99999999\" step=\"any\" />\r\n\t\t\t\t\t<input class=\"value\" type=\"number\" v-model.number=\"feature.value\" step=\"0.001\" />\r\n\t\t\t\t</li>\r\n\t\t\t</ol>\r\n\t\t</aside>\r\n\t\t<article :class=\"{loading}\">\r\n\t\t\t<img v-if=\"latentsBytes\" class=\"result\" :src=\"pasteUrl || imageURL\" @load=\"loading = false\" />\r\n\t\t\t<img v-if=\"pasteUrl\" class=\"result\" :src=\"pasteUrl\" @load=\"loading = false\" />\r\n\t\t</article>\r\n\t\t<div v-show=\"initializing\" class=\"initializing\">Model initializing, wait a moment...</div>\r\n\t\t<Navigator />\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport StoreInput from \"./storeinput.vue\";\r\n\timport Navigator from \"./navigator.vue\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\tfunction parseQueries (str) {\r\n\t\treturn str.substr(1).split(\"&\").reduce((dict, pair) => {\r\n\t\t\tconst sections = pair.split(\"=\");\r\n\t\t\tdict[sections[0]] = sections[1];\r\n\r\n\t\t\treturn dict;\r\n\t\t}, {});\r\n\t}\r\n\r\n\r\n\tlet featureNormalFactor = 0.6;\r\n\r\n\r\n\tclass Feature {\r\n\t\tconstructor (value) {\r\n\t\t\tthis.value = value;\r\n\t\t}\r\n\r\n\r\n\t\tget normalized () {\r\n\t\t\treturn Math.tanh(this.value / featureNormalFactor);\r\n\t\t}\r\n\r\n\r\n\t\tset normalized (v) {\r\n\t\t\tthis.value = Math.atanh(v) * featureNormalFactor;\r\n\t\t}\r\n\r\n\r\n\t\trandomize (intensity) {\r\n\t\t\tthis.value += LatentCode.randn_bm() * intensity;\r\n\t\t}\r\n\t};\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"index\",\r\n\r\n\r\n\t\tcomponents: {\r\n\t\t\tStoreInput,\r\n\t\t\tNavigator,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tmodel: null,\r\n\t\t\t\tlatents_dimensions: null,\r\n\t\t\t\tfeatures: null,\r\n\t\t\t\tpsi: 0.5,\r\n\t\t\t\tinitializing: false,\r\n\t\t\t\tloading: false,\r\n\t\t\t\trandomIntensity: -3,\r\n\t\t\t\tpasteUrl: null,\r\n\t\t\t\tnoise: true,\r\n\t\t\t\tfromW: false,\r\n\t\t\t\thashLatents: null,\r\n\t\t\t\tslerpStep: 10,\r\n\t\t\t\tlerpFactor: 0.8,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.features)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.featureVector).buffer))));\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tconst values = LatentCode.decodeLatentsBytes(value);\r\n\r\n\t\t\t\t\tvalues.forEach((value, i) => {\r\n\t\t\t\t\t\tif (this.features && this.features[i])\r\n\t\t\t\t\t\t\tthis.features[i].value = value;\r\n\t\t\t\t\t});\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfeatureVector () {\r\n\t\t\t\tconst normalized = this.fromW ? 1 : 1 / this.featureMagnitude;\r\n\t\t\t\treturn this.features.map(f => f.value * normalized);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfeatureMagnitude() {\r\n\t\t\t\tconst result = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));\r\n\r\n\t\t\t\treturn result || 1e-9;\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn `/generate?${this.fromW ? \"fromW=1\" : \"psi=\" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\ttag () {\r\n\t\t\t\treturn `#${this.fromW ? \"fromW=1\" : \"psi=\" + this.psi.toString()}&latents=${this.latentsBytes}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentDistance() {\r\n\t\t\t\tif (!this.hashLatents)\r\n\t\t\t\t\treturn NaN;\r\n\r\n\t\t\t\tif (this.fromW)\r\n\t\t\t\t\treturn LatentCode.distanceBetween(this.featureVector, this.hashLatents);\r\n\t\t\t\telse\r\n\t\t\t\t\treturn LatentCode.angleBetween(this.featureVector, this.hashLatents);\r\n\t\t\t},\r\n\r\n\t\t\tasideScales() {\r\n\t\t\t\treturn this.fromW ? [-10, 0, 10] : [-1, 0, 1];\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tasync mounted () {\r\n\t\t\twindow.$main = this;\r\n\r\n\t\t\tthis.initializing = true;\r\n\t\t\tconst res = await fetch(\"/spec\");\r\n\t\t\tconst spec = await res.json();\r\n\t\t\tconsole.log(\"spec:\", spec);\r\n\r\n\t\t\tthis.initializing = false;\r\n\r\n\t\t\tObject.assign(this, spec);\r\n\r\n\t\t\tthis.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));\r\n\r\n\t\t\twindow.onhashchange = () => this.loadHash();\r\n\r\n\t\t\tif (location.hash)\r\n\t\t\t\tthis.loadHash();\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\trandomizeFeatures() {\r\n\t\t\t\tif (this.features)\r\n\t\t\t\t\tthis.features.forEach(f => f.randomize(Math.exp(this.randomIntensity)));\r\n\t\t\t},\r\n\r\n\r\n\t\t\tzeroFeatures() {\r\n\t\t\t\tif (this.features)\r\n\t\t\t\t\tthis.features.forEach(f => f.value = 0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tloadHash () {\r\n\t\t\t\tconst dict = parseQueries(location.hash);\r\n\t\t\t\t//console.log(\"dict:\", dict);\r\n\r\n\t\t\t\tconst psi = Number(dict.psi);\r\n\t\t\t\tif (Number.isFinite(psi))\r\n\t\t\t\t\tthis.psi = psi;\r\n\r\n\t\t\t\tif (dict.latents)\r\n\t\t\t\t\tthis.latentsBytes = dict.latents;\r\n\r\n\t\t\t\tthis.fromW = dict.fromW ? true : false;\r\n\r\n\t\t\t\tthis.updateHashLatents();\r\n\t\t\t},\r\n\r\n\r\n\t\t\tnormalizeFeatures () {\r\n\t\t\t\tthis.features.forEach(f => f.value /= this.featureMagnitude);\r\n\t\t\t},\r\n\r\n\r\n\t\t\trotateFeatures (target, theta) {\r\n\t\t\t\tconsole.assert(target.length === this.features.length);\r\n\r\n\t\t\t\tthis.normalizeFeatures();\r\n\r\n\t\t\t\tconst dot = Math.min(1, Math.max(-1, target.reduce((sum, t, i) => sum + t * this.features[i].value, 0)));\r\n\t\t\t\t//console.assert(Math.abs(dot) <= 1, \"unexpect dot:\", dot, target);\r\n\r\n\t\t\t\tconst sinOmega = Math.sqrt(1 - dot * dot);\r\n\t\t\t\tconst sinTheta = Math.sin(theta);\r\n\t\t\t\tif (sinOmega < sinTheta) {\r\n\t\t\t\t\tthis.features.forEach((f, i) => f.value = target[i]);\r\n\t\t\t\t\treturn;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tconst side = target.map((t, i) => t - this.features[i].value * dot);\r\n\t\t\t\tconst relative = side.map(v => v * sinTheta / sinOmega);\r\n\r\n\t\t\t\tconst cosTheta = Math.cos(theta);\r\n\t\t\t\tthis.features.forEach((f, i) => f.value = f.value * cosTheta + relative[i]);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tslerpToHash () {\r\n\t\t\t\tconst targetLatents = parseQueries(location.hash).latents;\r\n\t\t\t\tif (targetLatents) {\r\n\t\t\t\t\tthis.rotateFeatures(this.hashLatents, this.slerpStep * Math.PI / 180);\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlerpToHash () {\r\n\t\t\t\tthis.features.forEach((f, i) => f.value = f.value * this.lerpFactor + this.hashLatents[i] * (1 - this.lerpFactor));\r\n\t\t\t},\r\n\r\n\r\n\t\t\tupdateHashLatents() {\r\n\t\t\t\tif (this.latentsBytes) {\r\n\t\t\t\t\tconst lvec = LatentCode.decodeLatentsBytes(this.latentsBytes);\r\n\t\t\t\t\tthis.hashLatents = this.fromW ? lvec : LatentCode.normalize(lvec);\r\n\t\t\t\t}\r\n\t\t\t\telse\r\n\t\t\t\t\tthis.hashLatents = null;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tcopyLatentCode() {\r\n\t\t\t\tnavigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));\r\n\t\t\t\tconsole.log(\"Latent code copied into clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync onPaste(event) {\r\n\t\t\t\t//console.log(\"onPaste:\", [...event.clipboardData.items]);\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\t//console.log(\"text:\", text);\r\n\t\t\t\ttry {\r\n\t\t\t\t\t// check if text is valid latent code\r\n\t\t\t\t\tconst origin = atob(text);\r\n\t\t\t\t\tif (origin.length !== 512 * 4)\r\n\t\t\t\t\t\tthrow new Error(\"invalid latent code\");\r\n\r\n\t\t\t\t\tthis.latentsBytes = text;\r\n\t\t\t\t}\r\n\t\t\t\tcatch(_) {\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfeatureNormalFactor() {\r\n\t\t\t\treturn featureNormalFactor;\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.loading = true;\r\n\t\t\t\tthis.pasteUrl = null;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tfromW (value) {\r\n\t\t\t\tfeatureNormalFactor = value ? 12 : 0.6;\r\n\r\n\t\t\t\tthis.updateHashLatents();\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style>\r\n\thtml\r\n\t{\r\n\t\toverflow: hidden;\r\n\t\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n\t}\r\n\r\n\tbody\r\n\t{\r\n\t\twhite-space: nowrap;\r\n\t}\r\n\r\n\theader\r\n\t{\r\n\t\theight: 2em;\r\n\t\tmargin: 20px 0;\r\n\t}\r\n\r\n\theader h2\r\n\t{\r\n\t\tdisplay: inline;\r\n\t}\r\n\r\n\theader fieldset\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tmargin: 0 .6em;\r\n\t\tborder: 0;\r\n\t\tpadding: 0;\r\n\t}\r\n\r\n\t.latant-type\r\n\t{\r\n\t\tborder: 0;\r\n\t\tfont-weight: bold;\r\n\t\t-webkit-appearance: none;\r\n\t\tcursor: pointer;\r\n\t}\r\n\r\n\t/*.latant-type:hover\r\n\t{\r\n\t\t-webkit-appearance: menulist;\r\n\t}*/\r\n\r\n\taside, article\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tvertical-align: top;\r\n\t\theight: calc(100vh - 72px);\r\n\t}\r\n\r\n\taside\r\n\t{\r\n\t\toverflow-y: auto;\r\n\t\tfont-size: 9px;\r\n\t}\r\n\r\n\taside > *\r\n\t{\r\n\t\tpadding-left: 3em;\r\n\t}\r\n\r\n\t.disabled\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.feature-bar, aside .scales\r\n\t{\r\n\t\twidth: 240px;\r\n\t}\r\n\r\n\t.model\r\n\t{\r\n\t\tfont-size: 20px;\r\n\t\tfont-weight: bold;\r\n\t\tmargin: 0 1em;\r\n\t}\r\n\r\n\t.result\r\n\t{\r\n\t\theight: 100%;\r\n\t\twidth: auto;\r\n\t}\r\n\r\n\t.value\r\n\t{\r\n\t\tborder: 0;\r\n\t\twidth: 4.1em;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.initializing\r\n\t{\r\n\t\tposition: absolute;\r\n\t\ttop: 0;\r\n\t\tleft: 0;\r\n\t\tbottom: 0;\r\n\t\tright: 0;\r\n\t\tfont-size: 10vh;\r\n\t\tpadding: 30vh 2em 0;\r\n\t\twhite-space: normal;\r\n\t\tbackground-color: #ccca;\r\n\t\tcolor: #444c;\r\n\t}\r\n\r\n\t.scales > span\r\n\t{\r\n\t\tposition: absolute;\r\n\t\ttext-align: center;\r\n\t\ttransform: translateX(-50%);\r\n\t\tpointer-events: none;\r\n\t}\r\n\r\n\t.psi-bar\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\twidth: 600px;\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.psi-bar input\r\n\t{\r\n\t\twidth: 100%;\r\n\t}\r\n\r\n\t.psi-bar .scales > span\r\n\t{\r\n\t\tfont-size: 9px;\r\n\t\tbottom: -8px;\r\n\t\tcolor: #ccc;\r\n\t}\r\n\r\n\taside .scales\r\n\t{\r\n\t\tposition: absolute;\r\n\t\tdisplay: inline-block;\r\n\t\theight: 2em;\r\n\t\tpointer-events: none;\r\n\t\tmargin: 0;\r\n\t\ttransform: translateY(-3em);\r\n\t\tcolor: #ccc;\r\n\t}\r\n\r\n\t/*.scales .line\r\n\t{\r\n\t\ttransform: scale(1000);\r\n\t}*/\r\n</style>\r\n"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__$1 = undefined;
+    const __vue_scope_id__$2 = undefined;
     /* module identifier */
-    const __vue_module_identifier__$1 = undefined;
+    const __vue_module_identifier__$2 = undefined;
     /* functional template */
-    const __vue_is_functional_template__$1 = false;
+    const __vue_is_functional_template__$2 = false;
     /* style inject SSR */
     
 
     
     var App = normalizeComponent_1(
-      { render: __vue_render__$1, staticRenderFns: __vue_staticRenderFns__$1 },
-      __vue_inject_styles__$1,
-      __vue_script__$1,
-      __vue_scope_id__$1,
-      __vue_is_functional_template__$1,
-      __vue_module_identifier__$1,
+      { render: __vue_render__$2, staticRenderFns: __vue_staticRenderFns__$2 },
+      __vue_inject_styles__$2,
+      __vue_script__$2,
+      __vue_scope_id__$2,
+      __vue_is_functional_template__$2,
+      __vue_module_identifier__$2,
       browser,
       undefined
     );

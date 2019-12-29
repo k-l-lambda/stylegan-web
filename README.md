@@ -1,3 +1,16 @@
+[![Explorer Demo](./documents/explorer-demo.gif)](https://www.youtube.com/watch?v=ek1j272iAmc)
+
+This project is a web porting for [NVlabs' StyleGAN2](https://github.com/NVlabs/stylegan2), to facilitate exploring all kinds characteristic of StyleGAN networks.
+
+Thanks for [NVlabs](https://github.com/NVlabs)' excellent work.
+
+## Functionality
+
+### Projector
+
+![Projector Demo 1](./documents/projector-demo1.png)
+![Projector Demo 2](./documents/projector-demo2.png)
+
 ## Run Web Server
 
 ```.bash
