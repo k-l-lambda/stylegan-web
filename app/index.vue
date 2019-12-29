@@ -12,7 +12,10 @@
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
 			</fieldset>
 			<fieldset>
-				<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
+				<span :title="`Randomize intensity: ${Math.exp(randomIntensity)}`">
+					<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" />
+					{{Math.exp(randomIntensity).toFixed(4)}}
+				</span>
 				<button @click="randomizeFeatures">Randomize</button>
 			</fieldset>
 			<fieldset>
@@ -35,10 +38,30 @@
 			<fieldset :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
 				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
-				<input v-show="!fromW" type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" />
+				<span class="psi-bar">
+					<input v-show="!fromW" type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" />
+					<span class="scales">
+						<span :style="{left: '25%'}">
+							&#x25b2;<br/>-1
+						</span>
+						<span :style="{left: '50%'}">
+							&#x25b2;<br/>0
+						</span>
+						<span :style="{left: '75%'}">
+							&#x25b2;<br/>1
+						</span>
+					</span>
+				</span>
 			</fieldset>
 		</header>
 		<aside>
+			<p>
+				<span class="scales">
+					<span v-for="scale of asideScales" :key="scale" :style="{left: `${(Math.tanh(scale / featureNormalFactor()) + 1) * 50}%`}">
+						{{scale}}<br/> &#x25be;<!--span class="line">&#xff5c;</span-->
+					</span>
+				</span>
+			</p>
 			<ol v-if="features">
 				<li v-for="(feature, index) of features" :key="index">
 					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" />
@@ -73,7 +96,7 @@
 	}
 
 
-	let featureNormalFactor = 12;
+	let featureNormalFactor = 0.6;
 
 
 	class Feature {
@@ -179,6 +202,10 @@
 					return LatentCode.distanceBetween(this.featureVector, this.hashLatents);
 				else
 					return LatentCode.angleBetween(this.featureVector, this.hashLatents);
+			},
+
+			asideScales() {
+				return this.fromW ? [-10, 0, 10] : [-1, 0, 1];
 			},
 		},
 
@@ -306,6 +333,11 @@
 				catch(_) {
 				}
 			},
+
+
+			featureNormalFactor() {
+				return featureNormalFactor;
+			},
 		},
 
 
@@ -317,7 +349,7 @@
 
 
 			fromW (value) {
-				featureNormalFactor = value ? 12 : 0.4;
+				featureNormalFactor = value ? 12 : 0.6;
 
 				this.updateHashLatents();
 			},
@@ -382,12 +414,17 @@
 		font-size: 9px;
 	}
 
+	aside > *
+	{
+		padding-left: 3em;
+	}
+
 	.disabled
 	{
 		color: #0006;
 	}
 
-	.feature-bar
+	.feature-bar, aside .scales
 	{
 		width: 240px;
 	}
@@ -408,7 +445,7 @@
 	.value
 	{
 		border: 0;
-		width: 4em;
+		width: 4.1em;
 	}
 
 	.loading img
@@ -429,4 +466,47 @@
 		background-color: #ccca;
 		color: #444c;
 	}
+
+	.scales > span
+	{
+		position: absolute;
+		text-align: center;
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.psi-bar
+	{
+		display: inline-block;
+		width: 600px;
+		position: relative;
+	}
+
+	.psi-bar input
+	{
+		width: 100%;
+	}
+
+	.psi-bar .scales > span
+	{
+		font-size: 9px;
+		bottom: -8px;
+		color: #ccc;
+	}
+
+	aside .scales
+	{
+		position: absolute;
+		display: inline-block;
+		height: 2em;
+		pointer-events: none;
+		margin: 0;
+		transform: translateY(-3em);
+		color: #ccc;
+	}
+
+	/*.scales .line
+	{
+		transform: scale(1000);
+	}*/
 </style>
