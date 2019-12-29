@@ -1,4 +1,4 @@
-[![Explorer Demo](./documents/explorer-demo.gif)](https://www.youtube.com/watch?v=ek1j272iAmc)
+[![Explorer Demo](./documents/explorer-demo.gif)](https://www.youtube.com/watch?v=6cCjX24hKwo)
 
 This project is a web porting for [NVlabs' StyleGAN2](https://github.com/NVlabs/stylegan2), to facilitate exploring all kinds characteristic of StyleGAN networks.
 
