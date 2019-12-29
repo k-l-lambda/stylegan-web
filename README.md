@@ -6,7 +6,17 @@ Thanks for [NVlabs](https://github.com/NVlabs)' excellent work.
 
 ## Functionality
 
+### Explorer
+
+See the result image how response to changes of latent code & psi.
+
+![Projector Demo 1](./documents/explorer-illustration.png)
+
 ### Projector
+
+Test the projection from image to latent code. Left is target image, right is result from generator model. Total step count and yielding interval can be configured in this page. And another hyperparameter `regularize noise weight` can be configured statically, see [Environment Configurations](#environment-configurations).
+
+You can save the projection result in a zip package, and this page can accept projector zip file dropping, so this feature enable you to share your projector result to others.
 
 ![Projector Demo 1](./documents/projector-demo1.png)
 ![Projector Demo 2](./documents/projector-demo2.png)
@@ -81,7 +91,7 @@ According to [StyleGAN2 README.md](https://github.com/NVlabs/stylegan2#requireme
 
 * Tips for tensorflow 1.15
 
-	Tensorflow 1.15 can work under Windows, but *NVCC* compiling may encounter C++ including path issue. This is an easy workaround: make a symbolic link in python installation directory `Python36\Lib\site-packages\tensorflow_core`:
+	Tensorflow 1.15 can work under Windows, but *NVCC* compiling may encounter C++ including path problem. Here is an easy workaround: make a symbolic link in python installation directory `Python36\Lib\site-packages\tensorflow_core`:
 
 	```.bash
 	mklink /J tensorflow tensorflow_core
@@ -89,7 +99,7 @@ According to [StyleGAN2 README.md](https://github.com/NVlabs/stylegan2#requireme
 
 ## Environment Configurations
 
-To manage environment variables easily, create a configuration file named `.env.local`. Avaiable env list:
+To manage environment variables conveniently, create a configuration file named `.env.local`. All avaiable env list:
 
 Key							| Description							| Default Value
 :--							| :--									| :--
@@ -99,4 +109,4 @@ Key							| Description							| Default Value
 **MODEL_PATH_LPIPS**		| File path for LPIPS model.			| *./models/vgg16_zhang_perceptual.pkl*
 **MODEL_PATH_***			| Generator network file path dictionary. See [examples](#model-paths-example).	|
 **REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter.	| *1e5*
-**LPIPS_IMAGE_SHAPE**			| LPIPS image input shape.				| *256,256*
+**LPIPS_IMAGE_SHAPE**		| LPIPS image input shape.				| *256,256*
