@@ -36,6 +36,10 @@
 			<div class="target" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
+				<div v-if="!targetUrl" class="placeholder">
+					<strong>DROP</strong> target image here<br/>
+					or <strong>PASTE</strong> by CTRL+V
+				</div>
 				<img v-if="targetUrl" :src="targetUrl" />
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
@@ -51,6 +55,7 @@
 					<img :src="item.img" />
 				</a>
 			</div>
+			<Navigator />
 		</article>
 	</div>
 </template>
@@ -59,6 +64,7 @@
 	import JSZip from "jszip";
 
 	import StoreInput from "./storeinput.vue";
+	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js";
 
@@ -128,6 +134,7 @@
 
 		components: {
 			StoreInput,
+			Navigator,
 		},
 
 
@@ -432,6 +439,20 @@
 	{
 		text-align: center;
 		padding: 20px;
+	}
+
+	.target .placeholder
+	{
+		padding: 2em;
+		color: #ccc;
+		font-size: 40px;
+		width: 40vw;
+		user-select: none;
+	}
+
+	.target.hover .placeholder
+	{
+		outline: .2em dashed #ccc;
 	}
 
 	.target > *

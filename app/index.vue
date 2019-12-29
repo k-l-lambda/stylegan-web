@@ -8,16 +8,14 @@
 					<option :value="true">W</option>
 				</select>&gt;
 			</fieldset>
-			<fieldset :class="{disabled: fromW}">
-				<!--&Psi; not work?-->&#x03a8;:
-				<input type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" :style="{width: '600px'}" :disabled="fromW" />
-				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
-			</fieldset>
 			<fieldset>
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
 			</fieldset>
 			<fieldset>
-				<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" :title="`Intensity: ${Math.exp(randomIntensity)}`" />{{Math.exp(randomIntensity).toFixed(4)}}
+				<span :title="`Randomize intensity: ${Math.exp(randomIntensity)}`">
+					<input type="range" min="-14" max="2" step="0.1" v-model.number="randomIntensity" />
+					{{Math.exp(randomIntensity).toFixed(4)}}
+				</span>
 				<button @click="randomizeFeatures">Randomize</button>
 			</fieldset>
 			<fieldset>
@@ -37,8 +35,33 @@
 				&times;<StoreInput v-model.number="lerpFactor" localKey="explorerLerpStep" :styleObj="{width: '2em', border: 0}" />
 				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
 			</fieldset>
+			<fieldset :class="{disabled: fromW}">
+				<!--&Psi; not work?-->&#x03a8;:
+				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
+				<span class="psi-bar">
+					<input v-show="!fromW" type="range" v-model.lazy="psi" :min="-2" :max="2" step="any" />
+					<span class="scales">
+						<span :style="{left: '25%'}">
+							&#x25b2;<br/>-1
+						</span>
+						<span :style="{left: '50%'}">
+							&#x25b2;<br/>0
+						</span>
+						<span :style="{left: '75%'}">
+							&#x25b2;<br/>1
+						</span>
+					</span>
+				</span>
+			</fieldset>
 		</header>
 		<aside>
+			<p>
+				<span class="scales">
+					<span v-for="scale of asideScales" :key="scale" :style="{left: `${(Math.tanh(scale / featureNormalFactor()) + 1) * 50}%`}">
+						{{scale}}<br/> &#x25be;<!--span class="line">&#xff5c;</span-->
+					</span>
+				</span>
+			</p>
 			<ol v-if="features">
 				<li v-for="(feature, index) of features" :key="index">
 					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" />
@@ -50,11 +73,14 @@
 			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
 			<img v-if="pasteUrl" class="result" :src="pasteUrl" @load="loading = false" />
 		</article>
+		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
+		<Navigator />
 	</div>
 </template>
 
 <script>
 	import StoreInput from "./storeinput.vue";
+	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js"
 
@@ -70,7 +96,7 @@
 	}
 
 
-	let featureNormalFactor = 12;
+	let featureNormalFactor = 0.6;
 
 
 	class Feature {
@@ -102,6 +128,7 @@
 
 		components: {
 			StoreInput,
+			Navigator,
 		},
 
 
@@ -111,6 +138,7 @@
 				latents_dimensions: null,
 				features: null,
 				psi: 0.5,
+				initializing: false,
 				loading: false,
 				randomIntensity: -3,
 				pasteUrl: null,
@@ -175,15 +203,22 @@
 				else
 					return LatentCode.angleBetween(this.featureVector, this.hashLatents);
 			},
+
+			asideScales() {
+				return this.fromW ? [-10, 0, 10] : [-1, 0, 1];
+			},
 		},
 
 
 		async mounted () {
 			window.$main = this;
 
+			this.initializing = true;
 			const res = await fetch("/spec");
 			const spec = await res.json();
 			console.log("spec:", spec);
+
+			this.initializing = false;
 
 			Object.assign(this, spec);
 
@@ -279,7 +314,7 @@
 
 			copyLatentCode() {
 				navigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));
-				console.log("Latent code copied in clipboard.");
+				console.log("Latent code copied into clipboard.");
 			},
 
 
@@ -298,6 +333,11 @@
 				catch(_) {
 				}
 			},
+
+
+			featureNormalFactor() {
+				return featureNormalFactor;
+			},
 		},
 
 
@@ -309,7 +349,7 @@
 
 
 			fromW (value) {
-				featureNormalFactor = value ? 12 : 0.4;
+				featureNormalFactor = value ? 12 : 0.6;
 
 				this.updateHashLatents();
 			},
@@ -322,6 +362,11 @@
 	{
 		overflow: hidden;
 		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	}
+
+	body
+	{
+		white-space: nowrap;
 	}
 
 	header
@@ -360,7 +405,7 @@
 	{
 		display: inline-block;
 		vertical-align: top;
-		height: calc(100vh - 69px);
+		height: calc(100vh - 72px);
 	}
 
 	aside
@@ -369,12 +414,17 @@
 		font-size: 9px;
 	}
 
+	aside > *
+	{
+		padding-left: 3em;
+	}
+
 	.disabled
 	{
 		color: #0006;
 	}
 
-	.feature-bar
+	.feature-bar, aside .scales
 	{
 		width: 240px;
 	}
@@ -395,11 +445,68 @@
 	.value
 	{
 		border: 0;
-		width: 4em;
+		width: 4.1em;
 	}
 
 	.loading img
 	{
 		opacity: 0.7;
 	}
+
+	.initializing
+	{
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		font-size: 10vh;
+		padding: 30vh 2em 0;
+		white-space: normal;
+		background-color: #ccca;
+		color: #444c;
+	}
+
+	.scales > span
+	{
+		position: absolute;
+		text-align: center;
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	.psi-bar
+	{
+		display: inline-block;
+		width: 600px;
+		position: relative;
+	}
+
+	.psi-bar input
+	{
+		width: 100%;
+	}
+
+	.psi-bar .scales > span
+	{
+		font-size: 9px;
+		bottom: -8px;
+		color: #ccc;
+	}
+
+	aside .scales
+	{
+		position: absolute;
+		display: inline-block;
+		height: 2em;
+		pointer-events: none;
+		margin: 0;
+		transform: translateY(-3em);
+		color: #ccc;
+	}
+
+	/*.scales .line
+	{
+		transform: scale(1000);
+	}*/
 </style>
