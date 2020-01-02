@@ -15,10 +15,10 @@ def decodeFloat32(code, len = 512):
 
 
 def encodeFixed16(latents):
-	intLatents = list(map(lambda x: min(max(math.floor(x * 1024), -32), 32), latents))
+	intLatents = list(map(lambda x: min(max(math.floor(x * 1024), -0x8000), 0x7fff), latents))
 	return base64.b64encode(struct.pack('h' * latents.shape[0], *intLatents))
 
 
 def decodeFixed16(code, len = 512):
 	intLatents = np.array(struct.unpack('h' * len, base64.b64decode(code)))
-	return list(map(lambda x: x / 1024, intLatents))
+	return np.array(list(map(lambda x: x / 1024, intLatents)))

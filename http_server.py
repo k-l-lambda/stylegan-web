@@ -65,8 +65,8 @@ def loadGs():
 
 				#print('Gs.components.synthesis.input_shape:', Gs.components.synthesis.input_shape)
 				global g_dLatentsIn
-				g_dLatentsIn = tf.placeholder(tf.float32, [1, Gs.input_shape[1]])
-				dlatents_expr = tf.tile(tf.reshape(g_dLatentsIn, [1, 1, Gs.input_shape[1]]), [1, Gs.components.synthesis.input_shape[1], 1])
+				g_dLatentsIn = tf.placeholder(tf.float32, [Gs.components.synthesis.input_shape[1] * Gs.input_shape[1]])
+				dlatents_expr = tf.reshape(g_dLatentsIn, [1, Gs.components.synthesis.input_shape[1], Gs.input_shape[1]])
 				g_Synthesis = Gs.components.synthesis.get_output_for(dlatents_expr, randomize_noise = False)
 
 	return g_Gs, g_Synthesis
@@ -141,18 +141,23 @@ def spec():
 @app.route('/generate', methods=['GET'])
 def generate():
 	latentsStr = flask.request.args.get('latents')
+	latentsStrX = flask.request.args.get('xlatents')
 	psi = float(flask.request.args.get('psi', 0.5))
 	#use_noise = bool(flask.request.args.get('use_noise', True))
 	randomize_noise = int(flask.request.args.get('randomize_noise', 0))
 	fromW = int(flask.request.args.get('fromW', 0))
 
 	global g_Session
+	global g_dLatentsIn
 	#print('g_Session.1:', g_Session)
 
 	gs, synthesis = loadGs()
 
 	latent_len = gs.input_shape[1]
-	latents = latentCode.decodeFloat32(latentsStr, latent_len).reshape([1, latent_len])
+	if latentsStrX:
+		latents = latentCode.decodeFixed16(latentsStrX, g_dLatentsIn.shape[0])
+	else:
+		latents = latentCode.decodeFloat32(latentsStr, latent_len)
 
 	t0 = time.time()
 
@@ -160,11 +165,15 @@ def generate():
 	fmt = dict(func = dnnlib.tflib.convert_images_to_uint8, nchw_to_nhwc = True)
 	with g_Session.as_default():
 		if fromW != 0:
-			print('latentsStr:', latentsStr)
-			global g_dLatentsIn
+			#print('latentsStr:', latentsStr)
+			#print('shapes:', g_dLatentsIn.shape, latents.shape)
+
+			if latents.shape[0] < g_dLatentsIn.shape[0]:
+				latents = np.tile(latents, g_dLatentsIn.shape[0] // latents.shape[0])
 			images = dnnlib.tflib.run(synthesis, {g_dLatentsIn: latents})
 			image = misc.convert_to_pil_image(misc.create_image_grid(images), drange = [-1,1])
 		else:
+			latents = latents.reshape([1, latent_len])
 			images = gs.run(latents, None, truncation_psi = psi, randomize_noise = randomize_noise != 0, output_transform = fmt)
 			image = PIL.Image.fromarray(images[0], 'RGB')
 
@@ -214,9 +223,9 @@ def project():
 
 				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue()).decode('ascii')
 
-				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
-				latentCodes = list(map(lambda latents: latentCode.encodeFloat32(latents).decode('ascii'), latentsList))
-				#latentCodes = latentCode.encodeFixed16(dlatents.flatten()).decode('ascii')
+				#latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
+				#latentCodes = list(map(lambda latents: latentCode.encodeFloat32(latents).decode('ascii'), latentsList))
+				latentCodes = latentCode.encodeFixed16(dlatents.flatten()).decode('ascii')
 
 				yield json.dumps(dict(step = step, img = imgUrl, latentCodes = latentCodes)) + '\n\n'
 
