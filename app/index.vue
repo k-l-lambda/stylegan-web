@@ -8,8 +8,11 @@
 					<option :value="true">W</option>
 				</select>&gt;
 			</fieldset>
-			<fieldset>
+			<fieldset v-show="!fromW">
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
+			</fieldset>
+			<fieldset v-show="fromW">
+				<input type="checkbox" v-model="extendFeature" />extend
 			</fieldset>
 			<fieldset>
 				<span :title="`Randomize intensity: ${Math.exp(randomIntensity)}`">
@@ -55,6 +58,9 @@
 			</fieldset>
 		</header>
 		<aside>
+			<select v-show="useXLatents" class="layer" v-model="shownLayer" title="layer index">
+				<option v-for="index of 18" :key="index" :value="index - 1">{{index - 1}}</option>
+			</select>
 			<p>
 				<span class="scales">
 					<span v-for="scale of asideScales" :key="scale" :style="{left: `${(Math.tanh(scale / featureNormalFactor()) + 1) * 50}%`}">
@@ -62,16 +68,15 @@
 					</span>
 				</span>
 			</p>
-			<ol v-if="features">
-				<li v-for="(feature, index) of features" :key="index">
+			<ol v-if="shownFeatures">
+				<li v-for="(feature, index) of shownFeatures" :key="index">
 					<input type="range" class="feature-bar" v-model.lazy="feature.normalized" :min="-0.99999999" :max="0.99999999" step="any" />
 					<input class="value" type="number" v-model.number="feature.value" step="0.001" />
 				</li>
 			</ol>
 		</aside>
 		<article :class="{loading}">
-			<img v-if="latentsBytes" class="result" :src="pasteUrl || imageURL" @load="loading = false" />
-			<img v-if="pasteUrl" class="result" :src="pasteUrl" @load="loading = false" />
+			<img v-if="latentsBytes" class="result" :src="imageURL" @load="loading = false" />
 		</article>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 		<Navigator />
@@ -137,21 +142,28 @@
 				model: null,
 				latents_dimensions: null,
 				features: null,
+				featuresEx: null,
 				psi: 0.5,
 				initializing: false,
 				loading: false,
 				randomIntensity: -3,
-				pasteUrl: null,
 				noise: true,
 				fromW: false,
 				hashLatents: null,
 				slerpStep: 10,
 				lerpFactor: 0.8,
+				extendFeature: false,
+				shownLayer: 0,
 			};
 		},
 
 
 		computed: {
+			useXLatents() {
+				return this.fromW && this.extendFeature;
+			},
+
+
 			latentsBytes: {
 				get () {
 					if (!this.features)
@@ -171,9 +183,46 @@
 			},
 
 
+			latentsBytesEx: {
+				get () {
+					if (!this.featuresEx)
+						return null;
+
+					return encodeURIComponent(LatentCode.encodeFixed16(this.featureVectorEx));
+				},
+
+				set (value) {
+					const values = LatentCode.decodeFixed16(value);
+
+					values.forEach((value, i) => {
+						if (this.featuresEx && this.featuresEx[i])
+							this.featuresEx[i].value = value;
+					});
+				},
+			},
+
+
+			shownFeatures () {
+				if (!this.useXLatents)
+					return this.features;
+
+				return this.featuresEx.slice(this.shownLayer * this.latents_dimensions, (this.shownLayer + 1) * this.latents_dimensions);
+			},
+
+
+			featuresInUse () {
+				return this.useXLatents ? this.featuresEx : this.features;
+			},
+
+
 			featureVector () {
 				const normalized = this.fromW ? 1 : 1 / this.featureMagnitude;
 				return this.features.map(f => f.value * normalized);
+			},
+
+
+			featureVectorEx () {
+				return this.featuresEx.map(f => f.value);
 			},
 
 
@@ -185,12 +234,16 @@
 
 
 			imageURL () {
-				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&latents=${this.latentsBytes}`;
+				const latentStr = this.useXLatents ? `xlatents=${this.latentsBytesEx}` : `latents=${this.latentsBytes}`;
+
+				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&${latentStr}`;
 			},
 
 
 			tag () {
-				return `#${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}&latents=${this.latentsBytes}`;
+				const latentStr = this.useXLatents ? `xlatents=${this.latentsBytesEx}` : `latents=${this.latentsBytes}`;
+
+				return `#${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}&${latentStr}`;
 			},
 
 
@@ -223,6 +276,7 @@
 			Object.assign(this, spec);
 
 			this.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));
+			this.featuresEx = Array(spec.latents_dimensions * 18).fill().map(() => new Feature(0));
 
 			window.onhashchange = () => this.loadHash();
 
@@ -233,14 +287,14 @@
 
 		methods: {
 			randomizeFeatures() {
-				if (this.features)
-					this.features.forEach(f => f.randomize(Math.exp(this.randomIntensity)));
+				if (this.featuresInUse)
+					this.featuresInUse.forEach(f => f.randomize(Math.exp(this.randomIntensity)));
 			},
 
 
 			zeroFeatures() {
-				if (this.features)
-					this.features.forEach(f => f.value = 0);
+				if (this.featuresInUse)
+					this.featuresInUse.forEach(f => f.value = 0);
 			},
 
 
@@ -252,8 +306,14 @@
 				if (Number.isFinite(psi))
 					this.psi = psi;
 
-				if (dict.latents)
+				if (dict.xlatents) {
+					this.latentsBytesEx = dict.xlatents;
+					this.extendFeature = true;
+				}
+				else if (dict.latents) {
 					this.latentsBytes = dict.latents;
+					this.extendFeature = false;
+				}
 
 				this.fromW = dict.fromW ? true : false;
 
@@ -325,7 +385,7 @@
 				try {
 					// check if text is valid latent code
 					const origin = atob(text);
-					if (origin.length !== 512 * 4)
+					if (origin.length !== this.latents_dimensions * 4)
 						throw new Error("invalid latent code");
 
 					this.latentsBytes = text;
@@ -344,7 +404,6 @@
 		watch: {
 			imageURL () {
 				this.loading = true;
-				this.pasteUrl = null;
 			},
 
 
@@ -417,6 +476,14 @@
 	aside > *
 	{
 		padding-left: 3em;
+	}
+
+	aside .layer
+	{
+		position: absolute;
+		top: 54px;
+		left: 1em;
+		padding-left: 0;
 	}
 
 	.disabled
