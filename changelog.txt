@@ -1,5 +1,7 @@
 
 TODO:
+	lerp on extend features
+	projector: gif capture
 
 
 

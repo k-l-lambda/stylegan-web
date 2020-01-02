@@ -287,8 +287,8 @@
 
 		methods: {
 			randomizeFeatures() {
-				if (this.featuresInUse)
-					this.featuresInUse.forEach(f => f.randomize(Math.exp(this.randomIntensity)));
+				if (this.shownFeatures)
+					this.shownFeatures.forEach(f => f.randomize(Math.exp(this.randomIntensity)));
 			},
 
 
@@ -412,6 +412,13 @@
 
 				this.updateHashLatents();
 			},
+
+
+			/*extendFeature (value) {
+				// set featuresEX value by tiling features' value
+				if (value)
+					this.featuresEx.forEach((feature, i) => feature.value = this.features[i % this.features.length].value);
+			},*/
 		},
 	};
 </script>
