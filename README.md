@@ -86,4 +86,5 @@ Key							| Description							| Default Value
 **MODEL_PATH_LPIPS**		| File path for LPIPS model.			| *./models/vgg16_zhang_perceptual.pkl*
 **MODEL_PATH_***			| Generator network file path dictionary. See [examples](#model-paths-example).	|
 **REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter.	| *1e5*
-**LPIPS_IMAGE_SHAPE**			| LPIPS image input shape.				| *256,256*
+**INITIAL_NOISE_FACTOR**	| Projector training hyperparameter.	| *0.05*
+**LPIPS_IMAGE_SHAPE**		| LPIPS image input shape.				| *256,256*
