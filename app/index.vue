@@ -157,11 +157,11 @@
 					if (!this.features)
 						return null;
 
-					return encodeURIComponent(btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(this.featureVector).buffer))));
+					return encodeURIComponent(LatentCode.encodeFloat32(this.featureVector));
 				},
 
 				set (value) {
-					const values = LatentCode.decodeLatentsBytes(value);
+					const values = LatentCode.decodeFloat32(value);
 
 					values.forEach((value, i) => {
 						if (this.features && this.features[i])
@@ -304,7 +304,7 @@
 
 			updateHashLatents() {
 				if (this.latentsBytes) {
-					const lvec = LatentCode.decodeLatentsBytes(this.latentsBytes);
+					const lvec = LatentCode.decodeFloat32(this.latentsBytes);
 					this.hashLatents = this.fromW ? lvec : LatentCode.normalize(lvec);
 				}
 				else

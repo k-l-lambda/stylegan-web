@@ -267,7 +267,7 @@
 				try {
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
 						//console.log("project value:", value);
-						const latents = LatentCode.decodeLatentsBytes(result.latentCodes[0]);
+						const latents = LatentCode.decodeFloat32(result.latentCodes[0]);
 
 						/*const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
 						const deltaMovement = lastItem ? LatentCode.distanceBetween(latents, lastItem.latents) : null;

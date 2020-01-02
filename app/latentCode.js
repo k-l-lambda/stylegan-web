@@ -7,10 +7,15 @@ function randn_bm() {
 }
 
 
-function decodeLatentsBytes (code) {
+function decodeFloat32 (code) {
 	const str = atob(decodeURIComponent(code));
 	const uint8 = str.split("").map(c => c.charCodeAt(0));
 	return new Float32Array(new Uint8Array(uint8).buffer);
+}
+
+
+function encodeFloat32 (vector) {
+	return btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(vector).buffer)));
 }
 
 
@@ -39,7 +44,8 @@ function distanceBetween(v1, v2) {
 
 export {
 	randn_bm,
-	decodeLatentsBytes,
+	decodeFloat32,
+	encodeFloat32,
 	normalize,
 	angleBetween,
 	distanceBetween,

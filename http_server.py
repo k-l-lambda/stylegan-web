@@ -8,7 +8,6 @@ import flask
 import pickle
 import PIL.Image
 import base64
-import struct
 import numpy as np
 import tensorflow as tf
 from threading import Lock
@@ -17,6 +16,7 @@ import json
 import dnnlib.tflib
 from training import misc
 from projector import Projector
+import latentCode
 
 
 
@@ -30,14 +30,6 @@ g_Lpips = None
 g_Projector = None
 g_Session = None
 g_LoadingMutex = Lock()
-
-
-def encodeLatents(latents):
-	return base64.b64encode(struct.pack('f' * latents.shape[0], *latents))
-
-
-def decodeLatents(code, len = 512):
-	return np.array(struct.unpack('f' * len, base64.b64decode(code)))
 
 
 def loadGs():
@@ -160,7 +152,7 @@ def generate():
 	gs, synthesis = loadGs()
 
 	latent_len = gs.input_shape[1]
-	latents = decodeLatents(latentsStr, latent_len).reshape([1, latent_len])
+	latents = latentCode.decodeFloat32(latentsStr, latent_len).reshape([1, latent_len])
 
 	t0 = time.time()
 
@@ -223,7 +215,8 @@ def project():
 				imgUrl = 'data:image/png;base64,%s' % base64.b64encode(fp.getvalue()).decode('ascii')
 
 				latentsList = list(dlatents.reshape((-1, dlatents.shape[2])))
-				latentCodes = list(map(lambda latents: encodeLatents(latents).decode('ascii'), latentsList))
+				latentCodes = list(map(lambda latents: latentCode.encodeFloat32(latents).decode('ascii'), latentsList))
+				#latentCodes = latentCode.encodeFixed16(dlatents.flatten()).decode('ascii')
 
 				yield json.dumps(dict(step = step, img = imgUrl, latentCodes = latentCodes)) + '\n\n'
 
