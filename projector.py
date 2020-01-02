@@ -25,6 +25,7 @@ class Projector:
         self.regularize_noise_weight    = 1e5
         self.verbose                    = False
         self.clone_net                  = True
+        self.uniform_latents            = True
 
         self._Gs                    = None
         self._minibatch_size        = None
@@ -89,10 +90,16 @@ class Projector:
 
         # Image output graph.
         self._info('Building image output graph...')
-        self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size] + list(self._dlatent_avg.shape[1:])), name='dlatents_var')
-        self._noise_in = tf.placeholder(tf.float32, [], name='noise_in')
-        dlatents_noise = tf.random.normal(shape=self._dlatents_var.shape) * self._noise_in
-        self._dlatents_expr = tf.tile(self._dlatents_var + dlatents_noise, [1, self._Gs.components.synthesis.input_shape[1], 1])
+        if self.uniform_latents:
+            self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size] + list(self._dlatent_avg.shape[1:])), name='dlatents_var')
+            self._noise_in = tf.placeholder(tf.float32, [], name='noise_in')
+            dlatents_noise = tf.random.normal(shape=self._dlatents_var.shape) * self._noise_in
+            self._dlatents_expr = tf.tile(self._dlatents_var + dlatents_noise, [1, self._Gs.components.synthesis.input_shape[1], 1])
+        else:
+            self._dlatents_var = tf.Variable(tf.zeros([self._minibatch_size, self._Gs.components.synthesis.input_shape[1], self._dlatent_avg.shape[2]]), name='dlatents_var')
+            self._noise_in = tf.placeholder(tf.float32, [], name='noise_in')
+            dlatents_noise = tf.random.normal(shape=self._dlatents_var.shape) * self._noise_in
+            self._dlatents_expr = self._dlatents_var + dlatents_noise
         self._images_expr = self._Gs.components.synthesis.get_output_for(self._dlatents_expr, randomize_noise=False)
 
         # Downsample image to 256x256 if it's larger than that. VGG was built for 224x224 images.
@@ -170,7 +177,7 @@ class Projector:
 
         # Initialize optimization state.
         self._info('Initializing optimization state...')
-        tflib.set_vars({self._target_images_var: target_images, self._dlatents_var: np.tile(self._dlatent_avg, [self._minibatch_size, 1, 1])})
+        tflib.set_vars({self._target_images_var: target_images, self._dlatents_var: np.tile(self._dlatent_avg, [self._minibatch_size, self._dlatents_var.shape[1], 1])})
         tflib.run(self._noise_init_op)
         self._opt.reset_optimizer_state()
         self._cur_step = 0
