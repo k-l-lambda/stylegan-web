@@ -26,7 +26,7 @@
 			<p v-if="focusResult">
 				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
 				<button title="save target &amp; result" class="icon" @click="save">&#x1f4be;</button>
-				<button @click="makeAnimation">GIF</button>
+				<button @click="showAnimationPanel = true">GIF</button>
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
@@ -58,11 +58,11 @@
 			</div>
 			<Navigator />
 		</main>
-		<div class="pad" v-show="showAnimationPanel" @click="showAnimationPanel = false">
-			<dialog>
+		<dialog class="pad" :open="showAnimationPanel" @click="showAnimationPanel = false">
+			<main>
 				<button @click="makeAnimation">Render</button>
-			</dialog>
-		</div>
+			</main>
+		</dialog>
 	</div>
 </template>
 
@@ -602,7 +602,7 @@
 		outline: 1em solid lightgreen;
 	}
 
-	.pad
+	dialog
 	{
 		position: fixed;
 		top: 0;
@@ -611,5 +611,14 @@
 		right: 0;
 		background-color: #ccca;
 		cursor: pointer;
+	}
+
+	dialog main
+	{
+		margin: 50vh 50vw;
+		transform: translate(-50%, -50%);
+		background-color: #fff;
+		border-radius: 2em;
+		padding: 2em;
 	}
 </style>
