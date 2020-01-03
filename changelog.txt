@@ -5,9 +5,14 @@ TODO:
 
 
 
-2020.1.2	K.L.	<k.l.lambda@gmail.com>
+2020.1.3	K.L.	<k.l.lambda@gmail.com>
+
+	>	projector.vue: fixed latent layer dimensions issue.
 
 	+	projector.vue: makeAnimation added.
+
+
+2020.1.2	K.L.	<k.l.lambda@gmail.com>
 
 	+	index.vue: added option of extend feature.
 

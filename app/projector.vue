@@ -33,7 +33,7 @@
 				<input type="checkbox" v-model="showAll" />show all
 			</p>
 		</aside>
-		<article>
+		<main>
 			<div class="target" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
@@ -57,9 +57,11 @@
 				</a>
 			</div>
 			<Navigator />
-		</article>
-		<div v-show="showGifPanel">
-
+		</main>
+		<div class="pad" v-show="showAnimationPanel" @click="showAnimationPanel = false">
+			<dialog>
+				<button @click="makeAnimation">Render</button>
+			</dialog>
 		</div>
 	</div>
 </template>
@@ -154,7 +156,7 @@
 				focusIndex: 0,
 				drageHover: false,
 				showAll: false,
-				showGifPanel: false,
+				showAnimationPanel: false,
 			};
 		},
 
@@ -304,12 +306,17 @@
 			},
 
 
+			async getSpec() {
+				return (await fetch("/spec")).json();
+			},
+
+
 			async save () {
 				const pack = new JSZip();
 
 				const TARGET_FILE_NAME = "target.png";
 
-				const spec = await (await fetch("/spec")).json();
+				const spec = await this.getSpec();
 
 				const target = await (await fetch(this.targetUrl)).blob();
 				pack.file(TARGET_FILE_NAME, target);
@@ -356,14 +363,15 @@
 				this.targetUrl = URL.createObjectURL(target);
 				this.targetName = manifest.targetName;
 
+				const spec = await this.getSpec();
+
 				if (manifest.results) {
 					this.projectedSequence = manifest.results.map((result, index) => {
 						let latentCodes = result.xlatentCode;
 						if (!latentCodes && result.latentCode) {
 							const vector = Array.from(LatentCode.decodeFloat32(result.latentCode));
-							const v18 = [].concat(...Array(18).fill(vector));
-							console.log("v18:", v18);
-							latentCodes = LatentCode.encodeFixed16(v18);
+							const vs = [].concat(...Array(spec.synthesis_input_shape[1]).fill(vector));
+							latentCodes = LatentCode.encodeFixed16(vs);
 						}
 
 						return {
@@ -592,5 +600,16 @@
 	{
 		background-color: #dfd;
 		outline: 1em solid lightgreen;
+	}
+
+	.pad
+	{
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background-color: #ccca;
+		cursor: pointer;
 	}
 </style>
