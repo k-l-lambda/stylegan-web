@@ -48,7 +48,7 @@
 				<a v-for="item of shownProjectedSequence" :key="item.index" class="item"
 					:class="{focus: item.index === focusIndex}"
 					@mouseenter="focusIndex = item.index"
-					:href="generatorLinkFromLatents(item.latentCodes[0])"
+					:href="generatorLinkFromLatents(item.latentCodes)"
 					target="_blank"
 				>
 					<sup class="index">{{item.step}}.</sup>
@@ -183,7 +183,7 @@
 					return {
 						step: item.step,
 						img: item.img,
-						editorUrl: `/#fromW=1&psi=0.5&latents=${encodeURIComponent(item.latentCodes[0])}`,
+						editorUrl: `/#fromW=1&psi=0.5&xlatents=${encodeURIComponent(item.latentCodes)}`,
 					};
 
 				return null;
@@ -267,7 +267,7 @@
 				try {
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
 						//console.log("project value:", value);
-						const latents = LatentCode.decodeLatentsBytes(result.latentCodes[0]);
+						const latents = LatentCode.decodeFixed16(result.latentCodes);
 
 						/*const lastItem = this.projectedSequence[this.projectedSequence.length - 1];
 						const deltaMovement = lastItem ? LatentCode.distanceBetween(latents, lastItem.latents) : null;
@@ -294,7 +294,7 @@
 
 
 			generatorLinkFromLatents(latents) {
-				return `/generate?fromW=1&latents=${encodeURIComponent(latents)}`;
+				return `/generate?fromW=1&xlatents=${encodeURIComponent(latents)}`;
 			},
 
 
@@ -321,7 +321,7 @@
 					results: [
 						{
 							step: focusItem.step,
-							latentCode: focusItem.latentCodes[0],
+							xlatentCode: focusItem.latentCodes,
 						},
 					],
 				};
@@ -351,12 +351,22 @@
 				this.targetName = manifest.targetName;
 
 				if (manifest.results) {
-					this.projectedSequence = manifest.results.map((result, index) => ({
-						index,
-						step: result.step,
-						latentCodes: [result.latentCode],
-						img: this.generatorLinkFromLatents(result.latentCode),
-					}));
+					this.projectedSequence = manifest.results.map((result, index) => {
+						let latentCodes = result.xlatentCode;
+						if (!latentCodes && result.latentCode) {
+							const vector = Array.from(LatentCode.decodeFloat32(result.latentCode));
+							const v18 = [].concat(...Array(18).fill(vector));
+							console.log("v18:", v18);
+							latentCodes = LatentCode.encodeFixed16(v18);
+						}
+
+						return {
+							index,
+							step: result.step,
+							latentCodes,
+							img: this.generatorLinkFromLatents(latentCodes),
+						};
+					});
 
 					this.focusIndex = this.projectedSequence.length - 1;
 				}

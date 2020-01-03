@@ -1,6 +1,17 @@
 
 TODO:
+	lerp on extend features
+	projector: gif capture
 
+
+
+2020.1.2	K.L.	<k.l.lambda@gmail.com>
+
+	+	index.vue: added option of extend feature.
+
+	+	projector.vue: use fix16 extended latent code.
+
+	+	projector.py: added parameter of uniform_latents.
 
 
 2019.12.29	K.L.	<k.l.lambda@gmail.com>

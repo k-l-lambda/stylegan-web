@@ -7,10 +7,28 @@ function randn_bm() {
 }
 
 
-function decodeLatentsBytes (code) {
+function encodeFloat32 (vector) {
+	return btoa(String.fromCharCode.apply(null, new Uint8Array(new Float32Array(vector).buffer)));
+}
+
+
+function decodeFloat32 (code) {
 	const str = atob(decodeURIComponent(code));
 	const uint8 = str.split("").map(c => c.charCodeAt(0));
 	return new Float32Array(new Uint8Array(uint8).buffer);
+}
+
+
+function encodeFixed16 (vector) {
+	return btoa(String.fromCharCode.apply(null, new Uint8Array(new Int16Array(vector.map(x => Math.floor(Math.min(Math.max(x, -32), 32 - 1e-9) * 1024))).buffer)));
+}
+
+
+function decodeFixed16 (code) {
+	const str = atob(decodeURIComponent(code));
+	const uint8 = str.split("").map(c => c.charCodeAt(0));
+	const int16 = new Int16Array(new Uint8Array(uint8).buffer);
+	return Array.from(int16).map(x => x / 1024);
 }
 
 
@@ -39,7 +57,10 @@ function distanceBetween(v1, v2) {
 
 export {
 	randn_bm,
-	decodeLatentsBytes,
+	decodeFloat32,
+	encodeFloat32,
+	encodeFixed16,
+	decodeFixed16,
 	normalize,
 	angleBetween,
 	distanceBetween,

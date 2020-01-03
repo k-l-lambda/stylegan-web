@@ -108,5 +108,7 @@ Key							| Description							| Default Value
 **MODEL_NAME**				| Name for the generator model to load, this can be overwrite by the first argument of *[start script](./package.json#L7)*.	| *ffhq*
 **MODEL_PATH_LPIPS**		| File path for LPIPS model.			| *./models/vgg16_zhang_perceptual.pkl*
 **MODEL_PATH_***			| Generator network file path dictionary. See [examples](#model-paths-example).	|
-**REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter.	| *1e5*
+**REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter. Float.	| *1e5*
+**INITIAL_NOISE_FACTOR**	| Projector training hyperparameter. Float.	| *0.05*
+**UNIFORM_LATENTS**			| Use uniform latents for all feature layers (consistent with origin StyleGAN2 paper). Boolean, 0 or 1	| *0*
 **LPIPS_IMAGE_SHAPE**		| LPIPS image input shape.				| *256,256*
