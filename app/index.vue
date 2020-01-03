@@ -236,7 +236,7 @@
 			imageURL () {
 				const latentStr = this.useXLatents ? `xlatents=${this.latentsBytesEx}` : `latents=${this.latentsBytes}`;
 
-				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? '' : '&randomize_noise=1'}&${latentStr}`;
+				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? "&randomize_noise=1" : ""}&${latentStr}`;
 			},
 
 
