@@ -26,6 +26,7 @@
 			<p v-if="focusResult">
 				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
 				<button title="save target &amp; result" class="icon" @click="save">&#x1f4be;</button>
+				<button @click="makeAnimation">GIF</button>
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
@@ -52,16 +53,20 @@
 					target="_blank"
 				>
 					<sup class="index">{{item.step}}.</sup>
-					<img :src="item.img" />
+					<img ref="sequenceImages" :src="item.img" />
 				</a>
 			</div>
 			<Navigator />
 		</article>
+		<div v-show="showGifPanel">
+
+		</div>
 	</div>
 </template>
 
 <script>
 	import JSZip from "jszip";
+	import GIF from "gif.js.optimized";
 
 	import StoreInput from "./storeinput.vue";
 	import Navigator from "./navigator.vue";
@@ -149,6 +154,7 @@
 				focusIndex: 0,
 				drageHover: false,
 				showAll: false,
+				showGifPanel: false,
 			};
 		},
 
@@ -372,6 +378,28 @@
 				}
 
 				console.log("Done.");
+			},
+
+
+			async makeAnimation() {
+				const gif = new GIF({
+					workers: 2,
+					workerScript: "/gif.worker.js",
+					width: 1024,
+					height: 1024,
+				});
+
+				for (const img of this.$refs.sequenceImages)
+					gif.addFrame(img, {delay: 16});
+
+				const image = await new Promise(resolve => {
+					gif.on("finished", resolve);
+					gif.render();
+				});
+				const imageUrl = URL.createObjectURL(image);
+				console.log("gif:", imageUrl);
+
+				window.open(imageUrl, "_BLANK");
 			},
 		},
 

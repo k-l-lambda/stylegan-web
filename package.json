@@ -8,6 +8,7 @@
 		"start3": "python3 ./http_server.py"
 	},
 	"devDependencies": {
+		"gif.js.optimized": "^1.0.1",
 		"jszip": "^3.2.2",
 		"rollup": "^1.6.0",
 		"rollup-plugin-alias": "^1.5.1",
