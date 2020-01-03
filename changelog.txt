@@ -7,6 +7,8 @@ TODO:
 
 2020.1.3	K.L.	<k.l.lambda@gmail.com>
 
+	>	index.vue: fixed latent layer dimensions issue.
+
 	>	projector.vue: fixed latent layer dimensions issue.
 
 	+	projector.vue: makeAnimation added.
