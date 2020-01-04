@@ -58,8 +58,9 @@
 			</div>
 			<Navigator />
 		</main>
-		<dialog class="pad" :open="showAnimationPanel" @click="showAnimationPanel = false">
+		<dialog class="animation" :open="showAnimationPanel" @click="showAnimationPanel = false">
 			<main @click.stop="">
+				<canvas ref="canvas" v-show="false" />
 				<p>
 					<section>
 						Duration: <input type="number" v-model="animationDuration" min="100" :style="{width: '4em'}" />ms
@@ -69,10 +70,19 @@
 					</section>
 				</p>
 				<p>
+					Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+				</p>
+				<p>
 					<button @click="makeAnimation" :disabled="renderingAnimation">{{renderingAnimation ? `Rendering ${animationRenderProgress} / ${projectedSequence.length}` : "Render"}}</button>
 				</p>
 				<p>
 					<img v-if="animationUrl" :src="animationUrl" />
+				</p>
+				<p>
+					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length}.gif`" :href="animationUrl">
+						&#x2193;
+						<span v-if="animationSize" class="size">(<em>{{animationSize.toLocaleString()}}</em> bytes)</span>
+					</a>
 				</p>
 			</main>
 		</dialog>
@@ -173,6 +183,8 @@
 				animationRenderProgress: null,
 				animationUrl: null,
 				animationFrameInterval: 1000 / 30,
+				animationDimensions: null,
+				animationSize: null,
 			};
 		},
 
@@ -436,16 +448,30 @@
 			async makeAnimation() {
 				const spec = await this.getSpec();
 
+				this.$refs.canvas.width = this.animationDimensions;
+				this.$refs.canvas.height = Math.round(this.animationDimensions * spec.image_shape[3] / spec.image_shape[2]);
+				const ctx = this.$refs.canvas.getContext("2d");
+				const img = new Image();
+
 				const gif = new GIF({
 					workers: 2,
 					workerScript: "/gif.worker.js",
-					width: spec.image_shape[2],
-					height: spec.image_shape[3],
+					width: this.$refs.canvas.width,
+					height: this.$refs.canvas.height,
 				});
 
 				this.animationRenderProgress = 0;
-				for (const img of this.$refs.sequenceImages) {
-					gif.addFrame(img, {delay: this.animationRenderProgress ? this.animationFrameInterval : 1000});
+				this.animationSize = null;
+				this.animationUrl = null;
+
+				for (const item of this.projectedSequence) {
+					await new Promise(resoved => {
+						img.onload = resoved;
+						img.src = item.img;
+					});
+					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
+
+					gif.addFrame(ctx, {copy: true, delay: this.animationRenderProgress < this.projectedSequence.length - 1 ? this.animationFrameInterval : 1000});
 
 					++this.animationRenderProgress;
 				}
@@ -455,6 +481,7 @@
 					gif.on("finished", resolve);
 					gif.render();
 				});
+				this.animationSize = image.size;
 				this.animationUrl = URL.createObjectURL(image);
 			},
 		},
@@ -475,6 +502,19 @@
 
 			targetName(value) {
 				document.title = value ? `${this.originTitle} - ${value}` : this.originTitle;
+			},
+
+
+			async showAnimationPanel (value) {
+				if (value) {
+					const spec = await this.getSpec();
+					this.animationDimensions = spec.image_shape[2];
+				}
+			},
+
+
+			animationDimensions () {
+				this.animationSize = null;
 			},
 		},
 	};
@@ -681,5 +721,10 @@
 	{
 		display: inline-block;
 		margin: 0 1em;
+	}
+
+	.animation .size
+	{
+		font-size: 80%;
 	}
 </style>
