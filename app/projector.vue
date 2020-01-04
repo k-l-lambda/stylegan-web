@@ -331,12 +331,11 @@
 					model: spec.model,
 					targetName: this.targetName,
 					targetFile: TARGET_FILE_NAME,
-					results: [
-						{
-							step: focusItem.step,
-							xlatentCode: focusItem.latentCodes,
-						},
-					],
+					results: this.shownProjectedSequence.map(item => ({
+						step: item.step,
+						xlatentCode: item.latentCodes,
+						key: item.key,
+					})).sort((i1, i2) => i1.step - i2.step),
 				};
 				const manifestBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
 				pack.file("manifest.json", manifestBlob);
@@ -379,6 +378,7 @@
 							step: result.step,
 							latentCodes,
 							img: this.generatorLinkFromLatents(latentCodes),
+							key: result.key,
 						};
 					});
 
