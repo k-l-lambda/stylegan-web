@@ -327,6 +327,7 @@
 
 				this.running = true;
 				this.projectedSequence = [];
+				this.animationUrl = null;
 
 				try {
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
@@ -475,12 +476,13 @@
 
 					++this.animationRenderProgress;
 				}
-				this.animationRenderProgress = null;
 
 				const image = await new Promise(resolve => {
 					gif.on("finished", resolve);
 					gif.render();
 				});
+
+				this.animationRenderProgress = null;
 				this.animationSize = image.size;
 				this.animationUrl = URL.createObjectURL(image);
 			},
@@ -515,6 +517,11 @@
 
 			animationDimensions () {
 				this.animationSize = null;
+			},
+
+
+			targetUrl () {
+				this.animationUrl = null;
 			},
 		},
 	};
