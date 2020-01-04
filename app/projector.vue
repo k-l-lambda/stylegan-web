@@ -59,8 +59,21 @@
 			<Navigator />
 		</main>
 		<dialog class="pad" :open="showAnimationPanel" @click="showAnimationPanel = false">
-			<main>
-				<button @click="makeAnimation">Render</button>
+			<main @click.stop="">
+				<p>
+					<section>
+						Duration: <input type="number" v-model="animationDuration" min="100" :style="{width: '4em'}" />ms
+					</section>
+					<section>
+						Frame rate: <input type="number" v-model="animationFPS" min="1" :style="{width: '3em'}" />fps
+					</section>
+				</p>
+				<p>
+					<button @click="makeAnimation" :disabled="renderingAnimation">{{renderingAnimation ? `Rendering ${animationRenderProgress} / ${projectedSequence.length}` : "Render"}}</button>
+				</p>
+				<p>
+					<img v-if="animationUrl" :src="animationUrl" />
+				</p>
 			</main>
 		</dialog>
 	</div>
@@ -157,6 +170,9 @@
 				drageHover: false,
 				showAll: false,
 				showAnimationPanel: false,
+				animationRenderProgress: null,
+				animationUrl: null,
+				animationFrameInterval: 1000 / 30,
 			};
 		},
 
@@ -195,6 +211,34 @@
 					};
 
 				return null;
+			},
+
+
+			renderingAnimation () {
+				return Number.isFinite(this.animationRenderProgress);
+			},
+
+
+			animationDuration: {
+				get () {
+					return Math.round(this.projectedSequence.length * this.animationFrameInterval);
+				},
+
+				set (value) {
+					if (this.projectedSequence.length)
+						this.animationFrameInterval = value / this.projectedSequence.length;
+				},
+			},
+
+
+			animationFPS: {
+				get () {
+					return Math.round(1000 / this.animationFrameInterval);
+				},
+
+				set (value) {
+					this.animationFrameInterval = 1000 / value;
+				},
 			},
 		},
 
@@ -390,24 +434,28 @@
 
 
 			async makeAnimation() {
+				const spec = await this.getSpec();
+
 				const gif = new GIF({
 					workers: 2,
 					workerScript: "/gif.worker.js",
-					width: 1024,
-					height: 1024,
+					width: spec.image_shape[2],
+					height: spec.image_shape[3],
 				});
 
-				for (const img of this.$refs.sequenceImages)
-					gif.addFrame(img, {delay: 16});
+				this.animationRenderProgress = 0;
+				for (const img of this.$refs.sequenceImages) {
+					gif.addFrame(img, {delay: this.animationRenderProgress ? this.animationFrameInterval : 1000});
+
+					++this.animationRenderProgress;
+				}
+				this.animationRenderProgress = null;
 
 				const image = await new Promise(resolve => {
 					gif.on("finished", resolve);
 					gif.render();
 				});
-				const imageUrl = URL.createObjectURL(image);
-				console.log("gif:", imageUrl);
-
-				window.open(imageUrl, "_BLANK");
+				this.animationUrl = URL.createObjectURL(image);
 			},
 		},
 
@@ -606,19 +654,32 @@
 	{
 		position: fixed;
 		top: 0;
-		bottom: 0;
+		height: 100%;
 		left: 0;
-		right: 0;
+		width: 100%;
 		background-color: #ccca;
 		cursor: pointer;
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
 	dialog main
 	{
-		margin: 50vh 50vw;
+		position: absolute;
+		top: 50%;
+		left: 50%;
 		transform: translate(-50%, -50%);
 		background-color: #fff;
 		border-radius: 2em;
 		padding: 2em;
+		cursor: default;
+		text-align: center;
+	}
+
+	p section
+	{
+		display: inline-block;
+		margin: 0 1em;
 	}
 </style>
