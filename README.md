@@ -21,6 +21,12 @@ You can save the projection result in a zip package, and this page can accept pr
 ![Projector Demo 1](./documents/projector-demo1.png)
 ![Projector Demo 2](./documents/projector-demo2.png)
 
+#### Projection animation exporting
+
+<p align="center">
+<img src="./documents/cat-roundeyes.png" valign="middle" /> &nbsp;&nbsp;&#x2b60;&nbsp;&nbsp; <img src="./documents/cat-roundeyes-projection-1000.gif" valign="middle" />
+</p>
+
 ## Run Web Server
 
 ```.bash
