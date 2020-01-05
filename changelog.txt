@@ -1,8 +1,23 @@
 
 TODO:
 	lerp on extend features
-	projector: gif capture
 
+
+
+2020.1.4	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: animation panel implemented.
+
+	+	projector.vue: save all latent codes in archive package.
+
+
+2020.1.3	K.L.	<k.l.lambda@gmail.com>
+
+	>	index.vue: fixed latent layer dimensions issue.
+
+	>	projector.vue: fixed latent layer dimensions issue.
+
+	+	projector.vue: makeAnimation added.
 
 
 2020.1.2	K.L.	<k.l.lambda@gmail.com>

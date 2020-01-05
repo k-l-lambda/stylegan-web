@@ -26,13 +26,14 @@
 			<p v-if="focusResult">
 				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
 				<button title="save target &amp; result" class="icon" @click="save">&#x1f4be;</button>
+				<button @click="showAnimationPanel = true">GIF</button>
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
 				<input type="checkbox" v-model="showAll" />show all
 			</p>
 		</aside>
-		<article>
+		<main>
 			<div class="target" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
@@ -52,16 +53,47 @@
 					target="_blank"
 				>
 					<sup class="index">{{item.step}}.</sup>
-					<img :src="item.img" />
+					<img ref="sequenceImages" :src="item.img" />
 				</a>
 			</div>
 			<Navigator />
-		</article>
+		</main>
+		<dialog class="animation" :open="showAnimationPanel" @click="showAnimationPanel = false">
+			<main @click.stop="">
+				<canvas ref="canvas" v-show="false" />
+				<p>
+					<section>
+						Duration: <input type="number" v-model="animationDuration" min="100" :style="{width: '4em'}" />ms
+					</section>
+					<section>
+						Frame rate: <input type="number" v-model="animationFPS" min="1" :style="{width: '3em'}" />fps
+					</section>
+				</p>
+				<p>
+					Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+				</p>
+				<p>
+					<button @click="makeAnimation" :disabled="renderingAnimation">
+						{{renderingAnimation ? (animationRenderProgress < projectedSequence.length ? `Copying ${animationRenderProgress} / ${projectedSequence.length}` : "Rendering...") : "Render"}}
+					</button>
+				</p>
+				<p>
+					<img v-if="animationUrl" :src="animationUrl" />
+				</p>
+				<p>
+					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length}.gif`" :href="animationUrl">
+						&#x2193;
+						<span v-if="animationSize" class="size">(<em>{{animationSize.toLocaleString()}}</em> bytes)</span>
+					</a>
+				</p>
+			</main>
+		</dialog>
 	</div>
 </template>
 
 <script>
 	import JSZip from "jszip";
+	import GIF from "gif.js.optimized";
 
 	import StoreInput from "./storeinput.vue";
 	import Navigator from "./navigator.vue";
@@ -149,6 +181,12 @@
 				focusIndex: 0,
 				drageHover: false,
 				showAll: false,
+				showAnimationPanel: false,
+				animationRenderProgress: null,
+				animationUrl: null,
+				animationFrameInterval: 1000 / 30,
+				animationDimensions: null,
+				animationSize: null,
 			};
 		},
 
@@ -187,6 +225,34 @@
 					};
 
 				return null;
+			},
+
+
+			renderingAnimation () {
+				return Number.isFinite(this.animationRenderProgress);
+			},
+
+
+			animationDuration: {
+				get () {
+					return Math.round(this.projectedSequence.length * this.animationFrameInterval);
+				},
+
+				set (value) {
+					if (this.projectedSequence.length)
+						this.animationFrameInterval = value / this.projectedSequence.length;
+				},
+			},
+
+
+			animationFPS: {
+				get () {
+					return Math.round(1000 / this.animationFrameInterval);
+				},
+
+				set (value) {
+					this.animationFrameInterval = 1000 / value;
+				},
 			},
 		},
 
@@ -263,6 +329,7 @@
 
 				this.running = true;
 				this.projectedSequence = [];
+				this.animationUrl = null;
 
 				try {
 					for await (const result of projectImage(target, {steps: this.projectSteps, yieldInterval: this.projectYieldInterval})) {
@@ -298,12 +365,17 @@
 			},
 
 
+			async getSpec() {
+				return (await fetch("/spec")).json();
+			},
+
+
 			async save () {
 				const pack = new JSZip();
 
 				const TARGET_FILE_NAME = "target.png";
 
-				const spec = await (await fetch("/spec")).json();
+				const spec = await this.getSpec();
 
 				const target = await (await fetch(this.targetUrl)).blob();
 				pack.file(TARGET_FILE_NAME, target);
@@ -318,12 +390,11 @@
 					model: spec.model,
 					targetName: this.targetName,
 					targetFile: TARGET_FILE_NAME,
-					results: [
-						{
-							step: focusItem.step,
-							xlatentCode: focusItem.latentCodes,
-						},
-					],
+					results: this.shownProjectedSequence.map(item => ({
+						step: item.step,
+						xlatentCode: item.latentCodes,
+						key: item.key,
+					})).sort((i1, i2) => i1.step - i2.step),
 				};
 				const manifestBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
 				pack.file("manifest.json", manifestBlob);
@@ -350,14 +421,15 @@
 				this.targetUrl = URL.createObjectURL(target);
 				this.targetName = manifest.targetName;
 
+				const spec = await this.getSpec();
+
 				if (manifest.results) {
 					this.projectedSequence = manifest.results.map((result, index) => {
 						let latentCodes = result.xlatentCode;
 						if (!latentCodes && result.latentCode) {
 							const vector = Array.from(LatentCode.decodeFloat32(result.latentCode));
-							const v18 = [].concat(...Array(18).fill(vector));
-							console.log("v18:", v18);
-							latentCodes = LatentCode.encodeFixed16(v18);
+							const vs = [].concat(...Array(spec.synthesis_input_shape[1]).fill(vector));
+							latentCodes = LatentCode.encodeFixed16(vs);
 						}
 
 						return {
@@ -365,6 +437,7 @@
 							step: result.step,
 							latentCodes,
 							img: this.generatorLinkFromLatents(latentCodes),
+							key: result.key,
 						};
 					});
 
@@ -372,6 +445,48 @@
 				}
 
 				console.log("Done.");
+			},
+
+
+			async makeAnimation() {
+				const spec = await this.getSpec();
+
+				this.$refs.canvas.width = this.animationDimensions;
+				this.$refs.canvas.height = Math.round(this.animationDimensions * spec.image_shape[3] / spec.image_shape[2]);
+				const ctx = this.$refs.canvas.getContext("2d");
+				const img = new Image();
+
+				const gif = new GIF({
+					workers: 2,
+					workerScript: "/gif.worker.js",
+					width: this.$refs.canvas.width,
+					height: this.$refs.canvas.height,
+				});
+
+				this.animationRenderProgress = 0;
+				this.animationSize = null;
+				this.animationUrl = null;
+
+				for (const item of this.projectedSequence) {
+					await new Promise(resoved => {
+						img.onload = resoved;
+						img.src = item.img;
+					});
+					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
+
+					gif.addFrame(ctx, {copy: true, delay: this.animationRenderProgress < this.projectedSequence.length - 1 ? this.animationFrameInterval : 1000});
+
+					++this.animationRenderProgress;
+				}
+
+				const image = await new Promise(resolve => {
+					gif.on("finished", resolve);
+					gif.render();
+				});
+
+				this.animationRenderProgress = null;
+				this.animationSize = image.size;
+				this.animationUrl = URL.createObjectURL(image);
 			},
 		},
 
@@ -391,6 +506,24 @@
 
 			targetName(value) {
 				document.title = value ? `${this.originTitle} - ${value}` : this.originTitle;
+			},
+
+
+			async showAnimationPanel (value) {
+				if (value) {
+					const spec = await this.getSpec();
+					this.animationDimensions = spec.image_shape[2];
+				}
+			},
+
+
+			animationDimensions () {
+				this.animationSize = null;
+			},
+
+
+			targetUrl () {
+				this.animationUrl = null;
 			},
 		},
 	};
@@ -564,5 +697,43 @@
 	{
 		background-color: #dfd;
 		outline: 1em solid lightgreen;
+	}
+
+	dialog
+	{
+		position: fixed;
+		top: 0;
+		height: 100%;
+		left: 0;
+		width: 100%;
+		background-color: #ccca;
+		cursor: pointer;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	dialog main
+	{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: #fff;
+		border-radius: 2em;
+		padding: 2em;
+		cursor: default;
+		text-align: center;
+	}
+
+	p section
+	{
+		display: inline-block;
+		margin: 0 1em;
+	}
+
+	.animation .size
+	{
+		font-size: 80%;
 	}
 </style>

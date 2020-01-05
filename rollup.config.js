@@ -28,6 +28,7 @@ export default [
 		alias({
 			vue: require.resolve("vue/dist/vue.runtime.esm.js"),
 			jszip: require.resolve("jszip/dist/jszip.min.js"),
+			"gif.js.optimized": require.resolve("gif.js.optimized/dist/gif.js"),
 		}),
 	],
 }));

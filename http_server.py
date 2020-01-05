@@ -135,7 +135,11 @@ def spec():
 	global model_name
 	model, _ = loadGs()
 
-	return dict(model = model_name, latents_dimensions = model.input_shape[1])
+	return dict(
+		model = model_name,
+		latents_dimensions = model.input_shape[1],
+		image_shape = model.output_shape,
+		synthesis_input_shape = model.components.synthesis.input_shape)
 
 
 @app.route('/generate', methods=['GET'])

@@ -59,7 +59,7 @@
 		</header>
 		<aside>
 			<select v-show="useXLatents" class="layer" v-model="shownLayer" title="layer index">
-				<option v-for="index of 18" :key="index" :value="index - 1">{{index - 1}}</option>
+				<option v-for="index of latentsLayers" :key="index" :value="index - 1">{{index - 1}}</option>
 			</select>
 			<p>
 				<span class="scales">
@@ -141,6 +141,7 @@
 			return {
 				model: null,
 				latents_dimensions: null,
+				latentsLayers: 0,
 				features: null,
 				featuresEx: null,
 				psi: 0.5,
@@ -268,15 +269,16 @@
 
 			this.initializing = true;
 			const res = await fetch("/spec");
-			const spec = await res.json();
-			console.log("spec:", spec);
+			this.spec = await res.json();
+			console.log("model spec:", this.spec);
+
+			this.latents_dimensions = this.spec.latents_dimensions;
+			this.latentsLayers = this.spec.synthesis_input_shape[1];
 
 			this.initializing = false;
 
-			Object.assign(this, spec);
-
-			this.features = Array(spec.latents_dimensions).fill().map(() => new Feature(0));
-			this.featuresEx = Array(spec.latents_dimensions * 18).fill().map(() => new Feature(0));
+			this.features = Array(this.spec.latents_dimensions).fill().map(() => new Feature(0));
+			this.featuresEx = Array(this.spec.latents_dimensions * this.latentsLayers).fill().map(() => new Feature(0));
 
 			window.onhashchange = () => this.loadHash();
 
