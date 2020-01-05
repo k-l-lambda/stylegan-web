@@ -102,7 +102,7 @@
 
 
 
-	const MOVEMENT_THRESHOLD = 4;
+	const MOVEMENT_THRESHOLD = 16;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
