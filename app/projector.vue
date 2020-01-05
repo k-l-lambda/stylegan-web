@@ -73,7 +73,9 @@
 					Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
 				</p>
 				<p>
-					<button @click="makeAnimation" :disabled="renderingAnimation">{{renderingAnimation ? `Rendering ${animationRenderProgress} / ${projectedSequence.length}` : "Render"}}</button>
+					<button @click="makeAnimation" :disabled="renderingAnimation">
+						{{renderingAnimation ? (animationRenderProgress < projectedSequence.length ? `Copying ${animationRenderProgress} / ${projectedSequence.length}` : "Rendering...") : "Render"}}
+					</button>
 				</p>
 				<p>
 					<img v-if="animationUrl" :src="animationUrl" />
