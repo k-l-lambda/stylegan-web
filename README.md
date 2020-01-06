@@ -21,10 +21,22 @@ You can save the projection result in a zip package, and this page can accept pr
 ![Projector Demo 1](./documents/projector-demo1.png)
 ![Projector Demo 2](./documents/projector-demo2.png)
 
-#### Projection animation exporting
+#### W latent space extension
+
+We added a env switch of `UNIFORM_LATENTS` to denote use uniform or separated W latent code when projecting image. This is the results comparison (center is the target):
 
 <p align="center">
-<img src="./documents/cat-roundeyes.png" valign="middle" /> &nbsp;&nbsp;&#x2b60;&nbsp;&nbsp; <img src="./documents/cat-roundeyes-projection-1000.gif" valign="middle" />
+<img src="./documents/ffhq-cover-girl-projection-w.jpg" alt="W latents result" valign="middle" /> &nbsp;&nbsp;&#x21e8;&nbsp;&nbsp; 
+<img src="./documents/ffhq-cover-girl.jpg" alt="target image" valign="middle" /> &nbsp;&nbsp;&#x21e6;&nbsp;&nbsp; 
+<img src="./documents/ffhq-cover-girl-projection-w+.jpg" alt="W+ latents result" valign="middle" />
+</p>
+
+#### Projection animation exporting
+
+You can also export image projection result sequence as a gif animation:
+
+<p align="center">
+<img src="./documents/cat-roundeyes.png" valign="middle" /> &nbsp;&nbsp;&#x21e6;&nbsp;&nbsp; <img src="./documents/cat-roundeyes-projection-1000.gif" valign="middle" />
 </p>
 
 ## Run Web Server
