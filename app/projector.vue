@@ -30,7 +30,7 @@
 			<p>
 				<input type="text" v-model="targetName" placeholder="target name" :style="{width: '8em'}" />
 				<button title="save target &amp; result" class="icon" @click="save" :disabled="!focusResult">&#x1f4be;</button>
-				<button @click="showAnimationPanel = true" disabled="!projectedSequence.length">GIF</button>
+				<button @click="showAnimationPanel = true" :disabled="!projectedSequence.length">GIF</button>
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
