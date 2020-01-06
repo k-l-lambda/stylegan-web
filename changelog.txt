@@ -1,7 +1,13 @@
 
 TODO:
 	lerp on extend features
+	feature merger page
 
+
+
+2020.1.6	K.L.	<k.l.lambda@gmail.com>
+
+	+	porjector.vue: target name control added.
 
 
 2020.1.4	K.L.	<k.l.lambda@gmail.com>
