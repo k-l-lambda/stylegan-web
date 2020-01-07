@@ -41,7 +41,7 @@ class Projector:
         self._images_expr           = None
         self._target_images_var     = None
         self._lpips                 = None
-        self._dist                  = None
+        self._perceptual_dist       = None
         self._euclidean_dist        = None
         self._loss                  = None
         self._reg_sizes             = None
@@ -119,12 +119,14 @@ class Projector:
         self._lpips = lpips
         if self._lpips is None:
             self._lpips = misc.load_pkl('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2') # vgg16_zhang_perceptual.pkl
-        self._dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
+        self._perceptual_dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
+        perceptual_dist_mag = tf.reduce_sum(self._perceptual_dist)
 
         # Euclidean distance
-        self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
+        #self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
+        self._euclidean_dist = tf.math.sqrt(tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.)))
 
-        self._loss = tf.reduce_sum(self._dist) + self.euclidean_dist_weight * self._euclidean_dist
+        self._loss = perceptual_dist_mag + self.euclidean_dist_weight * self._euclidean_dist
 
         # Noise regularization graph.
         self._info('Building noise regularization graph...')
@@ -168,6 +170,11 @@ class Projector:
             self.step()
             yield self._cur_step
 
+            '''if self._cur_step % 10 == 0:
+                pd = self._perceptual_dist.eval({self._noise_in: 0})
+                ed = self._euclidean_dist.eval({self._noise_in: 0})
+                print('\tdist:', pd, ed, ed / pd[0])'''
+
     def start(self, target_images):
         assert self._Gs is not None
 
@@ -206,7 +213,7 @@ class Projector:
 
         # Train.
         feed_dict = {self._noise_in: noise_strength, self._lrate_in: learning_rate}
-        _, dist_value, loss_value = tflib.run([self._opt_step, self._dist, self._loss], feed_dict)
+        _, dist_value, loss_value = tflib.run([self._opt_step, self._perceptual_dist, self._loss], feed_dict)
         tflib.run(self._noise_normalize_op)
 
         # Print status.
