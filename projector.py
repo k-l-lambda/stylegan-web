@@ -23,6 +23,7 @@ class Projector:
         self.lr_rampup_length           = 0.05
         self.noise_ramp_length          = 0.75
         self.regularize_noise_weight    = 1e5
+        self.euclidean_dist_weight      = 1
         self.verbose                    = False
         self.clone_net                  = True
         self.uniform_latents            = True
@@ -41,6 +42,7 @@ class Projector:
         self._target_images_var     = None
         self._lpips                 = None
         self._dist                  = None
+        self._euclidean_dist        = None
         self._loss                  = None
         self._reg_sizes             = None
         self._lrate_in              = None
@@ -113,11 +115,16 @@ class Projector:
         self._info('Building loss graph...')
         self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
         #print('_target_images_var:', self._target_images_var.shape)
+        #print('_images_expr:', self._images_expr.shape)
         self._lpips = lpips
         if self._lpips is None:
             self._lpips = misc.load_pkl('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2') # vgg16_zhang_perceptual.pkl
         self._dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
-        self._loss = tf.reduce_sum(self._dist)
+
+        # Euclidean distance
+        self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
+
+        self._loss = tf.reduce_sum(self._dist) + self.euclidean_dist_weight * self._euclidean_dist
 
         # Noise regularization graph.
         self._info('Building noise regularization graph...')
