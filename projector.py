@@ -11,6 +11,16 @@ import dnnlib.tflib as tflib
 
 from training import misc
 
+
+
+def downSampleImage(image, dimension):
+    sh = image.shape.as_list()
+    if sh[2] > dimension:
+        factor = sh[2] // dimension
+        return tf.reduce_mean(tf.reshape(image, [-1, sh[1], sh[2] // factor, factor, sh[2] // factor, factor]), axis=[3,5])
+
+    return image
+
 #----------------------------------------------------------------------------
 
 class Projector:
@@ -106,25 +116,25 @@ class Projector:
 
         # Downsample image to 256x256 if it's larger than that. VGG was built for 224x224 images.
         proc_images_expr = (self._images_expr + 1) * (255 / 2)
-        sh = proc_images_expr.shape.as_list()
-        if sh[2] > 256:
-            factor = sh[2] // 256
-            proc_images_expr = tf.reduce_mean(tf.reshape(proc_images_expr, [-1, sh[1], sh[2] // factor, factor, sh[2] // factor, factor]), axis=[3,5])
+        proc_images_expr = downSampleImage(proc_images_expr, 256)
 
         # Loss graph.
         self._info('Building loss graph...')
-        self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
+        self._target_images_var = tf.Variable(tf.zeros(self._images_expr.shape), name='target_images_var')
+        downsampled_target_image = downSampleImage(self._target_images_var, 256)
+        downsampled_target_image = (downsampled_target_image + 1) * (255 / 2)
+
         #print('_target_images_var:', self._target_images_var.shape)
         #print('_images_expr:', self._images_expr.shape)
         self._lpips = lpips
         if self._lpips is None:
             self._lpips = misc.load_pkl('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2') # vgg16_zhang_perceptual.pkl
-        self._perceptual_dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
+        self._perceptual_dist = self._lpips.get_output_for(proc_images_expr, downsampled_target_image)
         perceptual_dist_mag = tf.reduce_sum(self._perceptual_dist)
 
         # Euclidean distance
         #self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
-        self._euclidean_dist = tf.math.sqrt(tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.)))
+        self._euclidean_dist = tf.math.sqrt(tf.reduce_mean(tf.math.square((self._target_images_var - self._images_expr) / 2.)))
 
         self._loss = perceptual_dist_mag + self.euclidean_dist_weight * self._euclidean_dist
 
@@ -170,10 +180,11 @@ class Projector:
             self.step()
             yield self._cur_step
 
-            '''if self._cur_step % 10 == 0:
-                pd = self._perceptual_dist.eval({self._noise_in: 0})
-                ed = self._euclidean_dist.eval({self._noise_in: 0})
-                print('\tdist:', pd, ed, ed / pd[0])'''
+            if self.verbose:
+                if self._cur_step % 10 == 0:
+                    pd = self._perceptual_dist.eval({self._noise_in: 0})
+                    ed = self._euclidean_dist.eval({self._noise_in: 0})
+                    print('\tdist:', pd, ed, ed / pd[0])
 
     def start(self, target_images):
         assert self._Gs is not None
@@ -181,7 +192,7 @@ class Projector:
         # Prepare target images.
         self._info('Preparing target images...')
         target_images = np.asarray(target_images, dtype='float32')
-        target_images = (target_images + 1) * (255 / 2)
+        #target_images = (target_images + 1) * (255 / 2)
         sh = target_images.shape
         #print('sh:', sh)
         assert sh[0] == self._minibatch_size
