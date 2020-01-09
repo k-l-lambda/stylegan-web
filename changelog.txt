@@ -8,6 +8,8 @@ TODO:
 
 2020.1.9	K.L.	<k.l.lambda@gmail.com>
 
+	*!	Eulidean loss lead to blur result.
+
 	+	projector.py: use origin generator resolution for eulidean distance loss.
 
 

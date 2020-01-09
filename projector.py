@@ -134,7 +134,7 @@ class Projector:
 
         # Euclidean distance
         #self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
-        self._euclidean_dist = tf.math.sqrt(tf.reduce_mean(tf.math.square((self._target_images_var - self._images_expr) / 2.)))
+        self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - self._images_expr) / 2.)) ** 0.5
 
         self._loss = perceptual_dist_mag + self.euclidean_dist_weight * self._euclidean_dist
 
@@ -179,12 +179,6 @@ class Projector:
         while self._cur_step < self.num_steps:
             self.step()
             yield self._cur_step
-
-            if self.verbose:
-                if self._cur_step % 10 == 0:
-                    pd = self._perceptual_dist.eval({self._noise_in: 0})
-                    ed = self._euclidean_dist.eval({self._noise_in: 0})
-                    print('\tdist:', pd, ed, ed / pd[0])
 
     def start(self, target_images):
         assert self._Gs is not None
@@ -231,6 +225,10 @@ class Projector:
         self._cur_step += 1
         if self._cur_step == self.num_steps or self._cur_step % 10 == 0:
             self._info('%-8d%-12g%-12g' % (self._cur_step, dist_value, loss_value))
+
+            if self.verbose:
+                ed = self._euclidean_dist.eval({self._noise_in: noise_strength})
+                self._info('\teuclidean dist:', ed, ed / dist_value)
         if self._cur_step == self.num_steps:
             self._info('Done.')
 
