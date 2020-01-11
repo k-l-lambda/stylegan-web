@@ -170,7 +170,7 @@
 					if (!this.features)
 						return null;
 
-					return encodeURIComponent(LatentCode.encodeFloat32(this.featureVector));
+					return LatentCode.encodeFloat32(this.featureVector);
 				},
 
 				set (value) {
@@ -189,7 +189,7 @@
 					if (!this.featuresEx)
 						return null;
 
-					return encodeURIComponent(LatentCode.encodeFixed16(this.featureVectorEx));
+					return LatentCode.encodeFixed16(this.featureVectorEx);
 				},
 
 				set (value) {
@@ -199,6 +199,46 @@
 						if (this.featuresEx && this.featuresEx[i])
 							this.featuresEx[i].value = value;
 					});
+				},
+			},
+
+
+			latentsURL: {
+				get () {
+					if (!this.fromW)
+						return `z:${this.psi},${this.latentsBytes}`;
+					else if (!this.extendFeature)
+						return `w:${this.latentsBytes}`;
+					else
+						return `w+:${this.latentsBytesEx}`;
+				},
+
+				set (value) {
+					const [_, protocol, path] = value.match(/^([\w\+]+):(.+)$/);
+					switch (protocol) {
+					case "z":
+						this.fromW = false;
+
+						const [_, psi, bytes] = path.match(/^(.+),(.+)$/);
+						this.psi = Number(this.psi);
+						this.latentsBytes = bytes;
+
+						break;
+					case "w":
+						this.fromW = true;
+						this.extendFeature = false;
+
+						this.latentsBytes = path;
+
+						break;
+					case "w+":
+						this.fromW = true;
+						this.extendFeature = true;
+						
+						this.latentsBytesEx = path;
+
+						break;
+					}
 				},
 			},
 
@@ -235,14 +275,14 @@
 
 
 			imageURL () {
-				const latentStr = this.useXLatents ? `xlatents=${this.latentsBytesEx}` : `latents=${this.latentsBytes}`;
+				const latentStr = this.useXLatents ? `xlatents=${encodeURIComponent(this.latentsBytesEx)}` : `latents=${encodeURIComponent(this.latentsBytes)}`;
 
 				return `/generate?${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}${this.noise ? "&randomize_noise=1" : ""}&${latentStr}`;
 			},
 
 
 			tag () {
-				const latentStr = this.useXLatents ? `xlatents=${this.latentsBytesEx}` : `latents=${this.latentsBytes}`;
+				const latentStr = this.useXLatents ? `xlatents=${encodeURIComponent(this.latentsBytesEx)}` : `latents=${encodeURIComponent(this.latentsBytes)}`;
 
 				return `#${this.fromW ? "fromW=1" : "psi=" + this.psi.toString()}&${latentStr}`;
 			},
@@ -375,7 +415,7 @@
 
 
 			copyLatentCode() {
-				navigator.clipboard.writeText(decodeURIComponent(this.latentsBytes));
+				navigator.clipboard.writeText(this.latentsURL);
 				console.log("Latent code copied into clipboard.");
 			},
 
@@ -386,11 +426,13 @@
 				//console.log("text:", text);
 				try {
 					// check if text is valid latent code
-					const origin = atob(text);
+					/*const origin = atob(text);
 					if (origin.length !== this.latents_dimensions * 4)
+						throw new Error("invalid latent code");*/
+					if (!/^[\w+]+:.+$/.test(text))
 						throw new Error("invalid latent code");
 
-					this.latentsBytes = text;
+					this.latentsURL = text;
 				}
 				catch(_) {
 				}

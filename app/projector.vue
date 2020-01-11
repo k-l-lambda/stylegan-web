@@ -25,8 +25,12 @@
 			</p>
 			<p v-if="focusResult">
 				<a :href="!running && focusResult.editorUrl" target="editor"><span v-show="!running">Explore </span>#{{focusResult.step}}</a>
-				<button title="save target &amp; result" class="icon" @click="save">&#x1f4be;</button>
-				<button @click="showAnimationPanel = true">GIF</button>
+				<button @click="copyLatentCode" title="copy latent code">&#x2398;</button>
+			</p>
+			<p>
+				<input type="text" v-model="targetName" placeholder="target name" :style="{width: '8em'}" />
+				<button title="save target &amp; result" class="icon" @click="save" :disabled="!focusResult">&#x1f4be;</button>
+				<button @click="showAnimationPanel = true" :disabled="!projectedSequence.length">GIF</button>
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
@@ -102,7 +106,7 @@
 
 
 
-	const MOVEMENT_THRESHOLD = 4;
+	const MOVEMENT_THRESHOLD = 16;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -370,6 +374,15 @@
 			},
 
 
+			copyLatentCode() {
+				const item = this.projectedSequence && this.projectedSequence[this.focusIndex];
+				if (item) {
+					navigator.clipboard.writeText(`w+:${item.latentCodes}`);
+					console.log("Latent code copied into clipboard.");
+				}
+			},
+
+
 			async save () {
 				const pack = new JSZip();
 
@@ -512,7 +525,7 @@
 			async showAnimationPanel (value) {
 				if (value) {
 					const spec = await this.getSpec();
-					this.animationDimensions = spec.image_shape[2];
+					this.animationDimensions = Math.min(spec.image_shape[2], 256);
 				}
 			},
 

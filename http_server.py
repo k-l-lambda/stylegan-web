@@ -130,6 +130,11 @@ def projector():
 	return app.send_static_file('projector.html')
 
 
+@app.route('/merger/')
+def merger():
+	return app.send_static_file('merger.html')
+
+
 @app.route('/spec', methods=['GET'])
 def spec():
 	global model_name
@@ -190,7 +195,7 @@ def generate():
 	return flask.Response(fp.getvalue(), mimetype = 'image/png')
 
 
-LPIPS_IMAGE_SHAPE = tuple(map(int, os.environ.get('LPIPS_IMAGE_SHAPE', '256,256').split(',')))
+#LPIPS_IMAGE_SHAPE = tuple(map(int, os.environ.get('LPIPS_IMAGE_SHAPE', '256,256').split(',')))
 
 
 @app.route('/project', methods=['POST'])
@@ -203,7 +208,8 @@ def project():
 	if not imageFile:
 		flask.abort(400, 'image field is requested.')
 
-	image = PIL.Image.open(imageFile.stream).resize(LPIPS_IMAGE_SHAPE, PIL.Image.ANTIALIAS)
+	Gs, _ = loadGs()
+	image = PIL.Image.open(imageFile.stream).resize((Gs.output_shape[2], Gs.output_shape[3]), PIL.Image.ANTIALIAS)
 
 	image_array = np.array(image)[:, :, :3].swapaxes(0, 2).swapaxes(1, 2)
 	image_array = misc.adjust_dynamic_range(image_array, [0, 255], [-1, 1])

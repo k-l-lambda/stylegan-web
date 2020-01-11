@@ -11,6 +11,16 @@ import dnnlib.tflib as tflib
 
 from training import misc
 
+
+
+def downSampleImage(image, dimension):
+    sh = image.shape.as_list()
+    if sh[2] > dimension:
+        factor = sh[2] // dimension
+        return tf.reduce_mean(tf.reshape(image, [-1, sh[1], sh[2] // factor, factor, sh[2] // factor, factor]), axis=[3,5])
+
+    return image
+
 #----------------------------------------------------------------------------
 
 class Projector:
@@ -23,6 +33,7 @@ class Projector:
         self.lr_rampup_length           = 0.05
         self.noise_ramp_length          = 0.75
         self.regularize_noise_weight    = 1e5
+        self.euclidean_dist_weight      = 1
         self.verbose                    = False
         self.clone_net                  = True
         self.uniform_latents            = True
@@ -40,7 +51,8 @@ class Projector:
         self._images_expr           = None
         self._target_images_var     = None
         self._lpips                 = None
-        self._dist                  = None
+        self._perceptual_dist       = None
+        self._euclidean_dist        = None
         self._loss                  = None
         self._reg_sizes             = None
         self._lrate_in              = None
@@ -104,20 +116,27 @@ class Projector:
 
         # Downsample image to 256x256 if it's larger than that. VGG was built for 224x224 images.
         proc_images_expr = (self._images_expr + 1) * (255 / 2)
-        sh = proc_images_expr.shape.as_list()
-        if sh[2] > 256:
-            factor = sh[2] // 256
-            proc_images_expr = tf.reduce_mean(tf.reshape(proc_images_expr, [-1, sh[1], sh[2] // factor, factor, sh[2] // factor, factor]), axis=[3,5])
+        proc_images_expr = downSampleImage(proc_images_expr, 256)
 
         # Loss graph.
         self._info('Building loss graph...')
-        self._target_images_var = tf.Variable(tf.zeros(proc_images_expr.shape), name='target_images_var')
+        self._target_images_var = tf.Variable(tf.zeros(self._images_expr.shape), name='target_images_var')
+        downsampled_target_image = downSampleImage(self._target_images_var, 256)
+        downsampled_target_image = (downsampled_target_image + 1) * (255 / 2)
+
         #print('_target_images_var:', self._target_images_var.shape)
+        #print('_images_expr:', self._images_expr.shape)
         self._lpips = lpips
         if self._lpips is None:
             self._lpips = misc.load_pkl('https://drive.google.com/uc?id=1N2-m9qszOeVC9Tq77WxsLnuWwOedQiD2') # vgg16_zhang_perceptual.pkl
-        self._dist = self._lpips.get_output_for(proc_images_expr, self._target_images_var)
-        self._loss = tf.reduce_sum(self._dist)
+        self._perceptual_dist = self._lpips.get_output_for(proc_images_expr, downsampled_target_image)
+        perceptual_dist_mag = tf.reduce_sum(self._perceptual_dist)
+
+        # Euclidean distance
+        #self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - proc_images_expr) / 255.))
+        self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - self._images_expr) / 2.)) ** 0.5
+
+        self._loss = perceptual_dist_mag + self.euclidean_dist_weight * self._euclidean_dist
 
         # Noise regularization graph.
         self._info('Building noise regularization graph...')
@@ -167,7 +186,7 @@ class Projector:
         # Prepare target images.
         self._info('Preparing target images...')
         target_images = np.asarray(target_images, dtype='float32')
-        target_images = (target_images + 1) * (255 / 2)
+        #target_images = (target_images + 1) * (255 / 2)
         sh = target_images.shape
         #print('sh:', sh)
         assert sh[0] == self._minibatch_size
@@ -199,13 +218,17 @@ class Projector:
 
         # Train.
         feed_dict = {self._noise_in: noise_strength, self._lrate_in: learning_rate}
-        _, dist_value, loss_value = tflib.run([self._opt_step, self._dist, self._loss], feed_dict)
+        _, dist_value, loss_value = tflib.run([self._opt_step, self._perceptual_dist, self._loss], feed_dict)
         tflib.run(self._noise_normalize_op)
 
         # Print status.
         self._cur_step += 1
         if self._cur_step == self.num_steps or self._cur_step % 10 == 0:
             self._info('%-8d%-12g%-12g' % (self._cur_step, dist_value, loss_value))
+
+            if self.verbose:
+                ed = self._euclidean_dist.eval({self._noise_in: noise_strength})
+                self._info('\teuclidean dist:', ed, ed / dist_value)
         if self._cur_step == self.num_steps:
             self._info('Done.')
 

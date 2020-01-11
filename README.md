@@ -129,4 +129,3 @@ Key							| Description							| Default Value
 **REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter. Float.	| *1e5*
 **INITIAL_NOISE_FACTOR**	| Projector training hyperparameter. Float.	| *0.05*
 **UNIFORM_LATENTS**			| Use uniform latents for all feature layers (consistent with origin StyleGAN2 paper). Boolean, 0 or 1	| *0*
-**LPIPS_IMAGE_SHAPE**		| LPIPS image input shape.				| *256,256*

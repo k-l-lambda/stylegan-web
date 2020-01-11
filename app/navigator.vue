@@ -20,6 +20,10 @@
 						href: "/projector/",
 						name: "PROJECTOR",
 					},
+					{
+						href: "/merger/",
+						name: "MERGER",
+					},
 				],
 				pathname: location.pathname,
 			};
