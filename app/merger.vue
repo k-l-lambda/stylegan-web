@@ -11,7 +11,7 @@
 				<tbody>
 					<tr class="aggregation">
 						<td class="chosen">
-							<input type="checkbox" :class="{[`status-${aggregationStatus}`]: true}" :checked="aggregationStatus === 'ALL'" />
+							<input type="checkbox" :class="{[`status-${aggregationStatus}`]: true}" :checked="aggregationStatus === 'ALL'" @change="onAggregationChosen" />
 						</td>
 						<td class="index">
 							{{aggregationStatus}}
@@ -177,6 +177,13 @@
 				event.clipboardData.setData("text/plain", "w+:" + this.resultLatentsBytes);
 				console.log("Result latent code copied into clipboard.");
 			},
+
+
+			onAggregationChosen () {
+				//console.log("onAggregationChosen:", event);
+				const chosen = this.aggregationStatus === "ALL";
+				this.bars.forEach(bar => bar.chosen = !chosen);
+			},
 		},
 
 
@@ -209,6 +216,12 @@
 </script>
 
 <style>
+	html
+	{
+		overflow: hidden;
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	}
+
 	.initializing
 	{
 		position: fixed;
@@ -231,6 +244,15 @@
 	.turner .index
 	{
 		font-size: 10px;
+		width: 2.4em;
+		max-width: 2.4em;
+		text-align: right;
+		user-select: none;
+	}
+
+	.turner .value
+	{
+		font-size: 11px;
 	}
 
 	.turner .slider input
@@ -263,5 +285,16 @@
 	.loading img
 	{
 		opacity: 0.7;
+	}
+
+	.chosen input.status-PART::before
+	{
+		display: inline-block;
+		position: relative;
+		content: "\25a0";
+		color: #666;
+		font-size: 16px;
+		top: -4px;
+		left: 1px;
 	}
 </style>
