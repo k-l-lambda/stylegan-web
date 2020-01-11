@@ -2,12 +2,12 @@
 TODO:
 	map Z to W
 	project from a specified code
-	lerp on extend features
-	feature merger page
 
 
 
 2020.1.11	K.L.	<k.l.lambda@gmail.com>
+
+	-	index.vue: removed lerp button for W latents.
 
 	+	merger.vue: cache result latent code to reduce generation requests.
 

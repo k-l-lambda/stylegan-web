@@ -33,12 +33,12 @@
 				-<StoreInput v-model.number="slerpStep" localKey="explorerSlerpStep" :styleObj="{width: '1.6em', border: 0}" />&deg;
 				<button @click="slerpToHash" :disabled="!latentDistance" title="Slerp towards to hash tag">Slerp</button>
 			</fieldset>
-			<fieldset v-if="hashLatents && fromW">
+			<!--fieldset v-if="hashLatents && fromW">
 				<em :title="`${latentDistance}`">{{latentDistance.toPrecision(4)}}</em>
 				&times;<StoreInput v-model.number="lerpFactor" localKey="explorerLerpStep" :styleObj="{width: '2em', border: 0}" />
 				<button @click="lerpToHash" title="Lerp towards to hash tag">Lerp</button>
-			</fieldset>
-			<fieldset :class="{disabled: fromW}">
+			</fieldset-->
+			<fieldset v-show="!fromW" :class="{disabled: fromW}">
 				<!--&Psi; not work?-->&#x03a8;:
 				<input class="value" type="number" v-model.number="psi" step="0.001" :disabled="fromW" />
 				<span class="psi-bar">
