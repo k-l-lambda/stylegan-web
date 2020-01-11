@@ -9,6 +9,8 @@ TODO:
 
 2020.1.11	K.L.	<k.l.lambda@gmail.com>
 
+	+	merger.vue: cache result latent code to reduce generation requests.
+
 	+	navigator.vue: added link for merger.
 
 	+	merger.vue: store source codes in session storage.

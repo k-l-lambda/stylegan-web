@@ -9,8 +9,22 @@
 			</p>
 			<table class="turner">
 				<tbody>
+					<tr class="aggregation">
+						<td class="chosen">
+							<input type="checkbox" :class="{[`status-${aggregationStatus}`]: true}" :checked="aggregationStatus === 'ALL'" />
+						</td>
+						<td class="index">
+							{{aggregationStatus}}
+						</td>
+						<td class="slider">
+							<input type="range" v-model.number="aggregationBarValue" :min="-1" :max="1" step="any" :disabled="!Number.isFinite(aggregationBarValue)" />
+						</td>
+						<td class="value">
+							{{Number.isFinite(aggregationBarValue) ? aggregationBarValue.toFixed(2) : null}}
+						</td>
+					</tr>
 					<tr v-for="bar of bars" :key="bar.index">
-						<td>
+						<td class="chosen">
 							<input type="checkbox" v-model="bar.chosen" />
 						</td>
 						<td class="index">
@@ -26,8 +40,8 @@
 				</tbody>
 			</table>
 		</aside>
-		<main>
-			<img v-if="resultImageURL" class="result" :src="resultImageURL" />
+		<main :class="{loading: resultLoading}">
+			<img v-if="resultImageURL" class="result" :src="resultImageURL" @load="resultLoading = false" />
 		</main>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 		<Navigator />
@@ -63,8 +77,11 @@
 				bars: [],
 				sourceLatents: [null, null],
 				resultLatents: null,
+				cachedResultCode: null,
+				resultUpdateTime: 0,
 				leftCode: null,
 				rightCode: null,
+				resultLoading: false,
 			};
 		},
 
@@ -86,7 +103,37 @@
 
 
 			resultImageURL () {
-				return this.resultLatentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.resultLatentsBytes)}`;
+				return this.cachedResultCode && `/generate?fromW=1&xlatents=${encodeURIComponent(this.cachedResultCode)}`;
+			},
+
+
+			aggregationStatus () {
+				const chosenBars = this.bars.filter(bar => bar.chosen);
+				if (chosenBars.length === this.latentLayers)
+					return "ALL";
+
+				if (chosenBars.length)
+					return "PART";
+
+				return "NONE";
+			},
+
+
+			aggregationBarValue: {
+				get () {
+					const chosenBars = this.bars.filter(bar => bar.chosen);
+					if (!chosenBars.length)
+						return null;
+
+					return chosenBars.reduce((sum, bar) => sum + bar.value, 0) / chosenBars.length;
+				},
+
+				set (value) {
+					this.bars.filter(bar => bar.chosen).forEach(bar => {
+						bar.value = value;
+						this.updateResultLatentsLayer(bar.index);
+					});
+				},
 			},
 		},
 
@@ -143,6 +190,20 @@
 
 				this.updateResultLatents();
 			},
+
+
+			resultLatentsBytes () {
+				this.resultUpdateTime = Date.now();
+				setTimeout(() => {
+					if (Date.now() - this.resultUpdateTime > 290)
+						this.cachedResultCode = this.resultLatentsBytes;
+				}, 300);
+			},
+
+
+			resultImageURL () {
+				this.resultLoading = true;
+			},
 		},
 	};
 </script>
@@ -197,5 +258,10 @@
 	.result
 	{
 		height: calc(100vh - 24px);
+	}
+
+	.loading img
+	{
+		opacity: 0.7;
 	}
 </style>
