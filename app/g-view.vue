@@ -4,7 +4,7 @@
 			<img v-if="imageURL" :src="imageURL" @load="imageLoading = false" />
 		</div>
 		<div>
-			<input class="hash" type="text" :value="latentsHash" :style="{width: `${imageSize}px`}" :readonly="true" @paste="onPaste" />
+			<input class="hash" type="text" :value="latentsHash" :style="{width: `${imageSize - 4}px`}" :readonly="true" @paste="onPaste" @copy.prevent="onCopy" />
 		</div>
 	</div>
 </template>
@@ -88,12 +88,23 @@
 					}
 				}
 			},
+
+
+			onCopy (event) {
+				event.clipboardData.setData("text/plain", "w+:" + this.latentsBytes);
+				console.log("Latent code copied into clipboard.");
+			},
 		},
 
 
 		watch: {
 			latents (value) {
 				this.$emit("update:latents", value);
+			},
+
+
+			latentsBytes (value) {
+				this.$emit("update:latentsBytes", value);
 			},
 
 
