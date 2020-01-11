@@ -30,6 +30,7 @@
 			<img v-if="resultImageURL" class="result" :src="resultImageURL" />
 		</main>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
+		<Navigator />
 	</div>
 </template>
 
@@ -38,6 +39,7 @@
 
 	import GView from "./g-view.vue";
 	import StoreInput from "./storeinput.vue";
+	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js"
 
@@ -50,6 +52,7 @@
 		components: {
 			GView,
 			StoreInput,
+			Navigator,
 		},
 
 
