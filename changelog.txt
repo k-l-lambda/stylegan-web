@@ -6,6 +6,11 @@ TODO:
 
 
 
+2020.1.11	K.L.	<k.l.lambda@gmail.com>
+
+	+	Entry of merger added.
+
+
 2020.1.9	K.L.	<k.l.lambda@gmail.com>
 
 	*!	Eulidean loss lead to blur result.

@@ -10,6 +10,7 @@ import alias from "rollup-plugin-alias";
 export default [
 	"index",
 	"projector",
+	"merger",
 ].map(entry => ({
 	input: `./app/${entry}.js`,
 

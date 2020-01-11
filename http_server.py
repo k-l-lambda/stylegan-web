@@ -130,6 +130,11 @@ def projector():
 	return app.send_static_file('projector.html')
 
 
+@app.route('/merger/')
+def merger():
+	return app.send_static_file('merger.html')
+
+
 @app.route('/spec', methods=['GET'])
 def spec():
 	global model_name
