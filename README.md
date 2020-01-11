@@ -39,6 +39,14 @@ You can also export image projection result sequence as a gif animation:
 <img src="./documents/cat-roundeyes.png" valign="middle" /> &nbsp;&nbsp;&#x21e6;&nbsp;&nbsp; <img src="./documents/cat-roundeyes-projection-1000.gif" valign="middle" />
 </p>
 
+### Merger
+
+Once you get some latent codes by projector or turning, you can test to mix features by interpolating latent values on every W layer. This is a demo.
+
+![Merger Demo](./documents/merger-demo.gif)
+
+The pair of top-left images are the source to merge, press **Ctrl+V** in the hash box below either image to paste input latent code via clipboard, and **Ctrl+C** on the right blank area to copy result latent code.
+
 ## Run Web Server
 
 ```.bash
