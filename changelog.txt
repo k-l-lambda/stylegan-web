@@ -1,5 +1,6 @@
 
 TODO:
+	map Z to W
 	project from a specified code
 	lerp on extend features
 	feature merger page
@@ -7,6 +8,8 @@ TODO:
 
 
 2020.1.11	K.L.	<k.l.lambda@gmail.com>
+
+	+	g-view.vue created.
 
 	+	index.vue: use latents URL for clipboard copy & paste.
 
