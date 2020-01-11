@@ -44,6 +44,9 @@
 		computed: {
 			latentsBytes: {
 				get () {
+					if (!this.latents.length)
+						return null;
+
 					return LatentCode.encodeFixed16(this.latents);
 				},
 
@@ -54,12 +57,12 @@
 
 
 			latentsHash () {
-				return md5(this.latentsBytes);
+				return this.latentsBytes && md5(this.latentsBytes);
 			},
 
 
 			imageURL () {
-				return `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;
+				return this.latentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;
 			},
 		},
 
@@ -105,6 +108,7 @@
 
 			latentsBytes (value) {
 				this.$emit("update:latentsBytes", value);
+				this.$emit("change", value);
 			},
 
 
