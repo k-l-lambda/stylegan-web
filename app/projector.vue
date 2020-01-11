@@ -377,7 +377,7 @@
 			copyLatentCode() {
 				const item = this.projectedSequence && this.projectedSequence[this.focusIndex];
 				if (item) {
-					navigator.clipboard.writeText(item.latentCodes);
+					navigator.clipboard.writeText(`w+:${item.latentCodes}`);
 					console.log("Latent code copied into clipboard.");
 				}
 			},
