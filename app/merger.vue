@@ -1,9 +1,11 @@
 <template>
-	<div class="merger">
+	<div class="merger" @copy.prevent="onCopy">
 		<aside>
+			<StoreInput v-show="false" v-model="leftCode" sessionKey="mergerLeftCode" />
+			<StoreInput v-show="false" v-model="rightCode" sessionKey="mergerRightCode" />
 			<p>
-				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[0]" @change="updateResultLatents" />
-				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[1]" @change="updateResultLatents" />
+				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[0]" @change="updateResultLatents" :ppLatentsBytes.sync="leftCode" />
+				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[1]" @change="updateResultLatents" :ppLatentsBytes.sync="rightCode" />
 			</p>
 			<table class="turner">
 				<tbody>
@@ -25,7 +27,7 @@
 			</table>
 		</aside>
 		<main>
-			<img v-if="resultImageURL" :src="resultImageURL" />
+			<img v-if="resultImageURL" class="result" :src="resultImageURL" />
 		</main>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 	</div>
@@ -35,6 +37,7 @@
 	import Vue from "vue";
 
 	import GView from "./g-view.vue";
+	import StoreInput from "./storeinput.vue";
 
 	import * as LatentCode from "./latentCode.js"
 
@@ -46,6 +49,7 @@
 
 		components: {
 			GView,
+			StoreInput,
 		},
 
 
@@ -56,6 +60,8 @@
 				bars: [],
 				sourceLatents: [null, null],
 				resultLatents: null,
+				leftCode: null,
+				rightCode: null,
 			};
 		},
 
@@ -69,11 +75,6 @@
 			latentDimension () {
 				return this.spec ? this.spec.synthesis_input_shape[2] : 512;
 			},
-
-
-			/*resultLatents () {
-				return this.bars.map((k, i) => (this.sourceLatents[0][i] * (1 - k) + this.sourceLatents[1][i] * (k + 1)) / 2);
-			},*/
 
 
 			resultLatentsBytes () {
@@ -119,6 +120,12 @@
 			updateResultLatents () {
 				for (let i = 0; i < this.latentLayers; ++i)
 					this.updateResultLatentsLayer(i);
+			},
+
+
+			onCopy (event) {
+				event.clipboardData.setData("text/plain", "w+:" + this.resultLatentsBytes);
+				console.log("Result latent code copied into clipboard.");
 			},
 		},
 
@@ -182,5 +189,10 @@
 		position: absolute;
 		left: 420px;
 		top: 0;
+	}
+
+	.result
+	{
+		height: calc(100vh - 24px);
 	}
 </style>

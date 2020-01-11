@@ -4,7 +4,7 @@
 			<img v-if="imageURL" :src="imageURL" @load="imageLoading = false" />
 		</div>
 		<div>
-			<input class="hash" type="text" :value="latentsHash" :style="{width: `${imageSize - 4}px`}" :readonly="true" @paste="onPaste" @copy.prevent="onCopy" />
+			<input class="hash" type="text" :value="latentsHash" :style="{width: `${imageSize - 4}px`}" :readonly="true" @paste="onPaste" @copy.prevent.stop="onCopy" />
 		</div>
 	</div>
 </template>
@@ -30,6 +30,7 @@
 				type: Number,
 				default: 200,
 			},
+			ppLatentsBytes: String,
 		},
 
 
@@ -67,6 +68,12 @@
 		},
 
 
+		created () {
+			if (this.ppLatentsBytes)
+				this.latentsBytes = this.ppLatentsBytes;
+		},
+
+
 		methods: {
 			async onPaste (event) {
 				const text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));
@@ -75,7 +82,8 @@
 						const [_, protocol, path] = text.match(/^([\w\+]+):(.+)$/);
 						switch (protocol) {
 						case "w":
-							// TODO:
+							const w = LatentCode.decodeFloat32(path);
+							this.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(w)));
 
 							break;
 						case "w+":
@@ -107,18 +115,27 @@
 
 
 			latentsBytes (value) {
-				this.$emit("update:latentsBytes", value);
+				if (this.ppLatentsBytes != value)
+					this.$emit("update:ppLatentsBytes", value);
+
 				this.$emit("change", value);
 			},
 
 
+			ppLatentsBytes (value) {
+				this.latentsBytes = value;
+			},
+
+
 			layers () {
-				this.latents = Array(this.layers * this.lastDimension).fill(0);
+				if (!this.ppLatentsBytes)
+					this.latents = Array(this.layers * this.lastDimension).fill(0);
 			},
 
 
 			lastDimension () {
-				this.latents = Array(this.layers * this.lastDimension).fill(0);
+				if (!this.ppLatentsBytes)
+					this.latents = Array(this.layers * this.lastDimension).fill(0);
 			},
 
 
