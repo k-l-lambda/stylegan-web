@@ -1,12 +1,13 @@
 
 TODO:
-	map Z to W
 	batch projection
 	project from a specified code
 
 
 
 2020.1.12	K.L.	<k.l.lambda@gmail.com>
+
+	+	g-view.vue: accept Z latent code input.
 
 	+	http_server.py: added argument of psi for mapZtoW.
 
