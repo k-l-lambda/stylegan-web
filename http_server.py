@@ -150,12 +150,20 @@ def spec():
 @app.route('/map-z-w', methods=['GET'])
 def mapZtoW():
 	zStr = flask.request.args.get('z')
+	psi = flask.request.args.get('psi')
+	psi = psi and float(psi)
 
 	gs, _ = loadGs()
 	latent_len = gs.input_shape[1]
 
 	z = latentCode.decodeFloat32(zStr, latent_len).reshape([1, latent_len])
 	w = gs.components.mapping.run(z, None)[:, :1, :].reshape([latent_len])
+
+	if psi is not None:
+		proj = loadProjector()
+		avg = proj._dlatent_avg.reshape([latent_len])
+
+		w = avg + psi * (w - avg)
 
 	return latentCode.encodeFloat32(w)
 
