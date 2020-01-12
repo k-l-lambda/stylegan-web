@@ -8546,8 +8546,15 @@
   						this.latentsBytes = path;
 
   						break;
+  					case "z":
+  						const [_, psi, bytes] = path.match(/^(.+),(.+)$/);
+  						const wcode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(bytes)}`)).text();
+  						const ww = decodeFloat32(wcode);
+  						this.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(ww)));
+
+  						break;
   					default:
-  						console.warn("only w, w+ protocol supported.");
+  						console.warn("invalid latent protocol:", protocol);
   					}
   				}
   				catch (error) {
@@ -8790,11 +8797,11 @@
     /* style */
     const __vue_inject_styles__ = function (inject) {
       if (!inject) return
-      inject("data-v-0c3ebbdf_0", { source: "\n.image[data-v-0c3ebbdf]\n{\n\tposition: relative;\n}\n.image img[data-v-0c3ebbdf]\n{\n\twidth: 100%;\n\theight: 100%;\n}\n.loading img[data-v-0c3ebbdf]\n{\n\topacity: 0.7;\n}\n.hash[data-v-0c3ebbdf]\n{\n\tcolor: #0006;\n}\n.hash[data-v-0c3ebbdf]:focus\n{\n\tcolor: #000;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\g-view.vue"],"names":[],"mappings":";AAqJA;;CAEA,kBAAA;AACA;AAEA;;CAEA,WAAA;CACA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,WAAA;AACA","file":"g-view.vue","sourcesContent":["<template>\r\n\t<div>\r\n\t\t<div class=\"image\" :class=\"{loading: imageLoading}\" :style=\"{width: `${imageSize}px`, height: `${imageSize}px`}\">\r\n\t\t\t<img v-if=\"imageURL\" :src=\"imageURL\" @load=\"imageLoading = false\" />\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<input class=\"hash\" type=\"text\" :value=\"latentsHash\" :style=\"{width: `${imageSize - 4}px`}\" :readonly=\"true\" @paste=\"onPaste\" @copy.prevent.stop=\"onCopy\" />\r\n\t\t</div>\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport md5 from \"js-md5\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"GView\",\r\n\r\n\r\n\t\tprops: {\r\n\t\t\tlayers: Number,\r\n\t\t\tlastDimension: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 512,\r\n\t\t\t},\r\n\t\t\timageSize: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 200,\r\n\t\t\t},\r\n\t\t\tppLatentsBytes: String,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tlatents: Array(this.layers * this.lastDimension).fill(0),\r\n\t\t\t\timageLoading: false,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.latents.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn LatentCode.encodeFixed16(this.latents);\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.latents = LatentCode.decodeFixed16(value);\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsHash () {\r\n\t\t\t\treturn this.latentsBytes && md5(this.latentsBytes);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn this.latentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tcreated () {\r\n\t\t\tif (this.ppLatentsBytes)\r\n\t\t\t\tthis.latentsBytes = this.ppLatentsBytes;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tasync onPaste (event) {\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\tif (text) {\r\n\t\t\t\t\ttry {\r\n\t\t\t\t\t\tconst [_, protocol, path] = text.match(/^([\\w\\+]+):(.+)$/);\r\n\t\t\t\t\t\tswitch (protocol) {\r\n\t\t\t\t\t\tcase \"w\":\r\n\t\t\t\t\t\t\tconst w = LatentCode.decodeFloat32(path);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(w)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"w+\":\r\n\t\t\t\t\t\t\tthis.latentsBytes = path;\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tdefault:\r\n\t\t\t\t\t\t\tconsole.warn(\"only w, w+ protocol supported.\");\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch (error) {\r\n\t\t\t\t\t\tconsole.warn(\"invalid latent URL:\", error);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.latentsBytes);\r\n\t\t\t\tconsole.log(\"Latent code copied into clipboard.\");\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatents (value) {\r\n\t\t\t\tthis.$emit(\"update:latents\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsBytes (value) {\r\n\t\t\t\tif (this.ppLatentsBytes != value)\r\n\t\t\t\t\tthis.$emit(\"update:ppLatentsBytes\", value);\r\n\r\n\t\t\t\tthis.$emit(\"change\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tppLatentsBytes (value) {\r\n\t\t\t\tthis.latentsBytes = value;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlayers () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlastDimension () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.imageLoading = true;\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style scoped>\r\n\t.image\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.image img\r\n\t{\r\n\t\twidth: 100%;\r\n\t\theight: 100%;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.hash\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.hash:focus\r\n\t{\r\n\t\tcolor: #000;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
+      inject("data-v-249e872e_0", { source: "\n.image[data-v-249e872e]\n{\n\tposition: relative;\n}\n.image img[data-v-249e872e]\n{\n\twidth: 100%;\n\theight: 100%;\n}\n.loading img[data-v-249e872e]\n{\n\topacity: 0.7;\n}\n.hash[data-v-249e872e]\n{\n\tcolor: #0006;\n}\n.hash[data-v-249e872e]:focus\n{\n\tcolor: #000;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\g-view.vue"],"names":[],"mappings":";AA4JA;;CAEA,kBAAA;AACA;AAEA;;CAEA,WAAA;CACA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,WAAA;AACA","file":"g-view.vue","sourcesContent":["<template>\r\n\t<div>\r\n\t\t<div class=\"image\" :class=\"{loading: imageLoading}\" :style=\"{width: `${imageSize}px`, height: `${imageSize}px`}\">\r\n\t\t\t<img v-if=\"imageURL\" :src=\"imageURL\" @load=\"imageLoading = false\" />\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<input class=\"hash\" type=\"text\" :value=\"latentsHash\" :style=\"{width: `${imageSize - 4}px`}\" :readonly=\"true\" @paste=\"onPaste\" @copy.prevent.stop=\"onCopy\" />\r\n\t\t</div>\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport md5 from \"js-md5\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"GView\",\r\n\r\n\r\n\t\tprops: {\r\n\t\t\tlayers: Number,\r\n\t\t\tlastDimension: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 512,\r\n\t\t\t},\r\n\t\t\timageSize: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 200,\r\n\t\t\t},\r\n\t\t\tppLatentsBytes: String,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tlatents: Array(this.layers * this.lastDimension).fill(0),\r\n\t\t\t\timageLoading: false,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.latents.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn LatentCode.encodeFixed16(this.latents);\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.latents = LatentCode.decodeFixed16(value);\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsHash () {\r\n\t\t\t\treturn this.latentsBytes && md5(this.latentsBytes);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn this.latentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tcreated () {\r\n\t\t\tif (this.ppLatentsBytes)\r\n\t\t\t\tthis.latentsBytes = this.ppLatentsBytes;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tasync onPaste (event) {\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\tif (text) {\r\n\t\t\t\t\ttry {\r\n\t\t\t\t\t\tconst [_, protocol, path] = text.match(/^([\\w\\+]+):(.+)$/);\r\n\t\t\t\t\t\tswitch (protocol) {\r\n\t\t\t\t\t\tcase \"w\":\r\n\t\t\t\t\t\t\tconst w = LatentCode.decodeFloat32(path);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(w)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"w+\":\r\n\t\t\t\t\t\t\tthis.latentsBytes = path;\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"z\":\r\n\t\t\t\t\t\t\tconst [_, psi, bytes] = path.match(/^(.+),(.+)$/);\r\n\t\t\t\t\t\t\tconst wcode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(bytes)}`)).text();\r\n\t\t\t\t\t\t\tconst ww = LatentCode.decodeFloat32(wcode);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(ww)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tdefault:\r\n\t\t\t\t\t\t\tconsole.warn(\"invalid latent protocol:\", protocol);\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch (error) {\r\n\t\t\t\t\t\tconsole.warn(\"invalid latent URL:\", error);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.latentsBytes);\r\n\t\t\t\tconsole.log(\"Latent code copied into clipboard.\");\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatents (value) {\r\n\t\t\t\tthis.$emit(\"update:latents\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsBytes (value) {\r\n\t\t\t\tif (this.ppLatentsBytes != value)\r\n\t\t\t\t\tthis.$emit(\"update:ppLatentsBytes\", value);\r\n\r\n\t\t\t\tthis.$emit(\"change\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tppLatentsBytes (value) {\r\n\t\t\t\tthis.latentsBytes = value;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlayers () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlastDimension () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.imageLoading = true;\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style scoped>\r\n\t.image\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.image img\r\n\t{\r\n\t\twidth: 100%;\r\n\t\theight: 100%;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.hash\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.hash:focus\r\n\t{\r\n\t\tcolor: #000;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__ = "data-v-0c3ebbdf";
+    const __vue_scope_id__ = "data-v-249e872e";
     /* module identifier */
     const __vue_module_identifier__ = undefined;
     /* functional template */
@@ -9056,6 +9063,14 @@
 
 
 
+  const FORMULA_TEXTS = {
+  	INTERPOLATION: "(1-k)/2 &centerdot; x1 + (1+k)/2 &centerdot; x2",
+  	SUBTRACTION: "k &centerdot; (x2 - x1)",
+  	ADDITION: "x1 + k &centerdot; x2",
+  };
+
+
+
   var script$3 = {
   	name: "merger",
 
@@ -9079,6 +9094,9 @@
   			leftCode: null,
   			rightCode: null,
   			resultLoading: false,
+  			formula: "INTERPOLATION",
+  			FORMULA_TEXTS,
+  			kMax: 1,
   		};
   	},
 
@@ -9151,6 +9169,22 @@
 
 
   	methods: {
+  		calculateByFormula (x1, x2, k) {
+  			switch (this.formula) {
+  			case "INTERPOLATION":
+  				return (x1 * (1 - k) + x2 * (1 + k)) / 2;
+
+  			case "SUBTRACTION":
+  				return k * (x2 - x1);
+
+  			case "ADDITION":
+  				return x1 + k * x2;
+  			}
+
+  			throw new Error(`unexpected formula: ${this.formula}`);
+  		},
+
+
   		updateResultLatentsLayer (layer) {
   			if (!this.resultLatents || !this.sourceLatents[0] || !this.sourceLatents[1])
   				return;
@@ -9159,7 +9193,7 @@
   			for (let i = 0; i < this.latentDimension; ++i) {
   				const index = layer * this.latentDimension + i;
   				//this.resultLatents[index] = (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2;
-  				Vue.set(this.resultLatents, index, (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2);
+  				Vue.set(this.resultLatents, index, this.calculateByFormula(this.sourceLatents[0][index], this.sourceLatents[1][index], k));
   			}
   		},
 
@@ -9167,6 +9201,13 @@
   		updateResultLatents () {
   			for (let i = 0; i < this.latentLayers; ++i)
   				this.updateResultLatentsLayer(i);
+  		},
+
+
+  		swapSources () {
+  			const temp = this.leftCode;
+  			this.leftCode = this.rightCode;
+  			this.rightCode = temp;
   		},
 
 
@@ -9208,6 +9249,9 @@
   		resultImageURL () {
   			this.resultLoading = true;
   		},
+
+
+  		formula: "updateResultLatents",
   	},
   };
 
@@ -9323,6 +9367,85 @@
               1
             ),
             _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "swap", on: { click: _vm.swapSources } },
+              [_vm._v("⬄")]
+            ),
+            _vm._v(" "),
+            _c(
+              "p",
+              { staticClass: "operation" },
+              [
+                _c("StoreInput", {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: false,
+                      expression: "false"
+                    }
+                  ],
+                  attrs: { sessionKey: "mergerFormula" },
+                  model: {
+                    value: _vm.formula,
+                    callback: function($$v) {
+                      _vm.formula = $$v;
+                    },
+                    expression: "formula"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formula,
+                        expression: "formula"
+                      }
+                    ],
+                    staticClass: "formula",
+                    attrs: { title: _vm.formula },
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value;
+                            return val
+                          });
+                        _vm.formula = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0];
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "INTERPOLATION" } }, [
+                      _vm._v("⟷")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "ADDITION" } }, [_vm._v("+")]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "SUBTRACTION" } }, [
+                      _vm._v("-")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "description",
+                  domProps: { innerHTML: _vm._s(_vm.FORMULA_TEXTS[_vm.formula]) }
+                })
+              ],
+              1
+            ),
+            _vm._v(" "),
             _c("table", { staticClass: "turner" }, [
               _c(
                 "tbody",
@@ -9360,8 +9483,8 @@
                         ],
                         attrs: {
                           type: "range",
-                          min: -1,
-                          max: 1,
+                          min: -_vm.kMax,
+                          max: _vm.kMax,
                           step: "any",
                           disabled: !Number.isFinite(_vm.aggregationBarValue)
                         },
@@ -9454,7 +9577,12 @@
                               modifiers: { number: true }
                             }
                           ],
-                          attrs: { type: "range", min: -1, max: 1, step: "any" },
+                          attrs: {
+                            type: "range",
+                            min: -_vm.kMax,
+                            max: _vm.kMax,
+                            step: "any"
+                          },
                           domProps: { value: bar.value },
                           on: {
                             change: function($event) {
@@ -9528,7 +9656,7 @@
     /* style */
     const __vue_inject_styles__$3 = function (inject) {
       if (!inject) return
-      inject("data-v-4ec1af32_0", { source: "\nhtml\n{\n\toverflow: hidden;\n\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\n.initializing\n{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tbottom: 0;\n\tright: 0;\n\tfont-size: 10vh;\n\tpadding: 30vh 2em 0;\n\twhite-space: normal;\n\tbackground-color: #ccca;\n\tcolor: #444c;\n}\n.g-view\n{\n\tdisplay: inline-block;\n}\n.turner .index\n{\n\tfont-size: 10px;\n\twidth: 2.4em;\n\tmax-width: 2.4em;\n\ttext-align: right;\n\tuser-select: none;\n}\n.turner .value\n{\n\tfont-size: 11px;\n}\n.turner .slider input\n{\n\twidth: 320px;\n}\nbody\n{\n\toverflow: hidden;\n}\n.merger\n{\n\tposition: relative;\n}\nmain\n{\n\tposition: absolute;\n\tleft: 420px;\n\ttop: 0;\n}\n.result\n{\n\theight: calc(100vh - 24px);\n}\n.loading img\n{\n\topacity: 0.7;\n}\n.chosen input.status-PART::before\n{\n\tdisplay: inline-block;\n\tposition: relative;\n\tcontent: \"\\25a0\";\n\tcolor: #666;\n\tfont-size: 16px;\n\ttop: -4px;\n\tleft: 1px;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\merger.vue"],"names":[],"mappings":";AA0NA;;CAEA,gBAAA;CACA,4DAAA;AACA;AAEA;;CAEA,eAAA;CACA,MAAA;CACA,OAAA;CACA,SAAA;CACA,QAAA;CACA,eAAA;CACA,mBAAA;CACA,mBAAA;CACA,uBAAA;CACA,YAAA;AACA;AAEA;;CAEA,qBAAA;AACA;AAEA;;CAEA,eAAA;CACA,YAAA;CACA,gBAAA;CACA,iBAAA;CACA,iBAAA;AACA;AAEA;;CAEA,eAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,gBAAA;AACA;AAEA;;CAEA,kBAAA;AACA;AAEA;;CAEA,kBAAA;CACA,WAAA;CACA,MAAA;AACA;AAEA;;CAEA,0BAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,qBAAA;CACA,kBAAA;CACA,gBAAA;CACA,WAAA;CACA,eAAA;CACA,SAAA;CACA,SAAA;AACA","file":"merger.vue","sourcesContent":["<template>\r\n\t<div class=\"merger\" @copy.prevent=\"onCopy\">\r\n\t\t<aside>\r\n\t\t\t<StoreInput v-show=\"false\" v-model=\"leftCode\" sessionKey=\"mergerLeftCode\" />\r\n\t\t\t<StoreInput v-show=\"false\" v-model=\"rightCode\" sessionKey=\"mergerRightCode\" />\r\n\t\t\t<p>\r\n\t\t\t\t<GView class=\"g-view\" :layers=\"latentLayers\" :lastDimension=\"latentDimension\" :latents.sync=\"sourceLatents[0]\" @change=\"updateResultLatents\" :ppLatentsBytes.sync=\"leftCode\" />\r\n\t\t\t\t<GView class=\"g-view\" :layers=\"latentLayers\" :lastDimension=\"latentDimension\" :latents.sync=\"sourceLatents[1]\" @change=\"updateResultLatents\" :ppLatentsBytes.sync=\"rightCode\" />\r\n\t\t\t</p>\r\n\t\t\t<table class=\"turner\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr class=\"aggregation\">\r\n\t\t\t\t\t\t<td class=\"chosen\">\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" :class=\"{[`status-${aggregationStatus}`]: true}\" :checked=\"aggregationStatus === 'ALL'\" @change=\"onAggregationChosen\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"index\">\r\n\t\t\t\t\t\t\t{{aggregationStatus}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"slider\">\r\n\t\t\t\t\t\t\t<input type=\"range\" v-model.number=\"aggregationBarValue\" :min=\"-1\" :max=\"1\" step=\"any\" :disabled=\"!Number.isFinite(aggregationBarValue)\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"value\">\r\n\t\t\t\t\t\t\t{{Number.isFinite(aggregationBarValue) ? aggregationBarValue.toFixed(2) : null}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr v-for=\"bar of bars\" :key=\"bar.index\">\r\n\t\t\t\t\t\t<td class=\"chosen\">\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model=\"bar.chosen\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"index\">\r\n\t\t\t\t\t\t\t{{bar.index + 1}}.\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"slider\">\r\n\t\t\t\t\t\t\t<input type=\"range\" v-model.number=\"bar.value\" :min=\"-1\" :max=\"1\" step=\"any\" @change=\"updateResultLatentsLayer(bar.index)\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"value\">\r\n\t\t\t\t\t\t\t{{bar.value.toFixed(2)}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\t\t</aside>\r\n\t\t<main :class=\"{loading: resultLoading}\">\r\n\t\t\t<img v-if=\"resultImageURL\" class=\"result\" :src=\"resultImageURL\" @load=\"resultLoading = false\" />\r\n\t\t</main>\r\n\t\t<div v-show=\"initializing\" class=\"initializing\">Model initializing, wait a moment...</div>\r\n\t\t<Navigator />\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport Vue from \"vue\";\r\n\r\n\timport GView from \"./g-view.vue\";\r\n\timport StoreInput from \"./storeinput.vue\";\r\n\timport Navigator from \"./navigator.vue\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"merger\",\r\n\r\n\r\n\t\tcomponents: {\r\n\t\t\tGView,\r\n\t\t\tStoreInput,\r\n\t\t\tNavigator,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tspec: null,\r\n\t\t\t\tinitializing: false,\r\n\t\t\t\tbars: [],\r\n\t\t\t\tsourceLatents: [null, null],\r\n\t\t\t\tresultLatents: null,\r\n\t\t\t\tcachedResultCode: null,\r\n\t\t\t\tresultUpdateTime: 0,\r\n\t\t\t\tleftCode: null,\r\n\t\t\t\trightCode: null,\r\n\t\t\t\tresultLoading: false,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentLayers () {\r\n\t\t\t\treturn this.spec ? this.spec.synthesis_input_shape[1] : 0;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentDimension () {\r\n\t\t\t\treturn this.spec ? this.spec.synthesis_input_shape[2] : 512;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultLatentsBytes () {\r\n\t\t\t\treturn this.resultLatents && LatentCode.encodeFixed16(this.resultLatents);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultImageURL () {\r\n\t\t\t\treturn this.cachedResultCode && `/generate?fromW=1&xlatents=${encodeURIComponent(this.cachedResultCode)}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\taggregationStatus () {\r\n\t\t\t\tconst chosenBars = this.bars.filter(bar => bar.chosen);\r\n\t\t\t\tif (chosenBars.length === this.latentLayers)\r\n\t\t\t\t\treturn \"ALL\";\r\n\r\n\t\t\t\tif (chosenBars.length)\r\n\t\t\t\t\treturn \"PART\";\r\n\r\n\t\t\t\treturn \"NONE\";\r\n\t\t\t},\r\n\r\n\r\n\t\t\taggregationBarValue: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tconst chosenBars = this.bars.filter(bar => bar.chosen);\r\n\t\t\t\t\tif (!chosenBars.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn chosenBars.reduce((sum, bar) => sum + bar.value, 0) / chosenBars.length;\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.bars.filter(bar => bar.chosen).forEach(bar => {\r\n\t\t\t\t\t\tbar.value = value;\r\n\t\t\t\t\t\tthis.updateResultLatentsLayer(bar.index);\r\n\t\t\t\t\t});\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tasync created () {\r\n\t\t\twindow.$main = this;\r\n\r\n\t\t\tthis.initializing = true;\r\n\r\n\t\t\tconst res = await fetch(\"/spec\");\r\n\t\t\tthis.spec = await res.json();\r\n\t\t\tconsole.log(\"model spec:\", this.spec);\r\n\r\n\t\t\tthis.resultLatents = Array(this.spec.synthesis_input_shape[1] * this.spec.synthesis_input_shape[2]).fill(0);\r\n\r\n\t\t\tthis.initializing = false;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tupdateResultLatentsLayer (layer) {\r\n\t\t\t\tif (!this.resultLatents || !this.sourceLatents[0] || !this.sourceLatents[1])\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tconst k = this.bars[layer].value;\r\n\t\t\t\tfor (let i = 0; i < this.latentDimension; ++i) {\r\n\t\t\t\t\tconst index = layer * this.latentDimension + i;\r\n\t\t\t\t\t//this.resultLatents[index] = (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2;\r\n\t\t\t\t\tVue.set(this.resultLatents, index, (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2);\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tupdateResultLatents () {\r\n\t\t\t\tfor (let i = 0; i < this.latentLayers; ++i)\r\n\t\t\t\t\tthis.updateResultLatentsLayer(i);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.resultLatentsBytes);\r\n\t\t\t\tconsole.log(\"Result latent code copied into clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonAggregationChosen () {\r\n\t\t\t\t//console.log(\"onAggregationChosen:\", event);\r\n\t\t\t\tconst chosen = this.aggregationStatus === \"ALL\";\r\n\t\t\t\tthis.bars.forEach(bar => bar.chosen = !chosen);\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatentLayers () {\r\n\t\t\t\tthis.bars = Array(this.latentLayers).fill(null).map((_, i) => ({\r\n\t\t\t\t\tindex: i,\r\n\t\t\t\t\tchosen: true,\r\n\t\t\t\t\tvalue: 0,\r\n\t\t\t\t}));\r\n\r\n\t\t\t\tthis.updateResultLatents();\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultLatentsBytes () {\r\n\t\t\t\tthis.resultUpdateTime = Date.now();\r\n\t\t\t\tsetTimeout(() => {\r\n\t\t\t\t\tif (Date.now() - this.resultUpdateTime > 290)\r\n\t\t\t\t\t\tthis.cachedResultCode = this.resultLatentsBytes;\r\n\t\t\t\t}, 300);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultImageURL () {\r\n\t\t\t\tthis.resultLoading = true;\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style>\r\n\thtml\r\n\t{\r\n\t\toverflow: hidden;\r\n\t\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n\t}\r\n\r\n\t.initializing\r\n\t{\r\n\t\tposition: fixed;\r\n\t\ttop: 0;\r\n\t\tleft: 0;\r\n\t\tbottom: 0;\r\n\t\tright: 0;\r\n\t\tfont-size: 10vh;\r\n\t\tpadding: 30vh 2em 0;\r\n\t\twhite-space: normal;\r\n\t\tbackground-color: #ccca;\r\n\t\tcolor: #444c;\r\n\t}\r\n\r\n\t.g-view\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t}\r\n\r\n\t.turner .index\r\n\t{\r\n\t\tfont-size: 10px;\r\n\t\twidth: 2.4em;\r\n\t\tmax-width: 2.4em;\r\n\t\ttext-align: right;\r\n\t\tuser-select: none;\r\n\t}\r\n\r\n\t.turner .value\r\n\t{\r\n\t\tfont-size: 11px;\r\n\t}\r\n\r\n\t.turner .slider input\r\n\t{\r\n\t\twidth: 320px;\r\n\t}\r\n\r\n\tbody\r\n\t{\r\n\t\toverflow: hidden;\r\n\t}\r\n\r\n\t.merger\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\tmain\r\n\t{\r\n\t\tposition: absolute;\r\n\t\tleft: 420px;\r\n\t\ttop: 0;\r\n\t}\r\n\r\n\t.result\r\n\t{\r\n\t\theight: calc(100vh - 24px);\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.chosen input.status-PART::before\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tposition: relative;\r\n\t\tcontent: \"\\25a0\";\r\n\t\tcolor: #666;\r\n\t\tfont-size: 16px;\r\n\t\ttop: -4px;\r\n\t\tleft: 1px;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
+      inject("data-v-9c3e8b44_0", { source: "\nhtml\n{\n\toverflow: hidden;\n\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n}\n.initializing\n{\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tbottom: 0;\n\tright: 0;\n\tfont-size: 10vh;\n\tpadding: 30vh 2em 0;\n\twhite-space: normal;\n\tbackground-color: #ccca;\n\tcolor: #444c;\n}\n.g-view\n{\n\tdisplay: inline-block;\n}\n.turner .index\n{\n\tfont-size: 10px;\n\twidth: 2.4em;\n\tmax-width: 2.4em;\n\ttext-align: right;\n\tuser-select: none;\n}\n.turner .value\n{\n\tfont-size: 11px;\n}\n.turner .slider input\n{\n\twidth: 320px;\n}\nbody\n{\n\toverflow: hidden;\n}\n.merger\n{\n\tposition: relative;\n}\naside\n{\n\tposition: relative;\n\twidth: 406px;\n}\nmain\n{\n\tposition: absolute;\n\tleft: 420px;\n\ttop: 0;\n}\n.result\n{\n\theight: calc(100vh - 24px);\n}\n.loading img\n{\n\topacity: 0.7;\n}\n.chosen input.status-PART::before\n{\n\tdisplay: inline-block;\n\tposition: relative;\n\tcontent: \"\\25a0\";\n\tcolor: #666;\n\tfont-size: 16px;\n\ttop: -4px;\n\tleft: 1px;\n}\naside .swap\n{\n\tposition: absolute;\n\ttop: 0;\n\tleft: 50%;\n\ttransform: translateX(-50%);\n\tbackground: transparent;\n\tborder: 0;\n\tfont-size: 20px;\n\tcursor: pointer;\n\tborder-radius: 8px;\n}\naside .swap:hover\n{\n\tbackground: #fff6;\n\tfont-weight: bold;\n}\n.operation\n{\n\ttext-align: center;\n}\n.operation .description\n{\n\tcolor: #aaa;\n\tdisplay: inline-block;\n\twidth: 12em;\n}\n.formula\n{\n\tdisplay: inline-block;\n\tpadding: 0 1em;\n\tline-height: 120%;\n\tfont-size: 120%;\n\ttext-align-last: center;\n\tfont-weight: bold;\n\tborder: 0;\n\t-webkit-appearance: none;\n\tcursor: pointer;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\merger.vue"],"names":[],"mappings":";AAyQA;;CAEA,gBAAA;CACA,4DAAA;AACA;AAEA;;CAEA,eAAA;CACA,MAAA;CACA,OAAA;CACA,SAAA;CACA,QAAA;CACA,eAAA;CACA,mBAAA;CACA,mBAAA;CACA,uBAAA;CACA,YAAA;AACA;AAEA;;CAEA,qBAAA;AACA;AAEA;;CAEA,eAAA;CACA,YAAA;CACA,gBAAA;CACA,iBAAA;CACA,iBAAA;AACA;AAEA;;CAEA,eAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,gBAAA;AACA;AAEA;;CAEA,kBAAA;AACA;AAEA;;CAEA,kBAAA;CACA,YAAA;AACA;AAEA;;CAEA,kBAAA;CACA,WAAA;CACA,MAAA;AACA;AAEA;;CAEA,0BAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,qBAAA;CACA,kBAAA;CACA,gBAAA;CACA,WAAA;CACA,eAAA;CACA,SAAA;CACA,SAAA;AACA;AAEA;;CAEA,kBAAA;CACA,MAAA;CACA,SAAA;CACA,2BAAA;CACA,uBAAA;CACA,SAAA;CACA,eAAA;CACA,eAAA;CACA,kBAAA;AACA;AAEA;;CAEA,iBAAA;CACA,iBAAA;AACA;AAEA;;CAEA,kBAAA;AACA;AAEA;;CAEA,WAAA;CACA,qBAAA;CACA,WAAA;AACA;AAEA;;CAEA,qBAAA;CACA,cAAA;CACA,iBAAA;CACA,eAAA;CACA,uBAAA;CACA,iBAAA;CACA,SAAA;CACA,wBAAA;CACA,eAAA;AACA","file":"merger.vue","sourcesContent":["<template>\r\n\t<div class=\"merger\" @copy.prevent=\"onCopy\">\r\n\t\t<aside>\r\n\t\t\t<StoreInput v-show=\"false\" v-model=\"leftCode\" sessionKey=\"mergerLeftCode\" />\r\n\t\t\t<StoreInput v-show=\"false\" v-model=\"rightCode\" sessionKey=\"mergerRightCode\" />\r\n\t\t\t<p>\r\n\t\t\t\t<GView class=\"g-view\" :layers=\"latentLayers\" :lastDimension=\"latentDimension\" :latents.sync=\"sourceLatents[0]\" @change=\"updateResultLatents\" :ppLatentsBytes.sync=\"leftCode\" />\r\n\t\t\t\t<GView class=\"g-view\" :layers=\"latentLayers\" :lastDimension=\"latentDimension\" :latents.sync=\"sourceLatents[1]\" @change=\"updateResultLatents\" :ppLatentsBytes.sync=\"rightCode\" />\r\n\t\t\t</p>\r\n\t\t\t<button class=\"swap\" @click=\"swapSources\">&#x2b04;</button>\r\n\t\t\t<p class=\"operation\">\r\n\t\t\t\t<StoreInput v-show=\"false\" v-model=\"formula\" sessionKey=\"mergerFormula\" />\r\n\t\t\t\t<select class=\"formula\" v-model=\"formula\" :title=\"formula\">\r\n\t\t\t\t\t<option value=\"INTERPOLATION\">&#x27f7;</option>\r\n\t\t\t\t\t<option value=\"ADDITION\">+</option>\r\n\t\t\t\t\t<option value=\"SUBTRACTION\">-</option>\r\n\t\t\t\t</select>\r\n\t\t\t\t<span class=\"description\" v-html=\"FORMULA_TEXTS[formula]\"></span>\r\n\t\t\t</p>\r\n\t\t\t<table class=\"turner\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr class=\"aggregation\">\r\n\t\t\t\t\t\t<td class=\"chosen\">\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" :class=\"{[`status-${aggregationStatus}`]: true}\" :checked=\"aggregationStatus === 'ALL'\" @change=\"onAggregationChosen\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"index\">\r\n\t\t\t\t\t\t\t{{aggregationStatus}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"slider\">\r\n\t\t\t\t\t\t\t<input type=\"range\" v-model.number=\"aggregationBarValue\" :min=\"-kMax\" :max=\"kMax\" step=\"any\" :disabled=\"!Number.isFinite(aggregationBarValue)\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"value\">\r\n\t\t\t\t\t\t\t{{Number.isFinite(aggregationBarValue) ? aggregationBarValue.toFixed(2) : null}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t\t<tr v-for=\"bar of bars\" :key=\"bar.index\">\r\n\t\t\t\t\t\t<td class=\"chosen\">\r\n\t\t\t\t\t\t\t<input type=\"checkbox\" v-model=\"bar.chosen\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"index\">\r\n\t\t\t\t\t\t\t{{bar.index + 1}}.\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"slider\">\r\n\t\t\t\t\t\t\t<input type=\"range\" v-model.number=\"bar.value\" :min=\"-kMax\" :max=\"kMax\" step=\"any\" @change=\"updateResultLatentsLayer(bar.index)\" />\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t\t<td class=\"value\">\r\n\t\t\t\t\t\t\t{{bar.value.toFixed(2)}}\r\n\t\t\t\t\t\t</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\t\t</aside>\r\n\t\t<main :class=\"{loading: resultLoading}\">\r\n\t\t\t<img v-if=\"resultImageURL\" class=\"result\" :src=\"resultImageURL\" @load=\"resultLoading = false\" />\r\n\t\t</main>\r\n\t\t<div v-show=\"initializing\" class=\"initializing\">Model initializing, wait a moment...</div>\r\n\t\t<Navigator />\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport Vue from \"vue\";\r\n\r\n\timport GView from \"./g-view.vue\";\r\n\timport StoreInput from \"./storeinput.vue\";\r\n\timport Navigator from \"./navigator.vue\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\tconst FORMULA_TEXTS = {\r\n\t\tINTERPOLATION: \"(1-k)/2 &centerdot; x1 + (1+k)/2 &centerdot; x2\",\r\n\t\tSUBTRACTION: \"k &centerdot; (x2 - x1)\",\r\n\t\tADDITION: \"x1 + k &centerdot; x2\",\r\n\t};\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"merger\",\r\n\r\n\r\n\t\tcomponents: {\r\n\t\t\tGView,\r\n\t\t\tStoreInput,\r\n\t\t\tNavigator,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tspec: null,\r\n\t\t\t\tinitializing: false,\r\n\t\t\t\tbars: [],\r\n\t\t\t\tsourceLatents: [null, null],\r\n\t\t\t\tresultLatents: null,\r\n\t\t\t\tcachedResultCode: null,\r\n\t\t\t\tresultUpdateTime: 0,\r\n\t\t\t\tleftCode: null,\r\n\t\t\t\trightCode: null,\r\n\t\t\t\tresultLoading: false,\r\n\t\t\t\tformula: \"INTERPOLATION\",\r\n\t\t\t\tFORMULA_TEXTS,\r\n\t\t\t\tkMax: 1,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentLayers () {\r\n\t\t\t\treturn this.spec ? this.spec.synthesis_input_shape[1] : 0;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentDimension () {\r\n\t\t\t\treturn this.spec ? this.spec.synthesis_input_shape[2] : 512;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultLatentsBytes () {\r\n\t\t\t\treturn this.resultLatents && LatentCode.encodeFixed16(this.resultLatents);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultImageURL () {\r\n\t\t\t\treturn this.cachedResultCode && `/generate?fromW=1&xlatents=${encodeURIComponent(this.cachedResultCode)}`;\r\n\t\t\t},\r\n\r\n\r\n\t\t\taggregationStatus () {\r\n\t\t\t\tconst chosenBars = this.bars.filter(bar => bar.chosen);\r\n\t\t\t\tif (chosenBars.length === this.latentLayers)\r\n\t\t\t\t\treturn \"ALL\";\r\n\r\n\t\t\t\tif (chosenBars.length)\r\n\t\t\t\t\treturn \"PART\";\r\n\r\n\t\t\t\treturn \"NONE\";\r\n\t\t\t},\r\n\r\n\r\n\t\t\taggregationBarValue: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tconst chosenBars = this.bars.filter(bar => bar.chosen);\r\n\t\t\t\t\tif (!chosenBars.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn chosenBars.reduce((sum, bar) => sum + bar.value, 0) / chosenBars.length;\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.bars.filter(bar => bar.chosen).forEach(bar => {\r\n\t\t\t\t\t\tbar.value = value;\r\n\t\t\t\t\t\tthis.updateResultLatentsLayer(bar.index);\r\n\t\t\t\t\t});\r\n\t\t\t\t},\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tasync created () {\r\n\t\t\twindow.$main = this;\r\n\r\n\t\t\tthis.initializing = true;\r\n\r\n\t\t\tconst res = await fetch(\"/spec\");\r\n\t\t\tthis.spec = await res.json();\r\n\t\t\tconsole.log(\"model spec:\", this.spec);\r\n\r\n\t\t\tthis.resultLatents = Array(this.spec.synthesis_input_shape[1] * this.spec.synthesis_input_shape[2]).fill(0);\r\n\r\n\t\t\tthis.initializing = false;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tcalculateByFormula (x1, x2, k) {\r\n\t\t\t\tswitch (this.formula) {\r\n\t\t\t\tcase \"INTERPOLATION\":\r\n\t\t\t\t\treturn (x1 * (1 - k) + x2 * (1 + k)) / 2;\r\n\r\n\t\t\t\tcase \"SUBTRACTION\":\r\n\t\t\t\t\treturn k * (x2 - x1);\r\n\r\n\t\t\t\tcase \"ADDITION\":\r\n\t\t\t\t\treturn x1 + k * x2;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tthrow new Error(`unexpected formula: ${this.formula}`);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tupdateResultLatentsLayer (layer) {\r\n\t\t\t\tif (!this.resultLatents || !this.sourceLatents[0] || !this.sourceLatents[1])\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tconst k = this.bars[layer].value;\r\n\t\t\t\tfor (let i = 0; i < this.latentDimension; ++i) {\r\n\t\t\t\t\tconst index = layer * this.latentDimension + i;\r\n\t\t\t\t\t//this.resultLatents[index] = (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2;\r\n\t\t\t\t\tVue.set(this.resultLatents, index, this.calculateByFormula(this.sourceLatents[0][index], this.sourceLatents[1][index], k));\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tupdateResultLatents () {\r\n\t\t\t\tfor (let i = 0; i < this.latentLayers; ++i)\r\n\t\t\t\t\tthis.updateResultLatentsLayer(i);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tswapSources () {\r\n\t\t\t\tconst temp = this.leftCode;\r\n\t\t\t\tthis.leftCode = this.rightCode;\r\n\t\t\t\tthis.rightCode = temp;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.resultLatentsBytes);\r\n\t\t\t\tconsole.log(\"Result latent code copied into clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonAggregationChosen () {\r\n\t\t\t\t//console.log(\"onAggregationChosen:\", event);\r\n\t\t\t\tconst chosen = this.aggregationStatus === \"ALL\";\r\n\t\t\t\tthis.bars.forEach(bar => bar.chosen = !chosen);\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatentLayers () {\r\n\t\t\t\tthis.bars = Array(this.latentLayers).fill(null).map((_, i) => ({\r\n\t\t\t\t\tindex: i,\r\n\t\t\t\t\tchosen: true,\r\n\t\t\t\t\tvalue: 0,\r\n\t\t\t\t}));\r\n\r\n\t\t\t\tthis.updateResultLatents();\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultLatentsBytes () {\r\n\t\t\t\tthis.resultUpdateTime = Date.now();\r\n\t\t\t\tsetTimeout(() => {\r\n\t\t\t\t\tif (Date.now() - this.resultUpdateTime > 290)\r\n\t\t\t\t\t\tthis.cachedResultCode = this.resultLatentsBytes;\r\n\t\t\t\t}, 300);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tresultImageURL () {\r\n\t\t\t\tthis.resultLoading = true;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tformula: \"updateResultLatents\",\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style>\r\n\thtml\r\n\t{\r\n\t\toverflow: hidden;\r\n\t\tfont-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n\t}\r\n\r\n\t.initializing\r\n\t{\r\n\t\tposition: fixed;\r\n\t\ttop: 0;\r\n\t\tleft: 0;\r\n\t\tbottom: 0;\r\n\t\tright: 0;\r\n\t\tfont-size: 10vh;\r\n\t\tpadding: 30vh 2em 0;\r\n\t\twhite-space: normal;\r\n\t\tbackground-color: #ccca;\r\n\t\tcolor: #444c;\r\n\t}\r\n\r\n\t.g-view\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t}\r\n\r\n\t.turner .index\r\n\t{\r\n\t\tfont-size: 10px;\r\n\t\twidth: 2.4em;\r\n\t\tmax-width: 2.4em;\r\n\t\ttext-align: right;\r\n\t\tuser-select: none;\r\n\t}\r\n\r\n\t.turner .value\r\n\t{\r\n\t\tfont-size: 11px;\r\n\t}\r\n\r\n\t.turner .slider input\r\n\t{\r\n\t\twidth: 320px;\r\n\t}\r\n\r\n\tbody\r\n\t{\r\n\t\toverflow: hidden;\r\n\t}\r\n\r\n\t.merger\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\taside\r\n\t{\r\n\t\tposition: relative;\r\n\t\twidth: 406px;\r\n\t}\r\n\r\n\tmain\r\n\t{\r\n\t\tposition: absolute;\r\n\t\tleft: 420px;\r\n\t\ttop: 0;\r\n\t}\r\n\r\n\t.result\r\n\t{\r\n\t\theight: calc(100vh - 24px);\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.chosen input.status-PART::before\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tposition: relative;\r\n\t\tcontent: \"\\25a0\";\r\n\t\tcolor: #666;\r\n\t\tfont-size: 16px;\r\n\t\ttop: -4px;\r\n\t\tleft: 1px;\r\n\t}\r\n\r\n\taside .swap\r\n\t{\r\n\t\tposition: absolute;\r\n\t\ttop: 0;\r\n\t\tleft: 50%;\r\n\t\ttransform: translateX(-50%);\r\n\t\tbackground: transparent;\r\n\t\tborder: 0;\r\n\t\tfont-size: 20px;\r\n\t\tcursor: pointer;\r\n\t\tborder-radius: 8px;\r\n\t}\r\n\r\n\taside .swap:hover\r\n\t{\r\n\t\tbackground: #fff6;\r\n\t\tfont-weight: bold;\r\n\t}\r\n\r\n\t.operation\r\n\t{\r\n\t\ttext-align: center;\r\n\t}\r\n\r\n\t.operation .description\r\n\t{\r\n\t\tcolor: #aaa;\r\n\t\tdisplay: inline-block;\r\n\t\twidth: 12em;\r\n\t}\r\n\r\n\t.formula\r\n\t{\r\n\t\tdisplay: inline-block;\r\n\t\tpadding: 0 1em;\r\n\t\tline-height: 120%;\r\n\t\tfont-size: 120%;\r\n\t\ttext-align-last: center;\r\n\t\tfont-weight: bold;\r\n\t\tborder: 0;\r\n\t\t-webkit-appearance: none;\r\n\t\tcursor: pointer;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
 
     };
     /* scoped */
