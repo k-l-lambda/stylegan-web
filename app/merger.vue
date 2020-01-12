@@ -27,7 +27,7 @@
 							{{aggregationStatus}}
 						</td>
 						<td class="slider">
-							<input type="range" v-model.number="aggregationBarValue" :min="-1" :max="1" step="any" :disabled="!Number.isFinite(aggregationBarValue)" />
+							<input type="range" v-model.number="aggregationBarValue" :min="-kMax" :max="kMax" step="any" :disabled="!Number.isFinite(aggregationBarValue)" />
 						</td>
 						<td class="value">
 							{{Number.isFinite(aggregationBarValue) ? aggregationBarValue.toFixed(2) : null}}
@@ -41,7 +41,7 @@
 							{{bar.index + 1}}.
 						</td>
 						<td class="slider">
-							<input type="range" v-model.number="bar.value" :min="-1" :max="1" step="any" @change="updateResultLatentsLayer(bar.index)" />
+							<input type="range" v-model.number="bar.value" :min="-kMax" :max="kMax" step="any" @change="updateResultLatentsLayer(bar.index)" />
 						</td>
 						<td class="value">
 							{{bar.value.toFixed(2)}}
@@ -102,6 +102,7 @@
 				resultLoading: false,
 				formula: "INTERPOLATION",
 				FORMULA_TEXTS,
+				kMax: 1,
 			};
 		},
 
