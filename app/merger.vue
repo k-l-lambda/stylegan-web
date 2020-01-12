@@ -7,6 +7,16 @@
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[0]" @change="updateResultLatents" :ppLatentsBytes.sync="leftCode" />
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[1]" @change="updateResultLatents" :ppLatentsBytes.sync="rightCode" />
 			</p>
+			<button class="swap" @click="swapSources">&#x2b04;</button>
+			<p class="operation">
+				<StoreInput v-show="false" v-model="formula" sessionKey="mergerFormula" />
+				<select class="formula" v-model="formula" :title="formula">
+					<option value="INTERPOLATION">&#x27f7;</option>
+					<option value="ADDITION">+</option>
+					<option value="SUBTRACTION">-</option>
+				</select>
+				<span class="description" v-html="FORMULA_TEXTS[formula]"></span>
+			</p>
 			<table class="turner">
 				<tbody>
 					<tr class="aggregation">
@@ -17,7 +27,7 @@
 							{{aggregationStatus}}
 						</td>
 						<td class="slider">
-							<input type="range" v-model.number="aggregationBarValue" :min="-1" :max="1" step="any" :disabled="!Number.isFinite(aggregationBarValue)" />
+							<input type="range" v-model.number="aggregationBarValue" :min="-kMax" :max="kMax" step="any" :disabled="!Number.isFinite(aggregationBarValue)" />
 						</td>
 						<td class="value">
 							{{Number.isFinite(aggregationBarValue) ? aggregationBarValue.toFixed(2) : null}}
@@ -31,7 +41,7 @@
 							{{bar.index + 1}}.
 						</td>
 						<td class="slider">
-							<input type="range" v-model.number="bar.value" :min="-1" :max="1" step="any" @change="updateResultLatentsLayer(bar.index)" />
+							<input type="range" v-model.number="bar.value" :min="-kMax" :max="kMax" step="any" @change="updateResultLatentsLayer(bar.index)" />
 						</td>
 						<td class="value">
 							{{bar.value.toFixed(2)}}
@@ -59,6 +69,14 @@
 
 
 
+	const FORMULA_TEXTS = {
+		INTERPOLATION: "(1-k)/2 &centerdot; x1 + (1+k)/2 &centerdot; x2",
+		SUBTRACTION: "k &centerdot; (x2 - x1)",
+		ADDITION: "x1 + k &centerdot; x2",
+	};
+
+
+
 	export default {
 		name: "merger",
 
@@ -82,6 +100,9 @@
 				leftCode: null,
 				rightCode: null,
 				resultLoading: false,
+				formula: "INTERPOLATION",
+				FORMULA_TEXTS,
+				kMax: 1,
 			};
 		},
 
@@ -154,6 +175,22 @@
 
 
 		methods: {
+			calculateByFormula (x1, x2, k) {
+				switch (this.formula) {
+				case "INTERPOLATION":
+					return (x1 * (1 - k) + x2 * (1 + k)) / 2;
+
+				case "SUBTRACTION":
+					return k * (x2 - x1);
+
+				case "ADDITION":
+					return x1 + k * x2;
+				}
+
+				throw new Error(`unexpected formula: ${this.formula}`);
+			},
+
+
 			updateResultLatentsLayer (layer) {
 				if (!this.resultLatents || !this.sourceLatents[0] || !this.sourceLatents[1])
 					return;
@@ -162,7 +199,7 @@
 				for (let i = 0; i < this.latentDimension; ++i) {
 					const index = layer * this.latentDimension + i;
 					//this.resultLatents[index] = (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2;
-					Vue.set(this.resultLatents, index, (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2);
+					Vue.set(this.resultLatents, index, this.calculateByFormula(this.sourceLatents[0][index], this.sourceLatents[1][index], k));
 				}
 			},
 
@@ -170,6 +207,13 @@
 			updateResultLatents () {
 				for (let i = 0; i < this.latentLayers; ++i)
 					this.updateResultLatentsLayer(i);
+			},
+
+
+			swapSources () {
+				const temp = this.leftCode;
+				this.leftCode = this.rightCode;
+				this.rightCode = temp;
 			},
 
 
@@ -211,6 +255,9 @@
 			resultImageURL () {
 				this.resultLoading = true;
 			},
+
+
+			formula: "updateResultLatents",
 		},
 	};
 </script>
@@ -270,6 +317,12 @@
 		position: relative;
 	}
 
+	aside
+	{
+		position: relative;
+		width: 406px;
+	}
+
 	main
 	{
 		position: absolute;
@@ -296,5 +349,49 @@
 		font-size: 16px;
 		top: -4px;
 		left: 1px;
+	}
+
+	aside .swap
+	{
+		position: absolute;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		background: transparent;
+		border: 0;
+		font-size: 20px;
+		cursor: pointer;
+		border-radius: 8px;
+	}
+
+	aside .swap:hover
+	{
+		background: #fff6;
+		font-weight: bold;
+	}
+
+	.operation
+	{
+		text-align: center;
+	}
+
+	.operation .description
+	{
+		color: #aaa;
+		display: inline-block;
+		width: 12em;
+	}
+
+	.formula
+	{
+		display: inline-block;
+		padding: 0 1em;
+		line-height: 120%;
+		font-size: 120%;
+		text-align-last: center;
+		font-weight: bold;
+		border: 0;
+		-webkit-appearance: none;
+		cursor: pointer;
 	}
 </style>

@@ -90,8 +90,15 @@
 							this.latentsBytes = path;
 
 							break;
+						case "z":
+							const [_, psi, bytes] = path.match(/^(.+),(.+)$/);
+							const wcode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(bytes)}`)).text();
+							const ww = LatentCode.decodeFloat32(wcode);
+							this.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(ww)));
+
+							break;
 						default:
-							console.warn("only w, w+ protocol supported.");
+							console.warn("invalid latent protocol:", protocol);
 						}
 					}
 					catch (error) {

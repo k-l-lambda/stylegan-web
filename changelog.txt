@@ -1,8 +1,25 @@
 
 TODO:
-	map Z to W
+	batch projection
 	project from a specified code
 
+
+
+2020.1.12	K.L.	<k.l.lambda@gmail.com>
+
+	+	index.vue: show W latent magnitude.
+
+	+	index.vue: added latent URL copy shortcut.
+
+	+	g-view.vue: accept Z latent code input.
+
+	+	http_server.py: added argument of psi for mapZtoW.
+
+	+	http_server.py: mapZtoW added.
+
+	+	merger.vue: source swapping button added.
+
+	+	merger.vue: added 3 formula options.
 
 
 2020.1.11	K.L.	<k.l.lambda@gmail.com>

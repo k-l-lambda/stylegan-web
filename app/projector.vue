@@ -5,6 +5,7 @@
 		@drop.prevent="onDropFiles"
 		@dragover.prevent="drageHover = true"
 		@drageleave="drageHover = false"
+		@mouseup="drageHover = false"
 	>
 		<aside>
 			<p>

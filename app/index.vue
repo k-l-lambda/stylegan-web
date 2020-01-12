@@ -1,5 +1,5 @@
 <template>
-	<div @paste="onPaste">
+	<div @paste="onPaste" @copy.prevent="copyLatentCode">
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
 			<fieldset>
@@ -55,6 +55,9 @@
 						</span>
 					</span>
 				</span>
+			</fieldset>
+			<fieldset v-show="fromW">
+				Magnitude: <em :title="currentLatentsMagnitude">{{currentLatentsMagnitude.toFixed(3)}}</em>
 			</fieldset>
 		</header>
 		<aside>
@@ -257,20 +260,45 @@
 
 
 			featureVector () {
-				const normalized = this.fromW ? 1 : 1 / this.featureMagnitude;
+				const normalized = this.fromW ? 1 : 1 / this.safeFeatureMagnitude;
 				return this.features.map(f => f.value * normalized);
 			},
 
 
 			featureVectorEx () {
-				return this.featuresEx.map(f => f.value);
+				return this.featuresEx && this.featuresEx.map(f => f.value);
 			},
 
 
 			featureMagnitude() {
+				if (!this.features)
+					return 0;
+
 				const result = Math.sqrt(this.features.reduce((sum, f) => sum + f.value * f.value, 0));
 
-				return result || 1e-9;
+				return result;
+			},
+
+
+			safeFeatureMagnitude() {
+				const EPSILON = 1e-9;
+
+				return this.featureMagnitude || EPSILON;
+			},
+
+
+			featureMagnitudeEx() {
+				if (!this.featureVectorEx)
+					return 0;
+
+				const result = Math.sqrt(this.featureVectorEx.reduce((sum, v) => sum + v * v, 0));
+
+				return result;
+			},
+
+
+			currentLatentsMagnitude () {
+				return this.extendFeature ? this.featureMagnitudeEx / this.latentsLayers : this.featureMagnitude;
 			},
 
 
@@ -364,7 +392,7 @@
 
 
 			normalizeFeatures () {
-				this.features.forEach(f => f.value /= this.featureMagnitude);
+				this.features.forEach(f => f.value /= this.safeFeatureMagnitude);
 			},
 
 
