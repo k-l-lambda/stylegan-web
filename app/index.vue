@@ -1,5 +1,5 @@
 <template>
-	<div @paste="onPaste">
+	<div @paste="onPaste" @copy.prevent="copyLatentCode">
 		<header>
 			<h2 class="model" title="model name">{{model}}</h2>
 			<fieldset>
