@@ -7,6 +7,14 @@
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[0]" @change="updateResultLatents" :ppLatentsBytes.sync="leftCode" />
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[1]" @change="updateResultLatents" :ppLatentsBytes.sync="rightCode" />
 			</p>
+			<p class="operation">
+				<select class="formula" v-model="formula" :title="formula">
+					<option value="INTERPOLATION">&#x2b04;</option>
+					<option value="SUBTRACTION">-</option>
+					<option value="ADDITION">+</option>
+				</select>
+				<span class="description" v-html="FORMULA_TEXTS[formula]"></span>
+			</p>
 			<table class="turner">
 				<tbody>
 					<tr class="aggregation">
@@ -59,6 +67,14 @@
 
 
 
+	const FORMULA_TEXTS = {
+		INTERPOLATION: "(1-k)/2 &centerdot; x1 + (1+k)/2 &centerdot; x2",
+		SUBTRACTION: "k &centerdot; (x2 - x1)",
+		ADDITION: "x1 + k &centerdot; x2",
+	};
+
+
+
 	export default {
 		name: "merger",
 
@@ -82,6 +98,8 @@
 				leftCode: null,
 				rightCode: null,
 				resultLoading: false,
+				formula: "INTERPOLATION",
+				FORMULA_TEXTS,
 			};
 		},
 
@@ -154,6 +172,22 @@
 
 
 		methods: {
+			calculateByFormula (x1, x2, k) {
+				switch (this.formula) {
+				case "INTERPOLATION":
+					return x1 * (1 - k) + x2 * (1 + k);
+
+				case "SUBTRACTION":
+					return k * (x2 - x1);
+
+				case "ADDITION":
+					return x1 + k * x2;
+				}
+
+				throw new Error(`unexpected formula: ${this.formula}`);
+			},
+
+
 			updateResultLatentsLayer (layer) {
 				if (!this.resultLatents || !this.sourceLatents[0] || !this.sourceLatents[1])
 					return;
@@ -162,7 +196,7 @@
 				for (let i = 0; i < this.latentDimension; ++i) {
 					const index = layer * this.latentDimension + i;
 					//this.resultLatents[index] = (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2;
-					Vue.set(this.resultLatents, index, (this.sourceLatents[0][index] * (1 - k) + this.sourceLatents[1][index] * (k + 1)) / 2);
+					Vue.set(this.resultLatents, index, this.calculateByFormula(this.sourceLatents[0][index], this.sourceLatents[1][index], k));
 				}
 			},
 
@@ -211,6 +245,9 @@
 			resultImageURL () {
 				this.resultLoading = true;
 			},
+
+
+			formula: "updateResultLatents",
 		},
 	};
 </script>
@@ -270,6 +307,11 @@
 		position: relative;
 	}
 
+	aside
+	{
+		width: 406px;
+	}
+
 	main
 	{
 		position: absolute;
@@ -296,5 +338,30 @@
 		font-size: 16px;
 		top: -4px;
 		left: 1px;
+	}
+
+	.operation
+	{
+		text-align: center;
+	}
+
+	.operation .description
+	{
+		color: #aaa;
+		display: inline-block;
+		width: 12em;
+	}
+
+	.formula
+	{
+		display: inline-block;
+		padding: 0 1em;
+		line-height: 120%;
+		font-size: 120%;
+		text-align-last: center;
+		font-weight: bold;
+		border: 0;
+		-webkit-appearance: none;
+		cursor: pointer;
 	}
 </style>
