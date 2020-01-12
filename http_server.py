@@ -147,6 +147,19 @@ def spec():
 		synthesis_input_shape = model.components.synthesis.input_shape)
 
 
+@app.route('/map-z-w', methods=['GET'])
+def mapZtoW():
+	zStr = flask.request.args.get('z')
+
+	gs, _ = loadGs()
+	latent_len = gs.input_shape[1]
+
+	z = latentCode.decodeFloat32(zStr, latent_len).reshape([1, latent_len])
+	w = gs.components.mapping.run(z, None)[:, :1, :].reshape([latent_len])
+
+	return latentCode.encodeFloat32(w)
+
+
 @app.route('/generate', methods=['GET'])
 def generate():
 	latentsStr = flask.request.args.get('latents')
