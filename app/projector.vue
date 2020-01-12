@@ -35,7 +35,7 @@
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
-				<input type="checkbox" v-model="showAll" />show all
+				<input type="checkbox" v-model="showAll" />show all <em>({{projectedSequence.length}})</em>
 			</p>
 		</aside>
 		<main>
@@ -313,8 +313,12 @@
 				if (file)
 					if (/^image/.test(file.type))
 						this.loadTargetFile(file);
-					else if (/zip/.test(file.type))
-						this.loadPackage(file);
+					else if (/zip/.test(file.type)) {
+						if (/batch-pack/.test(file.name))
+							this.batchProject(file);
+						else
+							this.loadPackage(file);
+					}
 			},
 
 
@@ -407,7 +411,7 @@
 					results: this.shownProjectedSequence.map(item => ({
 						step: item.step,
 						xlatentCode: item.latentCodes,
-						key: item.key,
+						key: this.showAll && item.key,
 					})).sort((i1, i2) => i1.step - i2.step),
 				};
 				const manifestBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
@@ -459,6 +463,54 @@
 				}
 
 				console.log("Done.");
+			},
+
+
+			async batchProject (file) {
+				console.log("Batch projecting image...");
+
+				const pack = await JSZip.loadAsync(file);
+				const targetFiles = Object.values(pack.files).filter(data => !data.dir);
+				//console.log("batchProject:", targetFiles);
+
+				let index = 0;
+				for (const file of targetFiles) {
+					++index
+					console.log(`Projecting target ${index}/${targetFiles.length}, ${file.name}`);
+
+					try {
+						this.showAnimationPanel = false;
+
+						const blob = await file.async("blob");
+
+						this.targetUrl = URL.createObjectURL(blob);
+						this.targetName = file.name.replace(/\.\w+$/, "");
+
+						await this.$nextTick();
+
+						await this.project();
+
+						await this.$nextTick();
+
+						await this.save();
+
+						await this.$nextTick();
+
+						this.showAnimationPanel = true;
+						this.animationDimensions = 256;
+						await this.makeAnimation();
+
+						downloadUrl(this.animationUrl, `${this.targetName}-projection-${this.projectedSequence.length}.gif`);
+
+						await new Promise(resolve => setTimeout(resolve, 5e+3));
+					}
+					catch (error) {
+						console.error("batch projection error:", error);
+						await new Promise(resolve => console.log("continue function:", resolve));
+					}
+				}
+
+				console.log("Batch projecting finished.");
 			},
 
 

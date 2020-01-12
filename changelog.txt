@@ -1,11 +1,12 @@
 
 TODO:
-	batch projection
 	project from a specified code
 
 
 
 2020.1.12	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: batch projection implemented.
 
 	+	index.vue: show W latent magnitude.
 
