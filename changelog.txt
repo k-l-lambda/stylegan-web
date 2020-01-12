@@ -8,6 +8,8 @@ TODO:
 
 2020.1.12	K.L.	<k.l.lambda@gmail.com>
 
+	+	merger.vue: source swapping button added.
+
 	+	merger.vue: added 3 formula options.
 
 

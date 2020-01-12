@@ -7,11 +7,13 @@
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[0]" @change="updateResultLatents" :ppLatentsBytes.sync="leftCode" />
 				<GView class="g-view" :layers="latentLayers" :lastDimension="latentDimension" :latents.sync="sourceLatents[1]" @change="updateResultLatents" :ppLatentsBytes.sync="rightCode" />
 			</p>
+			<button class="swap" @click="swapSources">&#x2b04;</button>
 			<p class="operation">
+				<StoreInput v-show="false" v-model="formula" sessionKey="mergerFormula" />
 				<select class="formula" v-model="formula" :title="formula">
-					<option value="INTERPOLATION">&#x2b04;</option>
-					<option value="SUBTRACTION">-</option>
+					<option value="INTERPOLATION">&#x27f7;</option>
 					<option value="ADDITION">+</option>
+					<option value="SUBTRACTION">-</option>
 				</select>
 				<span class="description" v-html="FORMULA_TEXTS[formula]"></span>
 			</p>
@@ -207,6 +209,13 @@
 			},
 
 
+			swapSources () {
+				const temp = this.leftCode;
+				this.leftCode = this.rightCode;
+				this.rightCode = temp;
+			},
+
+
 			onCopy (event) {
 				event.clipboardData.setData("text/plain", "w+:" + this.resultLatentsBytes);
 				console.log("Result latent code copied into clipboard.");
@@ -309,6 +318,7 @@
 
 	aside
 	{
+		position: relative;
 		width: 406px;
 	}
 
@@ -338,6 +348,25 @@
 		font-size: 16px;
 		top: -4px;
 		left: 1px;
+	}
+
+	aside .swap
+	{
+		position: absolute;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		background: transparent;
+		border: 0;
+		font-size: 20px;
+		cursor: pointer;
+		border-radius: 8px;
+	}
+
+	aside .swap:hover
+	{
+		background: #fff6;
+		font-weight: bold;
 	}
 
 	.operation
