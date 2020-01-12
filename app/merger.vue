@@ -177,7 +177,7 @@
 			calculateByFormula (x1, x2, k) {
 				switch (this.formula) {
 				case "INTERPOLATION":
-					return x1 * (1 - k) + x2 * (1 + k);
+					return (x1 * (1 - k) + x2 * (1 + k)) / 2;
 
 				case "SUBTRACTION":
 					return k * (x2 - x1);
