@@ -1,5 +1,8 @@
 
 TODO:
+	try magnitude regularization
+	draw index number on projection GIF
+	face landmark tools for projection target image preprocess
 	project from a specified code
 
 
