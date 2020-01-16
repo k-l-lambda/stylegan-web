@@ -104,6 +104,7 @@
 	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js";
+	import {downloadUrl} from "./utils.js";
 
 
 
@@ -153,14 +154,6 @@
 			if (done)
 				break;
 		}
-	};
-
-
-	const downloadUrl = (url, filename) => {
-		const a = document.createElement("a");
-		a.setAttribute("download", filename);
-		a.href = url;
-		a.click();
 	};
 
 

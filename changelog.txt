@@ -9,6 +9,8 @@ TODO:
 
 2020.1.16	K.L.	<k.l.lambda@gmail.com>
 
+	+	merger.vue: download result image method added.
+
 	>	projector.vue: refined yield image sequence click behavior.
 
 	>	projector.vue: fixed field type of projectSteps & projectYieldInterval.

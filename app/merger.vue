@@ -60,12 +60,14 @@
 
 <script>
 	import Vue from "vue";
+	import md5 from "js-md5";
 
 	import GView from "./g-view.vue";
 	import StoreInput from "./storeinput.vue";
 	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js"
+	import {downloadUrl} from "./utils.js";
 
 
 
@@ -227,6 +229,11 @@
 				//console.log("onAggregationChosen:", event);
 				const chosen = this.aggregationStatus === "ALL";
 				this.bars.forEach(bar => bar.chosen = !chosen);
+			},
+
+
+			downloadResult () {
+				downloadUrl(this.resultImageURL, `${md5(this.cachedResultCode)}.png`);
 			},
 		},
 
