@@ -53,7 +53,7 @@
 			<div class="yielding">
 				<a v-for="item of shownProjectedSequence" :key="item.index" class="item"
 					:class="{focus: item.index === focusIndex}"
-					@mouseenter="focusIndex = item.index"
+					@click.prevent="focusIndex = item.index"
 					:href="generatorLinkFromLatents(item.latentCodes)"
 					target="_blank"
 				>
