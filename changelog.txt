@@ -1,13 +1,14 @@
 
 TODO:
 	try magnitude regularization
-	draw index number on projection GIF
 	face landmark tools for projection target image preprocess
 	project from a specified code
 
 
 
 2020.1.17	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: added index number on animation.
 
 	+	merger.vue: added result download button.
 

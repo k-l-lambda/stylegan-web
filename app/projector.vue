@@ -75,7 +75,12 @@
 					</section>
 				</p>
 				<p>
-					Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+					<section>
+						Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+					</section>
+					<section>
+						<input type="checkbox" v-model="animationWithIndex" />With Index
+					</section>
 				</p>
 				<p>
 					<button @click="makeAnimation" :disabled="renderingAnimation">
@@ -185,6 +190,7 @@
 				animationFrameInterval: 1000 / 30,
 				animationDimensions: null,
 				animationSize: null,
+				animationWithIndex: true,
 			};
 		},
 
@@ -532,6 +538,14 @@
 						img.src = item.img;
 					});
 					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
+
+					if (this.animationWithIndex) {
+						ctx.font = "12px serif";
+						ctx.fillStyle = "#fffa";
+						ctx.fillText(item.index.toString(), 3.4, 12);
+						ctx.fillStyle = "#000e";
+						ctx.fillText(item.index.toString(), 3, 11);
+					}
 
 					gif.addFrame(ctx, {copy: true, delay: this.animationRenderProgress < this.projectedSequence.length - 1 ? this.animationFrameInterval : 1000});
 
