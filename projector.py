@@ -34,6 +34,7 @@ class Projector:
         self.noise_ramp_length          = 0.75
         self.regularize_noise_weight    = 1e5
         self.euclidean_dist_weight      = 1
+        self.regularize_magnitude_weight= 0
         self.verbose                    = False
         self.clone_net                  = True
         self.uniform_latents            = True
@@ -137,6 +138,10 @@ class Projector:
         self._euclidean_dist = tf.reduce_mean(tf.math.square((self._target_images_var - self._images_expr) / 2.)) ** 0.5
 
         self._loss = perceptual_dist_mag + self.euclidean_dist_weight * self._euclidean_dist
+
+        # latent magnitude regularization
+        if self.regularize_magnitude_weight > 0:
+            self._loss += (tf.reduce_mean(tf.math.square(self._dlatents_var)) ** 0.5) * self.regularize_magnitude_weight
 
         # Noise regularization graph.
         self._info('Building noise regularization graph...')

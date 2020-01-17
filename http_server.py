@@ -112,6 +112,8 @@ def loadProjector():
 	g_Projector.regularize_noise_weight = float(os.environ.get('REGULARIZE_NOISE_WEIGHT', 1e5))
 	g_Projector.initial_noise_factor = float(os.environ.get('INITIAL_NOISE_FACTOR', 0.05))
 	g_Projector.uniform_latents = int(os.environ.get('UNIFORM_LATENTS', 0)) > 0
+	g_Projector.euclidean_dist_weight = float(os.environ.get('EUCLIDEAN_DIST_WEIGHT', 1))
+	g_Projector.regularize_magnitude_weight = float(os.environ.get('REGULARIZE_MAGNITUDE_WEIGHT', 0))
 	g_Projector.set_network(gs, lpips)
 
 	return g_Projector

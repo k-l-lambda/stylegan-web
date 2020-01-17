@@ -1,12 +1,13 @@
 
 TODO:
-	try magnitude regularization
 	face landmark tools for projection target image preprocess
 	project from a specified code
 
 
 
 2020.1.17	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.py: added latent magnitude regularization loss item.
 
 	+	projector.vue: added index number on animation.
 
