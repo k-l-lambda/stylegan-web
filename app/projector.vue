@@ -540,11 +540,12 @@
 					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
 
 					if (this.animationWithIndex) {
+						const number = (item.index + 1).toString();
 						ctx.font = "12px serif";
 						ctx.fillStyle = "#fffa";
-						ctx.fillText(item.index.toString(), 3.4, 12);
+						ctx.fillText(number, 3.4, 12);
 						ctx.fillStyle = "#000e";
-						ctx.fillText(item.index.toString(), 3, 11);
+						ctx.fillText(number, 3, 11);
 					}
 
 					gif.addFrame(ctx, {copy: true, delay: this.animationRenderProgress < this.projectedSequence.length - 1 ? this.animationFrameInterval : 1000});
