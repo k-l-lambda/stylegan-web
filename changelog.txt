@@ -1,12 +1,13 @@
 
 TODO:
-	Explorer: toW button
 	face landmark tools for projection target image preprocess
 	project from a specified code
 
 
 
 2020.1.17	K.L.	<k.l.lambda@gmail.com>
+
+	+	index.vue: added button of mapping Z to W.
 
 	+	g-view.vue: package file drag & drop added.
 

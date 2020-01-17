@@ -8,6 +8,9 @@
 					<option :value="true">W</option>
 				</select>&gt;
 			</fieldset>
+			<fieldset v-if="!fromW">
+				<button @click="convertFromZToW" title="map Z to W">&#x2192;W</button>
+			</fieldset>
 			<fieldset v-show="!fromW">
 				<input type="checkbox" v-model="noise" title="with random noise" :disabled="fromW" />noise
 			</fieldset>
@@ -469,6 +472,13 @@
 
 			featureNormalFactor() {
 				return featureNormalFactor;
+			},
+
+
+			async convertFromZToW () {
+				this.latentsBytes = await (await fetch(`/map-z-w?psi=${this.psi}&z=${encodeURIComponent(this.latentsBytes)}`)).text();
+				this.fromW = true;
+				this.extendFeature = false;
 			},
 		},
 
