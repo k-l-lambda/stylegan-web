@@ -123,6 +123,16 @@ According to [StyleGAN2 README.md](https://github.com/NVlabs/stylegan2#requireme
 	mklink /J tensorflow tensorflow_core
 	```
 
+* cudafe++ issue
+
+	If you encountered python console error like:
+	
+	```
+	nvcc error : 'cudafe++' died with status 0xC0000005 (ACCESS_VIOLATION)
+	```
+
+	That may caused by a bug from CUDA 10.0, you can fix this issue by replacing your `cudafe++.exe` file in CUDA program bin directory by the same name file from CUDA 10.1 or higher version. And you are welcome to download my [backup](./documents/cudafe++.zip) to avoid install a whole new version CUDA.
+
 ## Environment Configurations
 
 To manage environment variables conveniently, create a configuration file named `.env.local`. All avaiable env list:
