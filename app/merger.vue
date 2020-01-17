@@ -52,6 +52,7 @@
 		</aside>
 		<main :class="{loading: resultLoading}">
 			<img v-if="resultImageURL" class="result" :src="resultImageURL" @load="resultLoading = false" />
+			<button class="save-result" @click="downloadResult">&#x1f4be;</button>
 		</main>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 		<Navigator />
@@ -316,7 +317,7 @@
 
 	body
 	{
-		overflow: hidden;
+		overflow: visible;
 	}
 
 	.merger
@@ -400,5 +401,20 @@
 		border: 0;
 		-webkit-appearance: none;
 		cursor: pointer;
+	}
+
+	.save-result
+	{
+		position: relative;
+		transform: translate(-110%, -40%);
+		cursor: pointer;
+		background: transparent;
+		border: 0;
+		opacity: 0;
+	}
+
+	.save-result:hover
+	{
+		opacity: 1;
 	}
 </style>
