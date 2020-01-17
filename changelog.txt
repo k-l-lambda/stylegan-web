@@ -1,5 +1,6 @@
 
 TODO:
+	Explorer: toW button
 	face landmark tools for projection target image preprocess
 	project from a specified code
 
