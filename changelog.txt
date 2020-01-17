@@ -8,6 +8,8 @@ TODO:
 
 2020.1.17	K.L.	<k.l.lambda@gmail.com>
 
+	+	g-view.vue: package file drag & drop added.
+
 	+	projector.py: added latent magnitude regularization loss item.
 
 	+	projector.vue: added index number on animation.
