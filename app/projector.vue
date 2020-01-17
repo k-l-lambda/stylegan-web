@@ -9,9 +9,9 @@
 	>
 		<aside>
 			<p>
-				<StoreInput v-model="projectSteps" type="number" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
+				<StoreInput v-model.number="projectSteps" type="number" localKey="projectorSteps" :styleObj="{width: '4em'}" :disabled="running" title="projector steps" />
 				/
-				<StoreInput v-model="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
+				<StoreInput v-model.number="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
 				<button :disabled="running" @click="project">Project</button>
@@ -35,7 +35,7 @@
 			</p>
 			<p v-show="projectedSequence.length > 0">
 				<!--StoreInput type="checkbox" v-model="showAll" sessionKey="projectorShowAllSequenceItems" />show all-->
-				<input type="checkbox" v-model="showAll" />show all
+				<input type="checkbox" v-model="showAll" />show all <em>({{projectedSequence.length}})</em>
 			</p>
 		</aside>
 		<main>
@@ -53,7 +53,7 @@
 			<div class="yielding">
 				<a v-for="item of shownProjectedSequence" :key="item.index" class="item"
 					:class="{focus: item.index === focusIndex}"
-					@mouseenter="focusIndex = item.index"
+					@click.prevent="focusIndex = item.index"
 					:href="generatorLinkFromLatents(item.latentCodes)"
 					target="_blank"
 				>
@@ -75,7 +75,12 @@
 					</section>
 				</p>
 				<p>
-					Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+					<section>
+						Dimensions: <input type="number" v-model="animationDimensions" min="4" :style="{width: '4em'}" />px
+					</section>
+					<section>
+						<input type="checkbox" v-model="animationWithIndex" />With Index
+					</section>
 				</p>
 				<p>
 					<button @click="makeAnimation" :disabled="renderingAnimation">
@@ -104,6 +109,7 @@
 	import Navigator from "./navigator.vue";
 
 	import * as LatentCode from "./latentCode.js";
+	import {downloadUrl} from "./utils.js";
 
 
 
@@ -156,14 +162,6 @@
 	};
 
 
-	const downloadUrl = (url, filename) => {
-		const a = document.createElement("a");
-		a.setAttribute("download", filename);
-		a.href = url;
-		a.click();
-	};
-
-
 
 	export default {
 		name: "projector",
@@ -192,6 +190,7 @@
 				animationFrameInterval: 1000 / 30,
 				animationDimensions: null,
 				animationSize: null,
+				animationWithIndex: true,
 			};
 		},
 
@@ -313,8 +312,12 @@
 				if (file)
 					if (/^image/.test(file.type))
 						this.loadTargetFile(file);
-					else if (/zip/.test(file.type))
-						this.loadPackage(file);
+					else if (/zip/.test(file.type)) {
+						if (/batch-pack/.test(file.name))
+							this.batchProject(file);
+						else
+							this.loadPackage(file);
+					}
 			},
 
 
@@ -407,7 +410,7 @@
 					results: this.shownProjectedSequence.map(item => ({
 						step: item.step,
 						xlatentCode: item.latentCodes,
-						key: item.key,
+						key: this.showAll && item.key,
 					})).sort((i1, i2) => i1.step - i2.step),
 				};
 				const manifestBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
@@ -462,6 +465,54 @@
 			},
 
 
+			async batchProject (file) {
+				console.log("Batch projecting image...");
+
+				const pack = await JSZip.loadAsync(file);
+				const targetFiles = Object.values(pack.files).filter(data => !data.dir);
+				//console.log("batchProject:", targetFiles);
+
+				let index = 0;
+				for (const file of targetFiles) {
+					++index
+					console.log(`Projecting target ${index}/${targetFiles.length}, ${file.name}`);
+
+					try {
+						this.showAnimationPanel = false;
+
+						const blob = await file.async("blob");
+
+						this.targetUrl = URL.createObjectURL(blob);
+						this.targetName = file.name.replace(/\.\w+$/, "");
+
+						await this.$nextTick();
+
+						await this.project();
+
+						await this.$nextTick();
+
+						await this.save();
+
+						await this.$nextTick();
+
+						this.showAnimationPanel = true;
+						this.animationDimensions = 256;
+						await this.makeAnimation();
+
+						downloadUrl(this.animationUrl, `${this.targetName}-projection-${this.projectedSequence.length}.gif`);
+
+						await new Promise(resolve => setTimeout(resolve, 5e+3));
+					}
+					catch (error) {
+						console.error("batch projection error:", error);
+						await new Promise(resolve => console.log("continue function:", resolve));
+					}
+				}
+
+				console.log("Batch projecting finished.");
+			},
+
+
 			async makeAnimation() {
 				const spec = await this.getSpec();
 
@@ -487,6 +538,15 @@
 						img.src = item.img;
 					});
 					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
+
+					if (this.animationWithIndex) {
+						const number = (item.index + 1).toString();
+						ctx.font = "12px serif";
+						ctx.fillStyle = "#fffa";
+						ctx.fillText(number, 3.4, 12);
+						ctx.fillStyle = "#000e";
+						ctx.fillText(number, 3, 11);
+					}
 
 					gif.addFrame(ctx, {copy: true, delay: this.animationRenderProgress < this.projectedSequence.length - 1 ? this.animationFrameInterval : 1000});
 

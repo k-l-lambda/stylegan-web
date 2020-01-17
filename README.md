@@ -136,4 +136,6 @@ Key							| Description							| Default Value
 **MODEL_PATH_***			| Generator network file path dictionary. See [examples](#model-paths-example).	|
 **REGULARIZE_NOISE_WEIGHT**	| Projector training hyperparameter. Float.	| *1e5*
 **INITIAL_NOISE_FACTOR**	| Projector training hyperparameter. Float.	| *0.05*
+**EUCLIDEAN_DIST_WEIGHT**	| Projector training hyperparameter. Float.	| *1*
+**REGULARIZE_MAGNITUDE_WEIGHT**	| Projector training hyperparameter. Float.	| *0*
 **UNIFORM_LATENTS**			| Use uniform latents for all feature layers (consistent with origin StyleGAN2 paper). Boolean, 0 or 1	| *0*

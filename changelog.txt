@@ -1,11 +1,31 @@
 
 TODO:
-	batch projection
+	face landmark tools for projection target image preprocess
 	project from a specified code
 
 
 
+2020.1.17	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.py: added latent magnitude regularization loss item.
+
+	+	projector.vue: added index number on animation.
+
+	+	merger.vue: added result download button.
+
+
+2020.1.16	K.L.	<k.l.lambda@gmail.com>
+
+	+	merger.vue: download result image method added.
+
+	>	projector.vue: refined yield image sequence click behavior.
+
+	>	projector.vue: fixed field type of projectSteps & projectYieldInterval.
+
+
 2020.1.12	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: batch projection implemented.
 
 	+	index.vue: show W latent magnitude.
 

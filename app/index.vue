@@ -1,7 +1,7 @@
 <template>
 	<div @paste="onPaste" @copy.prevent="copyLatentCode">
 		<header>
-			<h2 class="model" title="model name">{{model}}</h2>
+			<h2 v-if="spec" class="model" title="model name">{{spec.model}}</h2>
 			<fieldset>
 				<select v-model="fromW" class="latant-type" :title="`generate from ${fromW ? 'W' : 'Z'}`">
 					<option :value="false">Z</option>
@@ -142,7 +142,7 @@
 
 		data () {
 			return {
-				model: null,
+				spec: null,
 				latents_dimensions: null,
 				latentsLayers: 0,
 				features: null,
