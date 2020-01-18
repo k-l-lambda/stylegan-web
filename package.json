@@ -17,7 +17,6 @@
 		"js-md5": "^0.7.3",
 		"jszip": "^3.2.2",
 		"rollup": "^1.6.0",
-		"rollup-plugin-node-builtins": "^2.1.2",
 		"rollup-plugin-vue": "^4.7.2",
 		"stream": "^0.0.2",
 		"vue": "^2.6.8",

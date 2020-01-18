@@ -262,11 +262,12 @@
 		},
 
 
-		created() {
+		created () {
 			window.$main = this;
 			this.originTitle = document.title;
 
-			console.log("faceapi:", faceapi);
+			//console.log("faceapi:", faceapi);
+			faceapi.nets.ssdMobilenetv1.load("/face-api/");
 		},
 
 

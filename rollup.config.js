@@ -5,7 +5,6 @@ import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
 //import alias from "@rollup/plugin-alias";
 import resolve from "@rollup/plugin-node-resolve";
-//import builtins from "rollup-plugin-node-builtins";
 
 
 
@@ -39,9 +38,8 @@ export default [
 		commonjs(),
 		resolve({
 			preferBuiltins: false,
-			browser: true
+			browser: true,
 		}),
-		//builtins(),
 		vue(),
 	],
 }));
