@@ -16,7 +16,9 @@
 			<p>
 				<em v-if="faceDetectionConfidence" :title="`face confidence: ${faceDetectionConfidence}`">{{faceDetectionConfidence.toFixed(3)}}</em>
 				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
+				<button v-show="faceCrop" @click="cropFace()" title="crop face area">&#x2704;</button>
 			</p>
+			<canvas v-if="faceCrop" v-show="false" ref="cropCanvas" :width="faceCrop.edgeLength" :height="faceCrop.edgeLength" />
 			<p>
 				<button :disabled="running" @click="project">Project</button>
 			</p>
@@ -292,7 +294,7 @@
 				if (!this.faceRefPoints)
 					return null;
 
-				const magnitude = ([x, y]) => (x * x, y * y) ** 0.5;
+				const magnitude = ([x, y]) => (x * x + y * y) ** 0.5;
 
 				const [eyel, eyer, mouth] = this.faceRefPoints;
 
@@ -306,19 +308,27 @@
 
 				const dx = [vx[0] - vy[1], vx[1] + vy[0]];
 				const dxm = Math.max(magnitude(dx), 1e-9);
-				dx.forEach(x => x / dxm);
+				const ndx = dx.map(x => x / dxm);
 
-				const angle = (dx[0] ? Math.atan(dx[1] / dx[0]) : 0) + (dx[0] > 0 ? 0 : Math.PI);
+				const angle = (ndx[0] ? Math.atan(ndx[1] / ndx[0]) : 0) + (ndx[0] > 0 ? 0 : Math.PI);
+
+				const leftTop = [center[0] - halfEdge, center[1] - halfEdge];
+
+				const cosA = Math.cos(angle);
+				const sinA = Math.sin(angle);
+				const rotatedLeftTop = [cosA * leftTop[0] + sinA * leftTop[1], -sinA * leftTop[0] + cosA * leftTop[1]];
+				//console.log("crop:", cosA, sinA, leftTop, rotatedLeftTop, dx, dxm, ndx, halfEdge);
 
 				return {
 					center: {x: center[0], y: center[1]},
 					edgeLength,
 					angle,
+					rotatedLeftTop: {x: rotatedLeftTop[0], y: rotatedLeftTop[1]},
 					vertices: [
-						{x: center[0] + (-dx[0] -dx[1]) * halfEdge, y: center[1] + (+dx[0] -dx[1]) * halfEdge},		// top-left
-						{x: center[0] + (-dx[0] +dx[1]) * halfEdge, y: center[1] + (+dx[0] +dx[1]) * halfEdge},		// top-right
-						{x: center[0] + (+dx[0] +dx[1]) * halfEdge, y: center[1] + (-dx[0] +dx[1]) * halfEdge},		// bottom-right
-						{x: center[0] + (+dx[0] -dx[1]) * halfEdge, y: center[1] + (-dx[0] -dx[1]) * halfEdge},		// bottom-left
+						{x: center[0] + (-ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] -ndx[1]) * halfEdge},		// top-left
+						{x: center[0] + (+ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] +ndx[1]) * halfEdge},		// top-right
+						{x: center[0] + (+ndx[0] -ndx[1]) * halfEdge, y: center[1] + (+ndx[0] +ndx[1]) * halfEdge},		// bottom-right
+						{x: center[0] + (-ndx[0] -ndx[1]) * halfEdge, y: center[1] + (+ndx[0] -ndx[1]) * halfEdge},		// bottom-left
 					],
 				};
 			},
@@ -674,8 +684,32 @@
 
 					faceapi.draw.drawFaceLandmarks(this.$refs.targetCanvas, results);
 				}
+				else {
+					console.log("no face detected.");
+					this.faceDetectionConfidence = -1;
+				}
 
 				this.faceDetecting = false;
+			},
+
+
+			async cropFace() {
+				console.assert(this.faceCrop, "face crop is null.");
+
+				const ctx = this.$refs.cropCanvas.getContext("2d");
+				ctx.resetTransform();
+				ctx.clearRect(0, 0, this.$refs.cropCanvas.width, this.$refs.cropCanvas.height);
+				//ctx.translate(-(this.faceCrop.center.x - this.faceCrop.edgeLength / 2), -(this.faceCrop.center.y - this.faceCrop.edgeLength / 2));
+				//ctx.translate(this.faceCrop.center.x, this.faceCrop.center.y);
+				//this.faceCrop.rotatedLeftTop.y = 450
+				//ctx.translate(-this.faceCrop.rotatedLeftTop.x, -this.faceCrop.rotatedLeftTop.y);
+				ctx.rotate(-this.faceCrop.angle);
+				//ctx.translate(this.faceCrop.center.x, this.faceCrop.center.y);
+				//console.log("this.faceCrop.rotatedLeftTop:", this.faceCrop.rotatedLeftTop);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				this.targetUrl = this.$refs.cropCanvas.toDataURL();
 			},
 		},
 
