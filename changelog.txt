@@ -5,6 +5,11 @@ TODO:
 
 
 
+2020.1.18	K.L.	<k.l.lambda@gmail.com>
+
+	+	http_server.py: separated static folder from dist.
+
+
 2020.1.17	K.L.	<k.l.lambda@gmail.com>
 
 	+	index.vue: added button of mapping Z to W.

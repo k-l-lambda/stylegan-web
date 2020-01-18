@@ -12,6 +12,7 @@ import numpy as np
 import tensorflow as tf
 from threading import Lock
 import json
+import re
 
 import dnnlib.tflib
 from training import misc
@@ -119,22 +120,33 @@ def loadProjector():
 	return g_Projector
 
 
-app = flask.Flask(__name__, static_url_path = '', static_folder = './dist')
+app = flask.Flask(__name__, static_url_path = '', static_folder = './static')
+
+
+DIST_DIR = './dist'
+
+
+@app.route('/bundles/<path:filename>')
+def bundle(filename):
+	if re.match(r'.*\.bundle\.js$', filename):
+		return flask.send_from_directory(DIST_DIR, filename)
+
+	flask.abort(404, 'Invalid request path.')
 
 
 @app.route('/')
 def root():
-	return app.send_static_file('index.html')
+	return flask.send_from_directory(DIST_DIR, 'index.html')
 
 
 @app.route('/projector/')
 def projector():
-	return app.send_static_file('projector.html')
+	return flask.send_from_directory(DIST_DIR, 'projector.html')
 
 
 @app.route('/merger/')
 def merger():
-	return app.send_static_file('merger.html')
+	return flask.send_from_directory(DIST_DIR, 'merger.html')
 
 
 @app.route('/spec', methods=['GET'])
