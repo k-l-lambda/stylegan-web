@@ -14,6 +14,10 @@
 				<StoreInput v-model.number="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
+				<em v-if="faceDetectionConfidence" :title="`face confidence: ${faceDetectionConfidence}`">{{faceDetectionConfidence.toFixed(3)}}</em>
+				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
+			</p>
+			<p>
 				<button :disabled="running" @click="project">Project</button>
 			</p>
 			<p>
@@ -39,14 +43,17 @@
 			</p>
 		</aside>
 		<main>
-			<div class="target" :class="{hover: drageHover}">
+			<div class="comparison" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
 				<div v-if="!targetUrl" class="placeholder">
 					<strong>DROP</strong> target image here<br/>
 					or <strong>PASTE</strong> by CTRL+V
 				</div>
-				<img v-if="targetUrl" :src="targetUrl" />
+				<div class="target">
+					<img v-if="targetUrl" :src="targetUrl" ref="targetImg" @load="onTargetImgLoad" />
+					<canvas :width="targetSize.width" :height="targetSize.height" ref="targetCanvas" />
+				</div>
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
 			</div>
@@ -192,6 +199,10 @@
 				animationDimensions: null,
 				animationSize: null,
 				animationWithIndex: true,
+				targetSize: {width: 256, height: 256},
+				faceDetecting: false,
+				faceDetectionConfidence: null,
+				faceRefPoints: null,
 			};
 		},
 
@@ -266,8 +277,7 @@
 			window.$main = this;
 			this.originTitle = document.title;
 
-			//console.log("faceapi:", faceapi);
-			faceapi.nets.ssdMobilenetv1.load("/face-api/");
+			this.loadFaceApiModels();
 		},
 
 
@@ -322,6 +332,14 @@
 						else
 							this.loadPackage(file);
 					}
+			},
+
+
+			onTargetImgLoad (event) {
+				this.targetSize = {
+					width: this.$refs.targetImg.naturalWidth,
+					height: this.$refs.targetImg.naturalHeight,
+				};
 			},
 
 
@@ -566,6 +584,44 @@
 				this.animationSize = image.size;
 				this.animationUrl = URL.createObjectURL(image);
 			},
+
+
+			async loadFaceApiModels () {
+				//console.log("faceapi:", faceapi);
+				await faceapi.nets.ssdMobilenetv1.load("/face-api/");
+				await faceapi.nets.faceLandmark68Net.load("/face-api/");
+
+				console.log("face-api models loaded.");
+			},
+
+
+			async detectFace (confidenceThreshold = 0) {
+				if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
+					console.warn("faceapi model not loaded yet.");
+					return;
+				}
+
+				this.faceDetecting = true;
+
+				await this.$nextTick();
+
+				const option = new faceapi.SsdMobilenetv1Options({minConfidence: confidenceThreshold, maxResults: 1});
+
+				const results = await faceapi.detectAllFaces(this.$refs.targetImg, option).withFaceLandmarks();
+				//console.log("face detection result:", results);
+
+				const result = results[0];
+				if (result) {
+					this.faceDetectionConfidence = result.detection.score;
+
+					this.faceRefPoints = result.landmarks.getRefPointsForAlignment();
+					console.log("face detection result:", this.faceRefPoints);
+
+					faceapi.draw.drawFaceLandmarks(this.$refs.targetCanvas, results);
+				}
+
+				this.faceDetecting = false;
+			},
 		},
 
 
@@ -602,6 +658,12 @@
 
 			targetUrl () {
 				this.animationUrl = null;
+				this.faceDetectionConfidence = null;
+				this.faceRefPoints = null;
+
+				// clear target canvas
+				const ctx = this.$refs.targetCanvas.getContext("2d");
+				ctx.clearRect(0, 0, this.targetSize.width, this.targetSize.height);
 			},
 		},
 	};
@@ -656,13 +718,18 @@
 		transform: scale(1.2);
 	}
 
-	.target
+	button.working
+	{
+		background-color: #afa;
+	}
+
+	.comparison
 	{
 		text-align: center;
 		padding: 20px;
 	}
 
-	.target .placeholder
+	.comparison .placeholder
 	{
 		padding: 2em;
 		color: #ccc;
@@ -671,31 +738,46 @@
 		user-select: none;
 	}
 
-	.target.hover .placeholder
+	.comparison.hover .placeholder
 	{
 		outline: .2em dashed #ccc;
 	}
 
-	.target > *
+	.comparison > *
 	{
 		vertical-align: middle;
 	}
 
-	.target img
+	.comparison img
 	{
 		width: min(60vh, 30vw);
 	}
 
-	.target img:first-of-type
+	/*.comparison img:first-of-type
 	{
 		height: min(60vh, 30vw);
-	}
+	}*/
 
-	.target .arrow
+	.comparison .arrow
 	{
 		font-size: 36px;
 		display: inline-block;
 		margin: 0 2em;
+	}
+
+	.target
+	{
+		position: relative;
+		display: inline-block;
+	}
+
+	.target > canvas
+	{
+		position: absolute;
+		left: 0;
+		right: 0;
+		width: 100%;
+		pointer-events: none;
 	}
 
 	.yielding
