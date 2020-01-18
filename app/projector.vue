@@ -15,6 +15,12 @@
 			</p>
 			<p>
 				<em v-if="faceDetectionConfidence != null" :title="faceDetectionConfidence > 0 ? `face confidence: ${faceDetectionConfidence}` : 'no face found'">{{faceDetectionConfidence.toFixed(3)}}</em>
+				<span v-if="targetUrl" class="target-size">
+					<em>{{targetSize.width}}&times;{{targetSize.height}}</em>
+				</span>
+				<span v-if="faceCrop" class="crop-size">
+					&#x2192;<em>{{faceCrop.edgeLength.toFixed(0)}}<sup>2</sup></em>
+				</span>
 				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
 				<button v-show="faceCrop" @click="cropFace()" title="crop face area">&#x2704;</button>
 			</p>
@@ -52,7 +58,11 @@
 					<strong>DROP</strong> target image here<br/>
 					or <strong>PASTE</strong> by CTRL+V
 				</div>
-				<div class="target">
+				<div class="target"
+					@mousedown="onTargetMouseDown"
+					@mouseup="onTargetMouseUp"
+					@mousemove="onTargetMouseMove"
+				>
 					<img v-if="targetUrl" :src="targetUrl" ref="targetImg" @load="onTargetImgLoad" />
 					<canvas :width="targetSize.width" :height="targetSize.height" ref="targetCanvas" />
 					<svg :viewBox="`0 0 ${targetSize.width} ${targetSize.height}`">
@@ -140,6 +150,9 @@
 
 
 	const MOVEMENT_THRESHOLD = 16;
+
+
+	const magnitude = ([x, y]) => (x * x + y * y) ** 0.5;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -294,8 +307,6 @@
 				if (!this.faceRefPoints)
 					return null;
 
-				const magnitude = ([x, y]) => (x * x + y * y) ** 0.5;
-
 				const [eyel, eyer, mouth] = this.faceRefPoints;
 
 				const vx = [eyer.x - eyel.x, eyer.y - eyel.y];
@@ -401,6 +412,44 @@
 					width: this.$refs.targetImg.naturalWidth,
 					height: this.$refs.targetImg.naturalHeight,
 				};
+			},
+
+
+			onTargetMouseDown (event) {
+				//console.log("onTargetMouseDown:", event);
+				// pick a nearest face ref point
+				if (this.faceRefPoints) {
+					const mousePoint = {
+						x: event.offsetX * this.targetSize.width / this.$refs.targetImg.width,
+						y: event.offsetY * this.targetSize.height / this.$refs.targetImg.height,
+					};
+
+					let bestDistance = 100;
+					for (const point of this.faceRefPoints) {
+						const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
+						if (distance < bestDistance) {
+							this.pickedPoint = point;
+							bestDistance = distance;
+						}
+					}
+
+					event.preventDefault();
+				}
+			},
+
+
+			onTargetMouseUp () {
+				this.pickedPoint = null;
+			},
+
+
+			onTargetMouseMove (event) {
+				if (this.pickedPoint) {
+					this.pickedPoint._x = event.offsetX * this.targetSize.width / this.$refs.targetImg.width;
+					this.pickedPoint._y = event.offsetY * this.targetSize.height / this.$refs.targetImg.height;
+
+					event.preventDefault();
+				}
 			},
 
 
@@ -833,6 +882,12 @@
 	aside p
 	{
 		text-align: center;
+	}
+
+	aside em
+	{
+		display: inline-block;
+		margin: 0 0.6em;
 	}
 
 	button.icon

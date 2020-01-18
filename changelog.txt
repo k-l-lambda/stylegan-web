@@ -1,12 +1,12 @@
 
 TODO:
-	face detection:
-		move mark manually
 	project from a specified code
 
 
 
 2020.1.18	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: move face ref marks manually.
 
 	+	projector.vue: mirror edge neighbor images in face crop added.
 
