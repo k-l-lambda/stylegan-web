@@ -1,5 +1,11 @@
 <template>
-	<div>
+	<div :class="{['drage-hover']: drageHover}"
+		@drop.prevent="onDropFiles"
+		@dragover.prevent="drageHover = true"
+		@drageleave="drageHover = false"
+		@mouseleave="drageHover = false"
+		@mouseup="drageHover = false"
+	>
 		<div class="image" :class="{loading: imageLoading}" :style="{width: `${imageSize}px`, height: `${imageSize}px`}">
 			<img v-if="imageURL" :src="imageURL" @load="imageLoading = false" />
 		</div>
@@ -11,6 +17,7 @@
 
 <script>
 	import md5 from "js-md5";
+	import JSZip from "jszip";
 
 	import * as LatentCode from "./latentCode.js"
 
@@ -38,6 +45,7 @@
 			return {
 				latents: Array(this.layers * this.lastDimension).fill(0),
 				imageLoading: false,
+				drageHover: false,
 			};
 		},
 
@@ -112,6 +120,33 @@
 				event.clipboardData.setData("text/plain", "w+:" + this.latentsBytes);
 				console.log("Latent code copied into clipboard.");
 			},
+
+
+			async onDropFiles(event) {
+				this.drageHover = false;
+
+				const file = event.dataTransfer.files[0];
+				if (file && /zip/.test(file.type))
+					this.loadPackage(file);
+			},
+
+
+			async loadPackage(file) {
+				const pack = await JSZip.loadAsync(file);
+				const manifest = JSON.parse(await pack.file("manifest.json").async("text"));
+				if (manifest.usage !== "stylegan-web-projector") {
+					console.warn("unsupported package type:", manifest.usage);
+					return;
+				}
+
+				console.log(`Loading package "${file.name}" with model`, manifest.model);
+
+				if (manifest.results) {
+					const lastResult = manifest.results[manifest.results.length - 1];
+					if (lastResult && lastResult.xlatentCode)
+						this.latentsBytes = lastResult.xlatentCode;
+				}
+			},
 		},
 
 
@@ -178,5 +213,11 @@
 	.hash:focus
 	{
 		color: #000;
+	}
+
+	.drage-hover
+	{
+		background-color: #dfd;
+		outline: .2em solid lightgreen;
 	}
 </style>
