@@ -53,6 +53,22 @@
 				<div class="target">
 					<img v-if="targetUrl" :src="targetUrl" ref="targetImg" @load="onTargetImgLoad" />
 					<canvas :width="targetSize.width" :height="targetSize.height" ref="targetCanvas" />
+					<svg :viewBox="`0 0 ${targetSize.width} ${targetSize.height}`">
+						<g v-if="faceRefPoints">
+							<g v-for="(point, i) of faceRefPoints" :key="i" class="ref-point" :transform="`translate(${point.x}, ${point.y})`">
+								<line :x1="-10" :y1="0" x2="10" y2="0" />
+								<line :x1="0" :y1="-10" x2="0" y2="10" />
+							</g>
+						</g>
+						<g v-if="faceCrop" class="crop" :transform="`translate(${faceCrop.center.x}, ${faceCrop.center.y}) rotate(${faceCrop.angle * 180 / Math.PI})`">
+							<rect
+								:x="-faceCrop.edgeLength / 2"
+								:y="-faceCrop.edgeLength / 2"
+								:width="faceCrop.edgeLength"
+								:height="faceCrop.edgeLength"
+							/>
+						</g>
+					</svg>
 				</div>
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
@@ -269,6 +285,42 @@
 				set (value) {
 					this.animationFrameInterval = 1000 / value;
 				},
+			},
+
+
+			faceCrop () {
+				if (!this.faceRefPoints)
+					return null;
+
+				const magnitude = ([x, y]) => (x * x, y * y) ** 0.5;
+
+				const [eyel, eyer, mouth] = this.faceRefPoints;
+
+				const vx = [eyer.x - eyel.x, eyer.y - eyel.y];
+				const vy = [(eyel.x + eyer.x) / 2 - mouth.x, (eyel.y + eyer.y) / 2 - mouth.y];
+
+				const edgeLength = Math.max(magnitude(vx) * 4, magnitude(vy) * 3.6);
+				const halfEdge = edgeLength / 2;
+
+				const center = [(eyel.x + eyer.x) / 2 - vy[0] * 0.1, (eyel.y + eyer.y) / 2 - vy[1] * 0.1];
+
+				const dx = [vx[0] - vy[1], vx[1] + vy[0]];
+				const dxm = Math.max(magnitude(dx), 1e-9);
+				dx.forEach(x => x / dxm);
+
+				const angle = (dx[0] ? Math.atan(dx[1] / dx[0]) : 0) + (dx[0] > 0 ? 0 : Math.PI);
+
+				return {
+					center: {x: center[0], y: center[1]},
+					edgeLength,
+					angle,
+					vertices: [
+						{x: center[0] + (-dx[0] -dx[1]) * halfEdge, y: center[1] + (+dx[0] -dx[1]) * halfEdge},		// top-left
+						{x: center[0] + (-dx[0] +dx[1]) * halfEdge, y: center[1] + (+dx[0] +dx[1]) * halfEdge},		// top-right
+						{x: center[0] + (+dx[0] +dx[1]) * halfEdge, y: center[1] + (-dx[0] +dx[1]) * halfEdge},		// bottom-right
+						{x: center[0] + (+dx[0] -dx[1]) * halfEdge, y: center[1] + (-dx[0] -dx[1]) * halfEdge},		// bottom-left
+					],
+				};
 			},
 		},
 
@@ -603,6 +655,9 @@
 
 				this.faceDetecting = true;
 
+				this.faceDetectionConfidence = null;
+				this.faceRefPoints = null;
+
 				await this.$nextTick();
 
 				const option = new faceapi.SsdMobilenetv1Options({minConfidence: confidenceThreshold, maxResults: 1});
@@ -771,13 +826,41 @@
 		display: inline-block;
 	}
 
-	.target > canvas
+	.target > canvas, .target > svg
 	{
 		position: absolute;
 		left: 0;
 		right: 0;
 		width: 100%;
 		pointer-events: none;
+	}
+
+	.target .ref-point line
+	{
+		stroke-width: 4px;
+	}
+
+	.target .ref-point:nth-child(1) line
+	{
+		stroke: #c00;
+	}
+
+	.target .ref-point:nth-child(2) line
+	{
+		stroke: #0c0;
+	}
+
+	.target .ref-point:nth-child(3) line
+	{
+		stroke: #00c;
+	}
+
+	.target .crop rect
+	{
+		stroke: #000c;
+		stroke-width: 3px;
+		stroke-dasharray: 10 10;
+		fill: transparent;
 	}
 
 	.yielding
