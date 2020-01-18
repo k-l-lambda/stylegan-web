@@ -1,11 +1,14 @@
 
 TODO:
-	face landmark tools for projection target image preprocess
+	face detection:
+		move mark manually
 	project from a specified code
 
 
 
 2020.1.18	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: mirror edge neighbor images in face crop added.
 
 	+	projector.vue: cropFace implemented.
 

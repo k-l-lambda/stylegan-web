@@ -14,11 +14,11 @@
 				<StoreInput v-model.number="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
-				<em v-if="faceDetectionConfidence" :title="`face confidence: ${faceDetectionConfidence}`">{{faceDetectionConfidence.toFixed(3)}}</em>
+				<em v-if="faceDetectionConfidence != null" :title="faceDetectionConfidence > 0 ? `face confidence: ${faceDetectionConfidence}` : 'no face found'">{{faceDetectionConfidence.toFixed(3)}}</em>
 				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
 				<button v-show="faceCrop" @click="cropFace()" title="crop face area">&#x2704;</button>
 			</p>
-			<canvas v-if="faceCrop" v-show="false" ref="cropCanvas" :width="faceCrop.edgeLength" :height="faceCrop.edgeLength" />
+			<canvas v-if="faceCrop" v-show="false" ref="cropCanvas" :width="Math.round(faceCrop.edgeLength)" :height="Math.round(faceCrop.edgeLength)" />
 			<p>
 				<button :disabled="running" @click="project">Project</button>
 			</p>
@@ -314,16 +314,15 @@
 
 				const leftTop = [center[0] - halfEdge, center[1] - halfEdge];
 
-				const cosA = Math.cos(angle);
+				/*const cosA = Math.cos(angle);
 				const sinA = Math.sin(angle);
 				const rotatedLeftTop = [cosA * leftTop[0] + sinA * leftTop[1], -sinA * leftTop[0] + cosA * leftTop[1]];
-				//console.log("crop:", cosA, sinA, leftTop, rotatedLeftTop, dx, dxm, ndx, halfEdge);
+				//console.log("crop:", cosA, sinA, leftTop, rotatedLeftTop, dx, dxm, ndx, halfEdge);*/
 
 				return {
 					center: {x: center[0], y: center[1]},
 					edgeLength,
 					angle,
-					rotatedLeftTop: {x: rotatedLeftTop[0], y: rotatedLeftTop[1]},
 					vertices: [
 						{x: center[0] + (-ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] -ndx[1]) * halfEdge},		// top-left
 						{x: center[0] + (+ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] +ndx[1]) * halfEdge},		// top-right
@@ -680,13 +679,13 @@
 					this.faceDetectionConfidence = result.detection.score;
 
 					this.faceRefPoints = result.landmarks.getRefPointsForAlignment();
-					console.log("face detection result:", this.faceRefPoints);
+					//console.log("face detection result:", this.faceRefPoints);
 
 					faceapi.draw.drawFaceLandmarks(this.$refs.targetCanvas, results);
 				}
 				else {
 					console.log("no face detected.");
-					this.faceDetectionConfidence = -1;
+					this.faceDetectionConfidence = NaN;
 				}
 
 				this.faceDetecting = false;
@@ -697,16 +696,60 @@
 				console.assert(this.faceCrop, "face crop is null.");
 
 				const ctx = this.$refs.cropCanvas.getContext("2d");
-				ctx.resetTransform();
 				ctx.clearRect(0, 0, this.$refs.cropCanvas.width, this.$refs.cropCanvas.height);
-				//ctx.translate(-(this.faceCrop.center.x - this.faceCrop.edgeLength / 2), -(this.faceCrop.center.y - this.faceCrop.edgeLength / 2));
-				//ctx.translate(this.faceCrop.center.x, this.faceCrop.center.y);
-				//this.faceCrop.rotatedLeftTop.y = 450
-				//ctx.translate(-this.faceCrop.rotatedLeftTop.x, -this.faceCrop.rotatedLeftTop.y);
+
+				ctx.resetTransform();
 				ctx.rotate(-this.faceCrop.angle);
-				//ctx.translate(this.faceCrop.center.x, this.faceCrop.center.y);
-				//console.log("this.faceCrop.rotatedLeftTop:", this.faceCrop.rotatedLeftTop);
 				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				// draw 8 neighbor mirrors
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, 1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, 1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(-1, -1);
 				ctx.drawImage(this.$refs.targetImg, 0, 0);
 
 				this.targetUrl = this.$refs.cropCanvas.toDataURL();
