@@ -7,6 +7,8 @@ TODO:
 
 2020.1.18	K.L.	<k.l.lambda@gmail.com>
 
+	+	projector.vue: imported face-api.
+
 	+	http_server.py: separated static folder from dist.
 
 

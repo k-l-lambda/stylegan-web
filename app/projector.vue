@@ -102,8 +102,9 @@
 </template>
 
 <script>
-	import JSZip from "jszip";
+	import JSZip from "jszip/dist/jszip.min.js";
 	import GIF from "gif.js.optimized";
+	import * as faceapi from "face-api.js";
 
 	import StoreInput from "./storeinput.vue";
 	import Navigator from "./navigator.vue";
@@ -264,6 +265,8 @@
 		created() {
 			window.$main = this;
 			this.originTitle = document.title;
+
+			console.log("faceapi:", faceapi);
 		},
 
 

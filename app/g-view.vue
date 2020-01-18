@@ -17,7 +17,7 @@
 
 <script>
 	import md5 from "js-md5";
-	import JSZip from "jszip";
+	import JSZip from "jszip/dist/jszip.min.js";
 
 	import * as LatentCode from "./latentCode.js"
 
