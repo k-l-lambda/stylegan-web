@@ -81,6 +81,7 @@
 							/>
 						</g>
 					</svg>
+					<a v-if="targetUrl" class="download" :href="targetUrl" :download="`${targetName}.png`">&#x1f4be;</a>
 				</div>
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
@@ -993,6 +994,20 @@
 		stroke-width: 3px;
 		stroke-dasharray: 10 10;
 		fill: transparent;
+	}
+
+	.target .download
+	{
+		position: absolute;
+		right: 4px;
+		bottom: 8px;
+		opacity: 0;
+		text-decoration: none;
+	}
+
+	.target .download:hover
+	{
+		opacity: 0.8;
 	}
 
 	.yielding

@@ -6,6 +6,8 @@ TODO:
 
 2020.1.18	K.L.	<k.l.lambda@gmail.com>
 
+	+	projector.vue: target image download link added.
+
 	+	projector.vue: move face ref marks manually.
 
 	+	projector.vue: mirror edge neighbor images in face crop added.
