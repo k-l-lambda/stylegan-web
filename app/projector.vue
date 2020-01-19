@@ -127,7 +127,7 @@
 					<img v-if="animationUrl" :src="animationUrl" />
 				</p>
 				<p>
-					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length}.gif`" :href="animationUrl">
+					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length * projectYieldInterval}.gif`" :href="animationUrl">
 						&#x2193;
 						<span v-if="animationSize" class="size">(<em>{{animationSize.toLocaleString()}}</em> bytes)</span>
 					</a>
@@ -673,7 +673,7 @@
 					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
 
 					if (this.animationWithIndex) {
-						const number = (item.index + 1).toString();
+						const number = ((item.index + 1) * this.projectYieldInterval).toString();
 						ctx.font = "12px serif";
 						ctx.fillStyle = "#fffa";
 						ctx.fillText(number, 3.4, 12);
