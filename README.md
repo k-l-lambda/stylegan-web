@@ -55,7 +55,7 @@ Then we import the [face-api](https://github.com/justadudewhohacks/face-api.js) 
 
 *Gratefulness for the authorization by [@芈砾](https://www.douban.com/people/43619507/) to his nice [opus](https://www.douban.com/photos/photo/2575639110/).*
 
-Click the button [&#x1F642;] after target image loaded, if the face detection succeed, you will get the face landmark and proposed crop box. The detection result may be not very accurate, now you can adjust 3 anchor marks manually to align left eye (red), right eye (green) and mouth (blue). Then click button [&#x2704;] to accept the crop.
+Click the button [&#x1F642;] after target image loaded, if the face detection succeed, you will get the face landmark and proposed crop box. The detection result may be not very accurate, now you can adjust 3 anchor marks manually to align left eye (red), right eye (green) and mouth (blue). Then click button [&#x2704;] to apply the crop.
 
 ### Merger
 
