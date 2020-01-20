@@ -41,7 +41,7 @@ You can also export image projection result sequence as a gif animation:
 
 #### Face image pose alignment
 
-Dataset of [FFHQ](https://github.com/NVlabs/ffhq-dataset)'s generation has a crop process to align face area.<sup>[see paper](https://arxiv.org/abs/1710.10196), appendix C.</sup> So the output distribution of StyleGAN model learned on FFHQ has a strong prior tendency on features position. We observed that many face images projection suffering semantic mistakes, e.g. erasing original eyes and transforming eyebrow into eyes during projection fitting (however you can get a similar face at last, but it may yield freak results when you manipulate the latent code). Finally we figured out that mainly caused by unalignment with training dataset prior distribution.
+Dataset of [FFHQ](https://github.com/NVlabs/ffhq-dataset)'s generation has a crop process to align face area.<sup>[see paper](https://arxiv.org/abs/1710.10196), appendix C.</sup> So the output distribution of StyleGAN model learned on FFHQ has a strong prior tendency on features position. We observed that many face images projection suffers semantic mistakes, e.g. erasing original eyes and transforming eyebrow into eyes during projection fitting (however you can get a similar face at last, but it may yield freak results when you manipulate the latent code). Finally we figured out that mainly caused by unalignment with training dataset prior distribution.
 
 Then we import the [face-api](https://github.com/justadudewhohacks/face-api.js) to measure and align human face images as below:
 
