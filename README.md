@@ -46,11 +46,11 @@ Dataset of [FFHQ](https://github.com/NVlabs/ffhq-dataset)'s generation has a cro
 Then we import the [face-api](https://github.com/justadudewhohacks/face-api.js) to measure and align human face images as below:
 
 <p align="center" style="white-space: nowrap">
-	<img src="./documents/face-crop-origin.jpg" valign="middle" />
+	<img src="./documents/face-crop-origin.jpg" valign="middle" width="240" />
 	- &#x1F642; &#x2192;
-	<img src="./documents/face-mark-demo.png" valign="middle" />
+	<img src="./documents/face-mark-demo.png" valign="middle" width="240" />
 	- &#x2704; &#x2192;
-	<img src="./documents/face-crop.jpg" valign="middle" />
+	<img src="./documents/face-crop.jpg" valign="middle" width="240" />
 </p>
 
 *Gratefulness for the authorization by [@芈砾](https://www.douban.com/people/43619507/) to his nice [opus](https://www.douban.com/photos/photo/2575639110/).*
