@@ -8433,14 +8433,14 @@
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function commonjsRequire () {
-  	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+  	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
   }
 
   function createCommonjsModule(fn, module) {
   	return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
 
-  var md5_min = createCommonjsModule(function (module) {
+  var md5 = createCommonjsModule(function (module) {
   /**
    * [js-md5]{@link https://github.com/emn178/js-md5}
    *
@@ -8450,7 +8450,673 @@
    * @copyright Chen, Yi-Cyuan 2014-2017
    * @license MIT
    */
-  !function(){function t(t){if(t)d[0]=d[16]=d[1]=d[2]=d[3]=d[4]=d[5]=d[6]=d[7]=d[8]=d[9]=d[10]=d[11]=d[12]=d[13]=d[14]=d[15]=0,this.blocks=d,this.buffer8=l;else if(a){var r=new ArrayBuffer(68);this.buffer8=new Uint8Array(r),this.blocks=new Uint32Array(r);}else this.blocks=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];this.h0=this.h1=this.h2=this.h3=this.start=this.bytes=this.hBytes=0,this.finalized=this.hashed=!1,this.first=!0;}var r="input is invalid type",e="object"==typeof window,i=e?window:{};i.JS_MD5_NO_WINDOW&&(e=!1);var s=!e&&"object"==typeof self,h=!i.JS_MD5_NO_NODE_JS&&"object"==typeof process&&process.versions&&process.versions.node;h?i=commonjsGlobal:s&&(i=self);var f=!i.JS_MD5_NO_COMMON_JS&&"object"=='object'&&module.exports,o="function"==typeof undefined&&undefined.amd,a=!i.JS_MD5_NO_ARRAY_BUFFER&&"undefined"!=typeof ArrayBuffer,n="0123456789abcdef".split(""),u=[128,32768,8388608,-2147483648],y=[0,8,16,24],c=["hex","array","digest","buffer","arrayBuffer","base64"],p="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),d=[],l;if(a){var A=new ArrayBuffer(68);l=new Uint8Array(A),d=new Uint32Array(A);}!i.JS_MD5_NO_NODE_JS&&Array.isArray||(Array.isArray=function(t){return "[object Array]"===Object.prototype.toString.call(t)}),!a||!i.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW&&ArrayBuffer.isView||(ArrayBuffer.isView=function(t){return "object"==typeof t&&t.buffer&&t.buffer.constructor===ArrayBuffer});var b=function(r){return function(e){return new t(!0).update(e)[r]()}},v=function(){var r=b("hex");h&&(r=w(r)),r.create=function(){return new t},r.update=function(t){return r.create().update(t)};for(var e=0;e<c.length;++e){var i=c[e];r[i]=b(i);}return r},w=function(t){var e=eval("require('crypto')"),i=eval("require('buffer').Buffer"),s=function(s){if("string"==typeof s)return e.createHash("md5").update(s,"utf8").digest("hex");if(null===s||void 0===s)throw r;return s.constructor===ArrayBuffer&&(s=new Uint8Array(s)),Array.isArray(s)||ArrayBuffer.isView(s)||s.constructor===i?e.createHash("md5").update(new i(s)).digest("hex"):t(s)};return s};t.prototype.update=function(t){if(!this.finalized){var e,i=typeof t;if("string"!==i){if("object"!==i)throw r;if(null===t)throw r;if(a&&t.constructor===ArrayBuffer)t=new Uint8Array(t);else if(!(Array.isArray(t)||a&&ArrayBuffer.isView(t)))throw r;e=!0;}for(var s,h,f=0,o=t.length,n=this.blocks,u=this.buffer8;f<o;){if(this.hashed&&(this.hashed=!1,n[0]=n[16],n[16]=n[1]=n[2]=n[3]=n[4]=n[5]=n[6]=n[7]=n[8]=n[9]=n[10]=n[11]=n[12]=n[13]=n[14]=n[15]=0),e)if(a)for(h=this.start;f<o&&h<64;++f)u[h++]=t[f];else for(h=this.start;f<o&&h<64;++f)n[h>>2]|=t[f]<<y[3&h++];else if(a)for(h=this.start;f<o&&h<64;++f)(s=t.charCodeAt(f))<128?u[h++]=s:s<2048?(u[h++]=192|s>>6,u[h++]=128|63&s):s<55296||s>=57344?(u[h++]=224|s>>12,u[h++]=128|s>>6&63,u[h++]=128|63&s):(s=65536+((1023&s)<<10|1023&t.charCodeAt(++f)),u[h++]=240|s>>18,u[h++]=128|s>>12&63,u[h++]=128|s>>6&63,u[h++]=128|63&s);else for(h=this.start;f<o&&h<64;++f)(s=t.charCodeAt(f))<128?n[h>>2]|=s<<y[3&h++]:s<2048?(n[h>>2]|=(192|s>>6)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]):s<55296||s>=57344?(n[h>>2]|=(224|s>>12)<<y[3&h++],n[h>>2]|=(128|s>>6&63)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]):(s=65536+((1023&s)<<10|1023&t.charCodeAt(++f)),n[h>>2]|=(240|s>>18)<<y[3&h++],n[h>>2]|=(128|s>>12&63)<<y[3&h++],n[h>>2]|=(128|s>>6&63)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]);this.lastByteIndex=h,this.bytes+=h-this.start,h>=64?(this.start=h-64,this.hash(),this.hashed=!0):this.start=h;}return this.bytes>4294967295&&(this.hBytes+=this.bytes/4294967296<<0,this.bytes=this.bytes%4294967296),this}},t.prototype.finalize=function(){if(!this.finalized){this.finalized=!0;var t=this.blocks,r=this.lastByteIndex;t[r>>2]|=u[3&r],r>=56&&(this.hashed||this.hash(),t[0]=t[16],t[16]=t[1]=t[2]=t[3]=t[4]=t[5]=t[6]=t[7]=t[8]=t[9]=t[10]=t[11]=t[12]=t[13]=t[14]=t[15]=0),t[14]=this.bytes<<3,t[15]=this.hBytes<<3|this.bytes>>>29,this.hash();}},t.prototype.hash=function(){var t,r,e,i,s,h,f=this.blocks;this.first?r=((r=((t=((t=f[0]-680876937)<<7|t>>>25)-271733879<<0)^(e=((e=(-271733879^(i=((i=(-1732584194^2004318071&t)+f[1]-117830708)<<12|i>>>20)+t<<0)&(-271733879^t))+f[2]-1126478375)<<17|e>>>15)+i<<0)&(i^t))+f[3]-1316259209)<<22|r>>>10)+e<<0:(t=this.h0,r=this.h1,e=this.h2,r=((r+=((t=((t+=((i=this.h3)^r&(e^i))+f[0]-680876936)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[1]-389564586)<<12|i>>>20)+t<<0)&(t^r))+f[2]+606105819)<<17|e>>>15)+i<<0)&(i^t))+f[3]-1044525330)<<22|r>>>10)+e<<0),r=((r+=((t=((t+=(i^r&(e^i))+f[4]-176418897)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[5]+1200080426)<<12|i>>>20)+t<<0)&(t^r))+f[6]-1473231341)<<17|e>>>15)+i<<0)&(i^t))+f[7]-45705983)<<22|r>>>10)+e<<0,r=((r+=((t=((t+=(i^r&(e^i))+f[8]+1770035416)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[9]-1958414417)<<12|i>>>20)+t<<0)&(t^r))+f[10]-42063)<<17|e>>>15)+i<<0)&(i^t))+f[11]-1990404162)<<22|r>>>10)+e<<0,r=((r+=((t=((t+=(i^r&(e^i))+f[12]+1804603682)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[13]-40341101)<<12|i>>>20)+t<<0)&(t^r))+f[14]-1502002290)<<17|e>>>15)+i<<0)&(i^t))+f[15]+1236535329)<<22|r>>>10)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[1]-165796510)<<5|t>>>27)+r<<0)^r))+f[6]-1069501632)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[11]+643717713)<<14|e>>>18)+i<<0)^i))+f[0]-373897302)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[5]-701558691)<<5|t>>>27)+r<<0)^r))+f[10]+38016083)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[15]-660478335)<<14|e>>>18)+i<<0)^i))+f[4]-405537848)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[9]+568446438)<<5|t>>>27)+r<<0)^r))+f[14]-1019803690)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[3]-187363961)<<14|e>>>18)+i<<0)^i))+f[8]+1163531501)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[13]-1444681467)<<5|t>>>27)+r<<0)^r))+f[2]-51403784)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[7]+1735328473)<<14|e>>>18)+i<<0)^i))+f[12]-1926607734)<<20|r>>>12)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[5]-378558)<<4|t>>>28)+r<<0))+f[8]-2022574463)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[11]+1839030562)<<16|e>>>16)+i<<0))+f[14]-35309556)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[1]-1530992060)<<4|t>>>28)+r<<0))+f[4]+1272893353)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[7]-155497632)<<16|e>>>16)+i<<0))+f[10]-1094730640)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[13]+681279174)<<4|t>>>28)+r<<0))+f[0]-358537222)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[3]-722521979)<<16|e>>>16)+i<<0))+f[6]+76029189)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[9]-640364487)<<4|t>>>28)+r<<0))+f[12]-421815835)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[15]+530742520)<<16|e>>>16)+i<<0))+f[2]-995338651)<<23|r>>>9)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[0]-198630844)<<6|t>>>26)+r<<0)|~e))+f[7]+1126891415)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[14]-1416354905)<<15|e>>>17)+i<<0)|~t))+f[5]-57434055)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[12]+1700485571)<<6|t>>>26)+r<<0)|~e))+f[3]-1894986606)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[10]-1051523)<<15|e>>>17)+i<<0)|~t))+f[1]-2054922799)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[8]+1873313359)<<6|t>>>26)+r<<0)|~e))+f[15]-30611744)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[6]-1560198380)<<15|e>>>17)+i<<0)|~t))+f[13]+1309151649)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[4]-145523070)<<6|t>>>26)+r<<0)|~e))+f[11]-1120210379)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[2]+718787259)<<15|e>>>17)+i<<0)|~t))+f[9]-343485551)<<21|r>>>11)+e<<0,this.first?(this.h0=t+1732584193<<0,this.h1=r-271733879<<0,this.h2=e-1732584194<<0,this.h3=i+271733878<<0,this.first=!1):(this.h0=this.h0+t<<0,this.h1=this.h1+r<<0,this.h2=this.h2+e<<0,this.h3=this.h3+i<<0);},t.prototype.hex=function(){this.finalize();var t=this.h0,r=this.h1,e=this.h2,i=this.h3;return n[t>>4&15]+n[15&t]+n[t>>12&15]+n[t>>8&15]+n[t>>20&15]+n[t>>16&15]+n[t>>28&15]+n[t>>24&15]+n[r>>4&15]+n[15&r]+n[r>>12&15]+n[r>>8&15]+n[r>>20&15]+n[r>>16&15]+n[r>>28&15]+n[r>>24&15]+n[e>>4&15]+n[15&e]+n[e>>12&15]+n[e>>8&15]+n[e>>20&15]+n[e>>16&15]+n[e>>28&15]+n[e>>24&15]+n[i>>4&15]+n[15&i]+n[i>>12&15]+n[i>>8&15]+n[i>>20&15]+n[i>>16&15]+n[i>>28&15]+n[i>>24&15]},t.prototype.toString=t.prototype.hex,t.prototype.digest=function(){this.finalize();var t=this.h0,r=this.h1,e=this.h2,i=this.h3;return [255&t,t>>8&255,t>>16&255,t>>24&255,255&r,r>>8&255,r>>16&255,r>>24&255,255&e,e>>8&255,e>>16&255,e>>24&255,255&i,i>>8&255,i>>16&255,i>>24&255]},t.prototype.array=t.prototype.digest,t.prototype.arrayBuffer=function(){this.finalize();var t=new ArrayBuffer(16),r=new Uint32Array(t);return r[0]=this.h0,r[1]=this.h1,r[2]=this.h2,r[3]=this.h3,t},t.prototype.buffer=t.prototype.arrayBuffer,t.prototype.base64=function(){for(var t,r,e,i="",s=this.array(),h=0;h<15;)t=s[h++],r=s[h++],e=s[h++],i+=p[t>>>2]+p[63&(t<<4|r>>>4)]+p[63&(r<<2|e>>>6)]+p[63&e];return t=s[h],i+=p[t>>>2]+p[t<<4&63]+"=="};var _=v();f?module.exports=_:(i.md5=_,o&&undefined(function(){return _}));}();
+  (function () {
+
+    var ERROR = 'input is invalid type';
+    var WINDOW = typeof window === 'object';
+    var root = WINDOW ? window : {};
+    if (root.JS_MD5_NO_WINDOW) {
+      WINDOW = false;
+    }
+    var WEB_WORKER = !WINDOW && typeof self === 'object';
+    var NODE_JS = !root.JS_MD5_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
+    if (NODE_JS) {
+      root = commonjsGlobal;
+    } else if (WEB_WORKER) {
+      root = self;
+    }
+    var COMMON_JS = !root.JS_MD5_NO_COMMON_JS && 'object' === 'object' && module.exports;
+    var ARRAY_BUFFER = !root.JS_MD5_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
+    var HEX_CHARS = '0123456789abcdef'.split('');
+    var EXTRA = [128, 32768, 8388608, -2147483648];
+    var SHIFT = [0, 8, 16, 24];
+    var OUTPUT_TYPES = ['hex', 'array', 'digest', 'buffer', 'arrayBuffer', 'base64'];
+    var BASE64_ENCODE_CHAR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
+
+    var blocks = [], buffer8;
+    if (ARRAY_BUFFER) {
+      var buffer = new ArrayBuffer(68);
+      buffer8 = new Uint8Array(buffer);
+      blocks = new Uint32Array(buffer);
+    }
+
+    if (root.JS_MD5_NO_NODE_JS || !Array.isArray) {
+      Array.isArray = function (obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+      };
+    }
+
+    if (ARRAY_BUFFER && (root.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+      ArrayBuffer.isView = function (obj) {
+        return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
+      };
+    }
+
+    /**
+     * @method hex
+     * @memberof md5
+     * @description Output hash as hex string
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {String} Hex string
+     * @example
+     * md5.hex('The quick brown fox jumps over the lazy dog');
+     * // equal to
+     * md5('The quick brown fox jumps over the lazy dog');
+     */
+    /**
+     * @method digest
+     * @memberof md5
+     * @description Output hash as bytes array
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {Array} Bytes array
+     * @example
+     * md5.digest('The quick brown fox jumps over the lazy dog');
+     */
+    /**
+     * @method array
+     * @memberof md5
+     * @description Output hash as bytes array
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {Array} Bytes array
+     * @example
+     * md5.array('The quick brown fox jumps over the lazy dog');
+     */
+    /**
+     * @method arrayBuffer
+     * @memberof md5
+     * @description Output hash as ArrayBuffer
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {ArrayBuffer} ArrayBuffer
+     * @example
+     * md5.arrayBuffer('The quick brown fox jumps over the lazy dog');
+     */
+    /**
+     * @method buffer
+     * @deprecated This maybe confuse with Buffer in node.js. Please use arrayBuffer instead.
+     * @memberof md5
+     * @description Output hash as ArrayBuffer
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {ArrayBuffer} ArrayBuffer
+     * @example
+     * md5.buffer('The quick brown fox jumps over the lazy dog');
+     */
+    /**
+     * @method base64
+     * @memberof md5
+     * @description Output hash as base64 string
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {String} base64 string
+     * @example
+     * md5.base64('The quick brown fox jumps over the lazy dog');
+     */
+    var createOutputMethod = function (outputType) {
+      return function (message) {
+        return new Md5(true).update(message)[outputType]();
+      };
+    };
+
+    /**
+     * @method create
+     * @memberof md5
+     * @description Create Md5 object
+     * @returns {Md5} Md5 object.
+     * @example
+     * var hash = md5.create();
+     */
+    /**
+     * @method update
+     * @memberof md5
+     * @description Create and update Md5 object
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {Md5} Md5 object.
+     * @example
+     * var hash = md5.update('The quick brown fox jumps over the lazy dog');
+     * // equal to
+     * var hash = md5.create();
+     * hash.update('The quick brown fox jumps over the lazy dog');
+     */
+    var createMethod = function () {
+      var method = createOutputMethod('hex');
+      if (NODE_JS) {
+        method = nodeWrap(method);
+      }
+      method.create = function () {
+        return new Md5();
+      };
+      method.update = function (message) {
+        return method.create().update(message);
+      };
+      for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+        var type = OUTPUT_TYPES[i];
+        method[type] = createOutputMethod(type);
+      }
+      return method;
+    };
+
+    /*var nodeWrap = function (method) {
+      var crypto = eval("require('crypto')");
+      var Buffer = eval("require('buffer').Buffer");
+      var nodeMethod = function (message) {
+        if (typeof message === 'string') {
+          return crypto.createHash('md5').update(message, 'utf8').digest('hex');
+        } else {
+          if (message === null || message === undefined) {
+            throw ERROR;
+          } else if (message.constructor === ArrayBuffer) {
+            message = new Uint8Array(message);
+          }
+        }
+        if (Array.isArray(message) || ArrayBuffer.isView(message) ||
+          message.constructor === Buffer) {
+          return crypto.createHash('md5').update(new Buffer(message)).digest('hex');
+        } else {
+          return method(message);
+        }
+      };
+      return nodeMethod;
+    };*/
+
+    /**
+     * Md5 class
+     * @class Md5
+     * @description This is internal class.
+     * @see {@link md5.create}
+     */
+    function Md5(sharedMemory) {
+      if (sharedMemory) {
+        blocks[0] = blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+        blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+        blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+        blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+        this.blocks = blocks;
+        this.buffer8 = buffer8;
+      } else {
+        if (ARRAY_BUFFER) {
+          var buffer = new ArrayBuffer(68);
+          this.buffer8 = new Uint8Array(buffer);
+          this.blocks = new Uint32Array(buffer);
+        } else {
+          this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
+      }
+      this.h0 = this.h1 = this.h2 = this.h3 = this.start = this.bytes = this.hBytes = 0;
+      this.finalized = this.hashed = false;
+      this.first = true;
+    }
+
+    /**
+     * @method update
+     * @memberof Md5
+     * @instance
+     * @description Update hash
+     * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+     * @returns {Md5} Md5 object.
+     * @see {@link md5.update}
+     */
+    Md5.prototype.update = function (message) {
+      if (this.finalized) {
+        return;
+      }
+
+      var notString, type = typeof message;
+      if (type !== 'string') {
+        if (type === 'object') {
+          if (message === null) {
+            throw ERROR;
+          } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+            message = new Uint8Array(message);
+          } else if (!Array.isArray(message)) {
+            if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+              throw ERROR;
+            }
+          }
+        } else {
+          throw ERROR;
+        }
+        notString = true;
+      }
+      var code, index = 0, i, length = message.length, blocks = this.blocks;
+      var buffer8 = this.buffer8;
+
+      while (index < length) {
+        if (this.hashed) {
+          this.hashed = false;
+          blocks[0] = blocks[16];
+          blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+          blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+          blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+          blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+        }
+
+        if (notString) {
+          if (ARRAY_BUFFER) {
+            for (i = this.start; index < length && i < 64; ++index) {
+              buffer8[i++] = message[index];
+            }
+          } else {
+            for (i = this.start; index < length && i < 64; ++index) {
+              blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+            }
+          }
+        } else {
+          if (ARRAY_BUFFER) {
+            for (i = this.start; index < length && i < 64; ++index) {
+              code = message.charCodeAt(index);
+              if (code < 0x80) {
+                buffer8[i++] = code;
+              } else if (code < 0x800) {
+                buffer8[i++] = 0xc0 | (code >> 6);
+                buffer8[i++] = 0x80 | (code & 0x3f);
+              } else if (code < 0xd800 || code >= 0xe000) {
+                buffer8[i++] = 0xe0 | (code >> 12);
+                buffer8[i++] = 0x80 | ((code >> 6) & 0x3f);
+                buffer8[i++] = 0x80 | (code & 0x3f);
+              } else {
+                code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+                buffer8[i++] = 0xf0 | (code >> 18);
+                buffer8[i++] = 0x80 | ((code >> 12) & 0x3f);
+                buffer8[i++] = 0x80 | ((code >> 6) & 0x3f);
+                buffer8[i++] = 0x80 | (code & 0x3f);
+              }
+            }
+          } else {
+            for (i = this.start; index < length && i < 64; ++index) {
+              code = message.charCodeAt(index);
+              if (code < 0x80) {
+                blocks[i >> 2] |= code << SHIFT[i++ & 3];
+              } else if (code < 0x800) {
+                blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+              } else if (code < 0xd800 || code >= 0xe000) {
+                blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+              } else {
+                code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+                blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+                blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+              }
+            }
+          }
+        }
+        this.lastByteIndex = i;
+        this.bytes += i - this.start;
+        if (i >= 64) {
+          this.start = i - 64;
+          this.hash();
+          this.hashed = true;
+        } else {
+          this.start = i;
+        }
+      }
+      if (this.bytes > 4294967295) {
+        this.hBytes += this.bytes / 4294967296 << 0;
+        this.bytes = this.bytes % 4294967296;
+      }
+      return this;
+    };
+
+    Md5.prototype.finalize = function () {
+      if (this.finalized) {
+        return;
+      }
+      this.finalized = true;
+      var blocks = this.blocks, i = this.lastByteIndex;
+      blocks[i >> 2] |= EXTRA[i & 3];
+      if (i >= 56) {
+        if (!this.hashed) {
+          this.hash();
+        }
+        blocks[0] = blocks[16];
+        blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+        blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+        blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+        blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+      }
+      blocks[14] = this.bytes << 3;
+      blocks[15] = this.hBytes << 3 | this.bytes >>> 29;
+      this.hash();
+    };
+
+    Md5.prototype.hash = function () {
+      var a, b, c, d, bc, da, blocks = this.blocks;
+
+      if (this.first) {
+        a = blocks[0] - 680876937;
+        a = (a << 7 | a >>> 25) - 271733879 << 0;
+        d = (-1732584194 ^ a & 2004318071) + blocks[1] - 117830708;
+        d = (d << 12 | d >>> 20) + a << 0;
+        c = (-271733879 ^ (d & (a ^ -271733879))) + blocks[2] - 1126478375;
+        c = (c << 17 | c >>> 15) + d << 0;
+        b = (a ^ (c & (d ^ a))) + blocks[3] - 1316259209;
+        b = (b << 22 | b >>> 10) + c << 0;
+      } else {
+        a = this.h0;
+        b = this.h1;
+        c = this.h2;
+        d = this.h3;
+        a += (d ^ (b & (c ^ d))) + blocks[0] - 680876936;
+        a = (a << 7 | a >>> 25) + b << 0;
+        d += (c ^ (a & (b ^ c))) + blocks[1] - 389564586;
+        d = (d << 12 | d >>> 20) + a << 0;
+        c += (b ^ (d & (a ^ b))) + blocks[2] + 606105819;
+        c = (c << 17 | c >>> 15) + d << 0;
+        b += (a ^ (c & (d ^ a))) + blocks[3] - 1044525330;
+        b = (b << 22 | b >>> 10) + c << 0;
+      }
+
+      a += (d ^ (b & (c ^ d))) + blocks[4] - 176418897;
+      a = (a << 7 | a >>> 25) + b << 0;
+      d += (c ^ (a & (b ^ c))) + blocks[5] + 1200080426;
+      d = (d << 12 | d >>> 20) + a << 0;
+      c += (b ^ (d & (a ^ b))) + blocks[6] - 1473231341;
+      c = (c << 17 | c >>> 15) + d << 0;
+      b += (a ^ (c & (d ^ a))) + blocks[7] - 45705983;
+      b = (b << 22 | b >>> 10) + c << 0;
+      a += (d ^ (b & (c ^ d))) + blocks[8] + 1770035416;
+      a = (a << 7 | a >>> 25) + b << 0;
+      d += (c ^ (a & (b ^ c))) + blocks[9] - 1958414417;
+      d = (d << 12 | d >>> 20) + a << 0;
+      c += (b ^ (d & (a ^ b))) + blocks[10] - 42063;
+      c = (c << 17 | c >>> 15) + d << 0;
+      b += (a ^ (c & (d ^ a))) + blocks[11] - 1990404162;
+      b = (b << 22 | b >>> 10) + c << 0;
+      a += (d ^ (b & (c ^ d))) + blocks[12] + 1804603682;
+      a = (a << 7 | a >>> 25) + b << 0;
+      d += (c ^ (a & (b ^ c))) + blocks[13] - 40341101;
+      d = (d << 12 | d >>> 20) + a << 0;
+      c += (b ^ (d & (a ^ b))) + blocks[14] - 1502002290;
+      c = (c << 17 | c >>> 15) + d << 0;
+      b += (a ^ (c & (d ^ a))) + blocks[15] + 1236535329;
+      b = (b << 22 | b >>> 10) + c << 0;
+      a += (c ^ (d & (b ^ c))) + blocks[1] - 165796510;
+      a = (a << 5 | a >>> 27) + b << 0;
+      d += (b ^ (c & (a ^ b))) + blocks[6] - 1069501632;
+      d = (d << 9 | d >>> 23) + a << 0;
+      c += (a ^ (b & (d ^ a))) + blocks[11] + 643717713;
+      c = (c << 14 | c >>> 18) + d << 0;
+      b += (d ^ (a & (c ^ d))) + blocks[0] - 373897302;
+      b = (b << 20 | b >>> 12) + c << 0;
+      a += (c ^ (d & (b ^ c))) + blocks[5] - 701558691;
+      a = (a << 5 | a >>> 27) + b << 0;
+      d += (b ^ (c & (a ^ b))) + blocks[10] + 38016083;
+      d = (d << 9 | d >>> 23) + a << 0;
+      c += (a ^ (b & (d ^ a))) + blocks[15] - 660478335;
+      c = (c << 14 | c >>> 18) + d << 0;
+      b += (d ^ (a & (c ^ d))) + blocks[4] - 405537848;
+      b = (b << 20 | b >>> 12) + c << 0;
+      a += (c ^ (d & (b ^ c))) + blocks[9] + 568446438;
+      a = (a << 5 | a >>> 27) + b << 0;
+      d += (b ^ (c & (a ^ b))) + blocks[14] - 1019803690;
+      d = (d << 9 | d >>> 23) + a << 0;
+      c += (a ^ (b & (d ^ a))) + blocks[3] - 187363961;
+      c = (c << 14 | c >>> 18) + d << 0;
+      b += (d ^ (a & (c ^ d))) + blocks[8] + 1163531501;
+      b = (b << 20 | b >>> 12) + c << 0;
+      a += (c ^ (d & (b ^ c))) + blocks[13] - 1444681467;
+      a = (a << 5 | a >>> 27) + b << 0;
+      d += (b ^ (c & (a ^ b))) + blocks[2] - 51403784;
+      d = (d << 9 | d >>> 23) + a << 0;
+      c += (a ^ (b & (d ^ a))) + blocks[7] + 1735328473;
+      c = (c << 14 | c >>> 18) + d << 0;
+      b += (d ^ (a & (c ^ d))) + blocks[12] - 1926607734;
+      b = (b << 20 | b >>> 12) + c << 0;
+      bc = b ^ c;
+      a += (bc ^ d) + blocks[5] - 378558;
+      a = (a << 4 | a >>> 28) + b << 0;
+      d += (bc ^ a) + blocks[8] - 2022574463;
+      d = (d << 11 | d >>> 21) + a << 0;
+      da = d ^ a;
+      c += (da ^ b) + blocks[11] + 1839030562;
+      c = (c << 16 | c >>> 16) + d << 0;
+      b += (da ^ c) + blocks[14] - 35309556;
+      b = (b << 23 | b >>> 9) + c << 0;
+      bc = b ^ c;
+      a += (bc ^ d) + blocks[1] - 1530992060;
+      a = (a << 4 | a >>> 28) + b << 0;
+      d += (bc ^ a) + blocks[4] + 1272893353;
+      d = (d << 11 | d >>> 21) + a << 0;
+      da = d ^ a;
+      c += (da ^ b) + blocks[7] - 155497632;
+      c = (c << 16 | c >>> 16) + d << 0;
+      b += (da ^ c) + blocks[10] - 1094730640;
+      b = (b << 23 | b >>> 9) + c << 0;
+      bc = b ^ c;
+      a += (bc ^ d) + blocks[13] + 681279174;
+      a = (a << 4 | a >>> 28) + b << 0;
+      d += (bc ^ a) + blocks[0] - 358537222;
+      d = (d << 11 | d >>> 21) + a << 0;
+      da = d ^ a;
+      c += (da ^ b) + blocks[3] - 722521979;
+      c = (c << 16 | c >>> 16) + d << 0;
+      b += (da ^ c) + blocks[6] + 76029189;
+      b = (b << 23 | b >>> 9) + c << 0;
+      bc = b ^ c;
+      a += (bc ^ d) + blocks[9] - 640364487;
+      a = (a << 4 | a >>> 28) + b << 0;
+      d += (bc ^ a) + blocks[12] - 421815835;
+      d = (d << 11 | d >>> 21) + a << 0;
+      da = d ^ a;
+      c += (da ^ b) + blocks[15] + 530742520;
+      c = (c << 16 | c >>> 16) + d << 0;
+      b += (da ^ c) + blocks[2] - 995338651;
+      b = (b << 23 | b >>> 9) + c << 0;
+      a += (c ^ (b | ~d)) + blocks[0] - 198630844;
+      a = (a << 6 | a >>> 26) + b << 0;
+      d += (b ^ (a | ~c)) + blocks[7] + 1126891415;
+      d = (d << 10 | d >>> 22) + a << 0;
+      c += (a ^ (d | ~b)) + blocks[14] - 1416354905;
+      c = (c << 15 | c >>> 17) + d << 0;
+      b += (d ^ (c | ~a)) + blocks[5] - 57434055;
+      b = (b << 21 | b >>> 11) + c << 0;
+      a += (c ^ (b | ~d)) + blocks[12] + 1700485571;
+      a = (a << 6 | a >>> 26) + b << 0;
+      d += (b ^ (a | ~c)) + blocks[3] - 1894986606;
+      d = (d << 10 | d >>> 22) + a << 0;
+      c += (a ^ (d | ~b)) + blocks[10] - 1051523;
+      c = (c << 15 | c >>> 17) + d << 0;
+      b += (d ^ (c | ~a)) + blocks[1] - 2054922799;
+      b = (b << 21 | b >>> 11) + c << 0;
+      a += (c ^ (b | ~d)) + blocks[8] + 1873313359;
+      a = (a << 6 | a >>> 26) + b << 0;
+      d += (b ^ (a | ~c)) + blocks[15] - 30611744;
+      d = (d << 10 | d >>> 22) + a << 0;
+      c += (a ^ (d | ~b)) + blocks[6] - 1560198380;
+      c = (c << 15 | c >>> 17) + d << 0;
+      b += (d ^ (c | ~a)) + blocks[13] + 1309151649;
+      b = (b << 21 | b >>> 11) + c << 0;
+      a += (c ^ (b | ~d)) + blocks[4] - 145523070;
+      a = (a << 6 | a >>> 26) + b << 0;
+      d += (b ^ (a | ~c)) + blocks[11] - 1120210379;
+      d = (d << 10 | d >>> 22) + a << 0;
+      c += (a ^ (d | ~b)) + blocks[2] + 718787259;
+      c = (c << 15 | c >>> 17) + d << 0;
+      b += (d ^ (c | ~a)) + blocks[9] - 343485551;
+      b = (b << 21 | b >>> 11) + c << 0;
+
+      if (this.first) {
+        this.h0 = a + 1732584193 << 0;
+        this.h1 = b - 271733879 << 0;
+        this.h2 = c - 1732584194 << 0;
+        this.h3 = d + 271733878 << 0;
+        this.first = false;
+      } else {
+        this.h0 = this.h0 + a << 0;
+        this.h1 = this.h1 + b << 0;
+        this.h2 = this.h2 + c << 0;
+        this.h3 = this.h3 + d << 0;
+      }
+    };
+
+    /**
+     * @method hex
+     * @memberof Md5
+     * @instance
+     * @description Output hash as hex string
+     * @returns {String} Hex string
+     * @see {@link md5.hex}
+     * @example
+     * hash.hex();
+     */
+    Md5.prototype.hex = function () {
+      this.finalize();
+
+      var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3;
+
+      return HEX_CHARS[(h0 >> 4) & 0x0F] + HEX_CHARS[h0 & 0x0F] +
+        HEX_CHARS[(h0 >> 12) & 0x0F] + HEX_CHARS[(h0 >> 8) & 0x0F] +
+        HEX_CHARS[(h0 >> 20) & 0x0F] + HEX_CHARS[(h0 >> 16) & 0x0F] +
+        HEX_CHARS[(h0 >> 28) & 0x0F] + HEX_CHARS[(h0 >> 24) & 0x0F] +
+        HEX_CHARS[(h1 >> 4) & 0x0F] + HEX_CHARS[h1 & 0x0F] +
+        HEX_CHARS[(h1 >> 12) & 0x0F] + HEX_CHARS[(h1 >> 8) & 0x0F] +
+        HEX_CHARS[(h1 >> 20) & 0x0F] + HEX_CHARS[(h1 >> 16) & 0x0F] +
+        HEX_CHARS[(h1 >> 28) & 0x0F] + HEX_CHARS[(h1 >> 24) & 0x0F] +
+        HEX_CHARS[(h2 >> 4) & 0x0F] + HEX_CHARS[h2 & 0x0F] +
+        HEX_CHARS[(h2 >> 12) & 0x0F] + HEX_CHARS[(h2 >> 8) & 0x0F] +
+        HEX_CHARS[(h2 >> 20) & 0x0F] + HEX_CHARS[(h2 >> 16) & 0x0F] +
+        HEX_CHARS[(h2 >> 28) & 0x0F] + HEX_CHARS[(h2 >> 24) & 0x0F] +
+        HEX_CHARS[(h3 >> 4) & 0x0F] + HEX_CHARS[h3 & 0x0F] +
+        HEX_CHARS[(h3 >> 12) & 0x0F] + HEX_CHARS[(h3 >> 8) & 0x0F] +
+        HEX_CHARS[(h3 >> 20) & 0x0F] + HEX_CHARS[(h3 >> 16) & 0x0F] +
+        HEX_CHARS[(h3 >> 28) & 0x0F] + HEX_CHARS[(h3 >> 24) & 0x0F];
+    };
+
+    /**
+     * @method toString
+     * @memberof Md5
+     * @instance
+     * @description Output hash as hex string
+     * @returns {String} Hex string
+     * @see {@link md5.hex}
+     * @example
+     * hash.toString();
+     */
+    Md5.prototype.toString = Md5.prototype.hex;
+
+    /**
+     * @method digest
+     * @memberof Md5
+     * @instance
+     * @description Output hash as bytes array
+     * @returns {Array} Bytes array
+     * @see {@link md5.digest}
+     * @example
+     * hash.digest();
+     */
+    Md5.prototype.digest = function () {
+      this.finalize();
+
+      var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3;
+      return [
+        h0 & 0xFF, (h0 >> 8) & 0xFF, (h0 >> 16) & 0xFF, (h0 >> 24) & 0xFF,
+        h1 & 0xFF, (h1 >> 8) & 0xFF, (h1 >> 16) & 0xFF, (h1 >> 24) & 0xFF,
+        h2 & 0xFF, (h2 >> 8) & 0xFF, (h2 >> 16) & 0xFF, (h2 >> 24) & 0xFF,
+        h3 & 0xFF, (h3 >> 8) & 0xFF, (h3 >> 16) & 0xFF, (h3 >> 24) & 0xFF
+      ];
+    };
+
+    /**
+     * @method array
+     * @memberof Md5
+     * @instance
+     * @description Output hash as bytes array
+     * @returns {Array} Bytes array
+     * @see {@link md5.array}
+     * @example
+     * hash.array();
+     */
+    Md5.prototype.array = Md5.prototype.digest;
+
+    /**
+     * @method arrayBuffer
+     * @memberof Md5
+     * @instance
+     * @description Output hash as ArrayBuffer
+     * @returns {ArrayBuffer} ArrayBuffer
+     * @see {@link md5.arrayBuffer}
+     * @example
+     * hash.arrayBuffer();
+     */
+    Md5.prototype.arrayBuffer = function () {
+      this.finalize();
+
+      var buffer = new ArrayBuffer(16);
+      var blocks = new Uint32Array(buffer);
+      blocks[0] = this.h0;
+      blocks[1] = this.h1;
+      blocks[2] = this.h2;
+      blocks[3] = this.h3;
+      return buffer;
+    };
+
+    /**
+     * @method buffer
+     * @deprecated This maybe confuse with Buffer in node.js. Please use arrayBuffer instead.
+     * @memberof Md5
+     * @instance
+     * @description Output hash as ArrayBuffer
+     * @returns {ArrayBuffer} ArrayBuffer
+     * @see {@link md5.buffer}
+     * @example
+     * hash.buffer();
+     */
+    Md5.prototype.buffer = Md5.prototype.arrayBuffer;
+
+    /**
+     * @method base64
+     * @memberof Md5
+     * @instance
+     * @description Output hash as base64 string
+     * @returns {String} base64 string
+     * @see {@link md5.base64}
+     * @example
+     * hash.base64();
+     */
+    Md5.prototype.base64 = function () {
+      var v1, v2, v3, base64Str = '', bytes = this.array();
+      for (var i = 0; i < 15;) {
+        v1 = bytes[i++];
+        v2 = bytes[i++];
+        v3 = bytes[i++];
+        base64Str += BASE64_ENCODE_CHAR[v1 >>> 2] +
+          BASE64_ENCODE_CHAR[(v1 << 4 | v2 >>> 4) & 63] +
+          BASE64_ENCODE_CHAR[(v2 << 2 | v3 >>> 6) & 63] +
+          BASE64_ENCODE_CHAR[v3 & 63];
+      }
+      v1 = bytes[i];
+      base64Str += BASE64_ENCODE_CHAR[v1 >>> 2] +
+        BASE64_ENCODE_CHAR[(v1 << 4) & 63] +
+        '==';
+      return base64Str;
+    };
+
+    var exports = createMethod();
+
+    if (COMMON_JS) {
+      module.exports = exports;
+    } else {
+      /**
+       * @method md5
+       * @description Md5 hash function, export to global in browsers.
+       * @param {String|Array|Uint8Array|ArrayBuffer} message message to hash
+       * @returns {String} md5 hashes
+       * @example
+       * md5(''); // d41d8cd98f00b204e9800998ecf8427e
+       * md5('The quick brown fox jumps over the lazy dog'); // 9e107d9d372bb6826bd81d3542a419d6
+       * md5('The quick brown fox jumps over the lazy dog.'); // e4d909c290d0fb1ca068ffaddf22cbd0
+       *
+       * // It also supports UTF-8 encoding
+       * md5('中文'); // a7bac2239fcdcb3a067903d8077c4a07
+       *
+       * // It also supports byte `Array`, `Uint8Array`, `ArrayBuffer`
+       * md5([]); // d41d8cd98f00b204e9800998ecf8427e
+       * md5(new Uint8Array([])); // d41d8cd98f00b204e9800998ecf8427e
+       */
+      root.md5 = exports;
+    }
+  })();
   });
 
   var jszip_min = createCommonjsModule(function (module, exports) {
@@ -8535,7 +9201,7 @@
 
 
   		latentsHash () {
-  			return this.latentsBytes && md5_min(this.latentsBytes);
+  			return this.latentsBytes && md5(this.latentsBytes);
   		},
 
 
@@ -8871,11 +9537,11 @@
     /* style */
     const __vue_inject_styles__ = function (inject) {
       if (!inject) return
-      inject("data-v-a2588be4_0", { source: "\n.image[data-v-a2588be4]\n{\n\tposition: relative;\n}\n.image img[data-v-a2588be4]\n{\n\twidth: 100%;\n\theight: 100%;\n}\n.loading img[data-v-a2588be4]\n{\n\topacity: 0.7;\n}\n.hash[data-v-a2588be4]\n{\n\tcolor: #0006;\n}\n.hash[data-v-a2588be4]:focus\n{\n\tcolor: #000;\n}\n.drage-hover[data-v-a2588be4]\n{\n\tbackground-color: #dfd;\n\toutline: .2em solid lightgreen;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\g-view.vue"],"names":[],"mappings":";AA+LA;;CAEA,kBAAA;AACA;AAEA;;CAEA,WAAA;CACA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,WAAA;AACA;AAEA;;CAEA,sBAAA;CACA,8BAAA;AACA","file":"g-view.vue","sourcesContent":["<template>\r\n\t<div :class=\"{['drage-hover']: drageHover}\"\r\n\t\t@drop.prevent=\"onDropFiles\"\r\n\t\t@dragover.prevent=\"drageHover = true\"\r\n\t\t@drageleave=\"drageHover = false\"\r\n\t\t@mouseleave=\"drageHover = false\"\r\n\t\t@mouseup=\"drageHover = false\"\r\n\t>\r\n\t\t<div class=\"image\" :class=\"{loading: imageLoading}\" :style=\"{width: `${imageSize}px`, height: `${imageSize}px`}\">\r\n\t\t\t<img v-if=\"imageURL\" :src=\"imageURL\" @load=\"imageLoading = false\" />\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<input class=\"hash\" type=\"text\" :value=\"latentsHash\" :style=\"{width: `${imageSize - 4}px`}\" :readonly=\"true\" @paste=\"onPaste\" @copy.prevent.stop=\"onCopy\" />\r\n\t\t</div>\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport md5 from \"js-md5\";\r\n\timport JSZip from \"jszip\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"GView\",\r\n\r\n\r\n\t\tprops: {\r\n\t\t\tlayers: Number,\r\n\t\t\tlastDimension: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 512,\r\n\t\t\t},\r\n\t\t\timageSize: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 200,\r\n\t\t\t},\r\n\t\t\tppLatentsBytes: String,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tlatents: Array(this.layers * this.lastDimension).fill(0),\r\n\t\t\t\timageLoading: false,\r\n\t\t\t\tdrageHover: false,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.latents.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn LatentCode.encodeFixed16(this.latents);\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.latents = LatentCode.decodeFixed16(value);\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsHash () {\r\n\t\t\t\treturn this.latentsBytes && md5(this.latentsBytes);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn this.latentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tcreated () {\r\n\t\t\tif (this.ppLatentsBytes)\r\n\t\t\t\tthis.latentsBytes = this.ppLatentsBytes;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tasync onPaste (event) {\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\tif (text) {\r\n\t\t\t\t\ttry {\r\n\t\t\t\t\t\tconst [_, protocol, path] = text.match(/^([\\w\\+]+):(.+)$/);\r\n\t\t\t\t\t\tswitch (protocol) {\r\n\t\t\t\t\t\tcase \"w\":\r\n\t\t\t\t\t\t\tconst w = LatentCode.decodeFloat32(path);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(w)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"w+\":\r\n\t\t\t\t\t\t\tthis.latentsBytes = path;\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"z\":\r\n\t\t\t\t\t\t\tconst [_, psi, bytes] = path.match(/^(.+),(.+)$/);\r\n\t\t\t\t\t\t\tconst wcode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(bytes)}`)).text();\r\n\t\t\t\t\t\t\tconst ww = LatentCode.decodeFloat32(wcode);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(ww)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tdefault:\r\n\t\t\t\t\t\t\tconsole.warn(\"invalid latent protocol:\", protocol);\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch (error) {\r\n\t\t\t\t\t\tconsole.warn(\"invalid latent URL:\", error);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.latentsBytes);\r\n\t\t\t\tconsole.log(\"Latent code copied into clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync onDropFiles(event) {\r\n\t\t\t\tthis.drageHover = false;\r\n\r\n\t\t\t\tconst file = event.dataTransfer.files[0];\r\n\t\t\t\tif (file && /zip/.test(file.type))\r\n\t\t\t\t\tthis.loadPackage(file);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync loadPackage(file) {\r\n\t\t\t\tconst pack = await JSZip.loadAsync(file);\r\n\t\t\t\tconst manifest = JSON.parse(await pack.file(\"manifest.json\").async(\"text\"));\r\n\t\t\t\tif (manifest.usage !== \"stylegan-web-projector\") {\r\n\t\t\t\t\tconsole.warn(\"unsupported package type:\", manifest.usage);\r\n\t\t\t\t\treturn;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tconsole.log(`Loading package \"${file.name}\" with model`, manifest.model);\r\n\r\n\t\t\t\tif (manifest.results) {\r\n\t\t\t\t\tconst lastResult = manifest.results[manifest.results.length - 1];\r\n\t\t\t\t\tif (lastResult && lastResult.xlatentCode)\r\n\t\t\t\t\t\tthis.latentsBytes = lastResult.xlatentCode;\r\n\t\t\t\t}\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatents (value) {\r\n\t\t\t\tthis.$emit(\"update:latents\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsBytes (value) {\r\n\t\t\t\tif (this.ppLatentsBytes != value)\r\n\t\t\t\t\tthis.$emit(\"update:ppLatentsBytes\", value);\r\n\r\n\t\t\t\tthis.$emit(\"change\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tppLatentsBytes (value) {\r\n\t\t\t\tthis.latentsBytes = value;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlayers () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlastDimension () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.imageLoading = true;\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style scoped>\r\n\t.image\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.image img\r\n\t{\r\n\t\twidth: 100%;\r\n\t\theight: 100%;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.hash\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.hash:focus\r\n\t{\r\n\t\tcolor: #000;\r\n\t}\r\n\r\n\t.drage-hover\r\n\t{\r\n\t\tbackground-color: #dfd;\r\n\t\toutline: .2em solid lightgreen;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
+      inject("data-v-4fe81699_0", { source: "\n.image[data-v-4fe81699]\n{\n\tposition: relative;\n}\n.image img[data-v-4fe81699]\n{\n\twidth: 100%;\n\theight: 100%;\n}\n.loading img[data-v-4fe81699]\n{\n\topacity: 0.7;\n}\n.hash[data-v-4fe81699]\n{\n\tcolor: #0006;\n}\n.hash[data-v-4fe81699]:focus\n{\n\tcolor: #000;\n}\n.drage-hover[data-v-4fe81699]\n{\n\tbackground-color: #dfd;\n\toutline: .2em solid lightgreen;\n}\n", map: {"version":3,"sources":["F:\\Documents\\Works\\Lab\\stylegan-web2\\app\\g-view.vue"],"names":[],"mappings":";AA+LA;;CAEA,kBAAA;AACA;AAEA;;CAEA,WAAA;CACA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,YAAA;AACA;AAEA;;CAEA,WAAA;AACA;AAEA;;CAEA,sBAAA;CACA,8BAAA;AACA","file":"g-view.vue","sourcesContent":["<template>\r\n\t<div :class=\"{['drage-hover']: drageHover}\"\r\n\t\t@drop.prevent=\"onDropFiles\"\r\n\t\t@dragover.prevent=\"drageHover = true\"\r\n\t\t@drageleave=\"drageHover = false\"\r\n\t\t@mouseleave=\"drageHover = false\"\r\n\t\t@mouseup=\"drageHover = false\"\r\n\t>\r\n\t\t<div class=\"image\" :class=\"{loading: imageLoading}\" :style=\"{width: `${imageSize}px`, height: `${imageSize}px`}\">\r\n\t\t\t<img v-if=\"imageURL\" :src=\"imageURL\" @load=\"imageLoading = false\" />\r\n\t\t</div>\r\n\t\t<div>\r\n\t\t\t<input class=\"hash\" type=\"text\" :value=\"latentsHash\" :style=\"{width: `${imageSize - 4}px`}\" :readonly=\"true\" @paste=\"onPaste\" @copy.prevent.stop=\"onCopy\" />\r\n\t\t</div>\r\n\t</div>\r\n</template>\r\n\r\n<script>\r\n\timport md5 from \"js-md5\";\r\n\timport JSZip from \"jszip/dist/jszip.min.js\";\r\n\r\n\timport * as LatentCode from \"./latentCode.js\"\r\n\r\n\r\n\r\n\texport default {\r\n\t\tname: \"GView\",\r\n\r\n\r\n\t\tprops: {\r\n\t\t\tlayers: Number,\r\n\t\t\tlastDimension: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 512,\r\n\t\t\t},\r\n\t\t\timageSize: {\r\n\t\t\t\ttype: Number,\r\n\t\t\t\tdefault: 200,\r\n\t\t\t},\r\n\t\t\tppLatentsBytes: String,\r\n\t\t},\r\n\r\n\r\n\t\tdata () {\r\n\t\t\treturn {\r\n\t\t\t\tlatents: Array(this.layers * this.lastDimension).fill(0),\r\n\t\t\t\timageLoading: false,\r\n\t\t\t\tdrageHover: false,\r\n\t\t\t};\r\n\t\t},\r\n\r\n\r\n\t\tcomputed: {\r\n\t\t\tlatentsBytes: {\r\n\t\t\t\tget () {\r\n\t\t\t\t\tif (!this.latents.length)\r\n\t\t\t\t\t\treturn null;\r\n\r\n\t\t\t\t\treturn LatentCode.encodeFixed16(this.latents);\r\n\t\t\t\t},\r\n\r\n\t\t\t\tset (value) {\r\n\t\t\t\t\tthis.latents = LatentCode.decodeFixed16(value);\r\n\t\t\t\t},\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsHash () {\r\n\t\t\t\treturn this.latentsBytes && md5(this.latentsBytes);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\treturn this.latentsBytes && `/generate?fromW=1&xlatents=${encodeURIComponent(this.latentsBytes)}`;\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\tcreated () {\r\n\t\t\tif (this.ppLatentsBytes)\r\n\t\t\t\tthis.latentsBytes = this.ppLatentsBytes;\r\n\t\t},\r\n\r\n\r\n\t\tmethods: {\r\n\t\t\tasync onPaste (event) {\r\n\t\t\t\tconst text = await new Promise(resolve => [...event.clipboardData.items][0].getAsString(resolve));\r\n\t\t\t\tif (text) {\r\n\t\t\t\t\ttry {\r\n\t\t\t\t\t\tconst [_, protocol, path] = text.match(/^([\\w\\+]+):(.+)$/);\r\n\t\t\t\t\t\tswitch (protocol) {\r\n\t\t\t\t\t\tcase \"w\":\r\n\t\t\t\t\t\t\tconst w = LatentCode.decodeFloat32(path);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(w)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"w+\":\r\n\t\t\t\t\t\t\tthis.latentsBytes = path;\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tcase \"z\":\r\n\t\t\t\t\t\t\tconst [_, psi, bytes] = path.match(/^(.+),(.+)$/);\r\n\t\t\t\t\t\t\tconst wcode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(bytes)}`)).text();\r\n\t\t\t\t\t\t\tconst ww = LatentCode.decodeFloat32(wcode);\r\n\t\t\t\t\t\t\tthis.latents = [].concat(...Array(this.layers).fill(null).map(() => Array.from(ww)));\r\n\r\n\t\t\t\t\t\t\tbreak;\r\n\t\t\t\t\t\tdefault:\r\n\t\t\t\t\t\t\tconsole.warn(\"invalid latent protocol:\", protocol);\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch (error) {\r\n\t\t\t\t\t\tconsole.warn(\"invalid latent URL:\", error);\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t},\r\n\r\n\r\n\t\t\tonCopy (event) {\r\n\t\t\t\tevent.clipboardData.setData(\"text/plain\", \"w+:\" + this.latentsBytes);\r\n\t\t\t\tconsole.log(\"Latent code copied into clipboard.\");\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync onDropFiles(event) {\r\n\t\t\t\tthis.drageHover = false;\r\n\r\n\t\t\t\tconst file = event.dataTransfer.files[0];\r\n\t\t\t\tif (file && /zip/.test(file.type))\r\n\t\t\t\t\tthis.loadPackage(file);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tasync loadPackage(file) {\r\n\t\t\t\tconst pack = await JSZip.loadAsync(file);\r\n\t\t\t\tconst manifest = JSON.parse(await pack.file(\"manifest.json\").async(\"text\"));\r\n\t\t\t\tif (manifest.usage !== \"stylegan-web-projector\") {\r\n\t\t\t\t\tconsole.warn(\"unsupported package type:\", manifest.usage);\r\n\t\t\t\t\treturn;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tconsole.log(`Loading package \"${file.name}\" with model`, manifest.model);\r\n\r\n\t\t\t\tif (manifest.results) {\r\n\t\t\t\t\tconst lastResult = manifest.results[manifest.results.length - 1];\r\n\t\t\t\t\tif (lastResult && lastResult.xlatentCode)\r\n\t\t\t\t\t\tthis.latentsBytes = lastResult.xlatentCode;\r\n\t\t\t\t}\r\n\t\t\t},\r\n\t\t},\r\n\r\n\r\n\t\twatch: {\r\n\t\t\tlatents (value) {\r\n\t\t\t\tthis.$emit(\"update:latents\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlatentsBytes (value) {\r\n\t\t\t\tif (this.ppLatentsBytes != value)\r\n\t\t\t\t\tthis.$emit(\"update:ppLatentsBytes\", value);\r\n\r\n\t\t\t\tthis.$emit(\"change\", value);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tppLatentsBytes (value) {\r\n\t\t\t\tthis.latentsBytes = value;\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlayers () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\tlastDimension () {\r\n\t\t\t\tif (!this.ppLatentsBytes)\r\n\t\t\t\t\tthis.latents = Array(this.layers * this.lastDimension).fill(0);\r\n\t\t\t},\r\n\r\n\r\n\t\t\timageURL () {\r\n\t\t\t\tthis.imageLoading = true;\r\n\t\t\t},\r\n\t\t},\r\n\t};\r\n</script>\r\n\r\n<style scoped>\r\n\t.image\r\n\t{\r\n\t\tposition: relative;\r\n\t}\r\n\r\n\t.image img\r\n\t{\r\n\t\twidth: 100%;\r\n\t\theight: 100%;\r\n\t}\r\n\r\n\t.loading img\r\n\t{\r\n\t\topacity: 0.7;\r\n\t}\r\n\r\n\t.hash\r\n\t{\r\n\t\tcolor: #0006;\r\n\t}\r\n\r\n\t.hash:focus\r\n\t{\r\n\t\tcolor: #000;\r\n\t}\r\n\r\n\t.drage-hover\r\n\t{\r\n\t\tbackground-color: #dfd;\r\n\t\toutline: .2em solid lightgreen;\r\n\t}\r\n</style>\r\n"]}, media: undefined });
 
     };
     /* scoped */
-    const __vue_scope_id__ = "data-v-a2588be4";
+    const __vue_scope_id__ = "data-v-4fe81699";
     /* module identifier */
     const __vue_module_identifier__ = undefined;
     /* functional template */
@@ -9306,7 +9972,7 @@
 
 
   		downloadResult () {
-  			downloadUrl(this.resultImageURL, `${md5_min(this.cachedResultCode)}.png`);
+  			downloadUrl(this.resultImageURL, `${md5(this.cachedResultCode)}.png`);
   		},
   	},
 
