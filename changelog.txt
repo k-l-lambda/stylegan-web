@@ -1,8 +1,34 @@
 
 TODO:
-	face landmark tools for projection target image preprocess
+	outline flicking when code copy
 	project from a specified code
 
+
+
+2020.1.19	K.L.	<k.l.lambda@gmail.com>
+
+	>	projector.vue: fixed projected sequence number when skip steps.
+
+
+2020.1.18	K.L.	<k.l.lambda@gmail.com>
+
+	+	projector.vue: target image download link added.
+
+	+	projector.vue: move face ref marks manually.
+
+	+	projector.vue: mirror edge neighbor images in face crop added.
+
+	+	projector.vue: cropFace implemented.
+
+	+	projector.vue: face crop graph added.
+
+	+	projector.vue: face landmark detection added.
+
+	+	projector.vue: face-api weights loading added.
+
+	+	projector.vue: imported face-api.
+
+	+	http_server.py: separated static folder from dist.
 
 
 2020.1.17	K.L.	<k.l.lambda@gmail.com>

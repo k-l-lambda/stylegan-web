@@ -14,6 +14,18 @@
 				<StoreInput v-model.number="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
+				<em v-if="faceDetectionConfidence != null" :title="faceDetectionConfidence > 0 ? `face confidence: ${faceDetectionConfidence}` : 'no face found'">{{faceDetectionConfidence.toFixed(3)}}</em>
+				<span v-if="targetUrl" class="target-size">
+					<em>{{targetSize.width}}&times;{{targetSize.height}}</em>
+				</span>
+				<span v-if="faceCrop" class="crop-size">
+					&#x2192;<em>{{faceCrop.edgeLength.toFixed(0)}}<sup>2</sup></em>
+				</span>
+				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
+				<button v-show="faceCrop" @click="cropFace()" title="crop face area">&#x2704;</button>
+			</p>
+			<canvas v-if="faceCrop" v-show="false" ref="cropCanvas" :width="Math.round(faceCrop.edgeLength)" :height="Math.round(faceCrop.edgeLength)" />
+			<p>
 				<button :disabled="running" @click="project">Project</button>
 			</p>
 			<p>
@@ -39,14 +51,38 @@
 			</p>
 		</aside>
 		<main>
-			<div class="target" :class="{hover: drageHover}">
+			<div class="comparison" :class="{hover: drageHover}">
 				<StoreInput v-show="false" v-model="targetUrl" sessionKey="projectorTargetImageURL" />
 				<StoreInput v-show="false" v-model="targetName" sessionKey="projectorTargetName" />
 				<div v-if="!targetUrl" class="placeholder">
 					<strong>DROP</strong> target image here<br/>
 					or <strong>PASTE</strong> by CTRL+V
 				</div>
-				<img v-if="targetUrl" :src="targetUrl" />
+				<div class="target"
+					@mousedown="onTargetMouseDown"
+					@mouseup="onTargetMouseUp"
+					@mousemove="onTargetMouseMove"
+				>
+					<img v-if="targetUrl" :src="targetUrl" ref="targetImg" @load="onTargetImgLoad" />
+					<canvas :width="targetSize.width" :height="targetSize.height" ref="targetCanvas" />
+					<svg :viewBox="`0 0 ${targetSize.width} ${targetSize.height}`">
+						<g v-if="faceRefPoints">
+							<g v-for="(point, i) of faceRefPoints" :key="i" class="ref-point" :transform="`translate(${point.x}, ${point.y})`">
+								<line :x1="-10" :y1="0" x2="10" y2="0" />
+								<line :x1="0" :y1="-10" x2="0" y2="10" />
+							</g>
+						</g>
+						<g v-if="faceCrop" class="crop" :transform="`translate(${faceCrop.center.x}, ${faceCrop.center.y}) rotate(${faceCrop.angle * 180 / Math.PI})`">
+							<rect
+								:x="-faceCrop.edgeLength / 2"
+								:y="-faceCrop.edgeLength / 2"
+								:width="faceCrop.edgeLength"
+								:height="faceCrop.edgeLength"
+							/>
+						</g>
+					</svg>
+					<a v-if="targetUrl" class="download" :href="targetUrl" :download="`${targetName}.png`">&#x1f4be;</a>
+				</div>
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
 				<img v-if="focusResult" :src="focusResult.img" />
 			</div>
@@ -91,7 +127,7 @@
 					<img v-if="animationUrl" :src="animationUrl" />
 				</p>
 				<p>
-					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length}.gif`" :href="animationUrl">
+					<a v-if="animationUrl" :download="`${targetName}-projection-${projectedSequence.length * projectYieldInterval}.gif`" :href="animationUrl">
 						&#x2193;
 						<span v-if="animationSize" class="size">(<em>{{animationSize.toLocaleString()}}</em> bytes)</span>
 					</a>
@@ -102,8 +138,9 @@
 </template>
 
 <script>
-	import JSZip from "jszip";
+	import JSZip from "jszip/dist/jszip.min.js";
 	import GIF from "gif.js.optimized";
+	import * as faceapi from "face-api.js";
 
 	import StoreInput from "./storeinput.vue";
 	import Navigator from "./navigator.vue";
@@ -114,6 +151,9 @@
 
 
 	const MOVEMENT_THRESHOLD = 16;
+
+
+	const magnitude = ([x, y]) => (x * x + y * y) ** 0.5;
 
 
 	const projectImage = async function* (image, {path = "/project", steps = 200, yieldInterval = 10}) {
@@ -191,6 +231,10 @@
 				animationDimensions: null,
 				animationSize: null,
 				animationWithIndex: true,
+				targetSize: {width: 256, height: 256},
+				faceDetecting: false,
+				faceDetectionConfidence: null,
+				faceRefPoints: null,
 			};
 		},
 
@@ -258,12 +302,55 @@
 					this.animationFrameInterval = 1000 / value;
 				},
 			},
+
+
+			faceCrop () {
+				if (!this.faceRefPoints)
+					return null;
+
+				const [eyel, eyer, mouth] = this.faceRefPoints;
+
+				const vx = [eyer.x - eyel.x, eyer.y - eyel.y];
+				const vy = [(eyel.x + eyer.x) / 2 - mouth.x, (eyel.y + eyer.y) / 2 - mouth.y];
+
+				const edgeLength = Math.max(magnitude(vx) * 4, magnitude(vy) * 3.6);
+				const halfEdge = edgeLength / 2;
+
+				const center = [(eyel.x + eyer.x) / 2 - vy[0] * 0.1, (eyel.y + eyer.y) / 2 - vy[1] * 0.1];
+
+				const dx = [vx[0] - vy[1], vx[1] + vy[0]];
+				const dxm = Math.max(magnitude(dx), 1e-9);
+				const ndx = dx.map(x => x / dxm);
+
+				const angle = (ndx[0] ? Math.atan(ndx[1] / ndx[0]) : 0) + (ndx[0] > 0 ? 0 : Math.PI);
+
+				const leftTop = [center[0] - halfEdge, center[1] - halfEdge];
+
+				/*const cosA = Math.cos(angle);
+				const sinA = Math.sin(angle);
+				const rotatedLeftTop = [cosA * leftTop[0] + sinA * leftTop[1], -sinA * leftTop[0] + cosA * leftTop[1]];
+				//console.log("crop:", cosA, sinA, leftTop, rotatedLeftTop, dx, dxm, ndx, halfEdge);*/
+
+				return {
+					center: {x: center[0], y: center[1]},
+					edgeLength,
+					angle,
+					vertices: [
+						{x: center[0] + (-ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] -ndx[1]) * halfEdge},		// top-left
+						{x: center[0] + (+ndx[0] +ndx[1]) * halfEdge, y: center[1] + (-ndx[0] +ndx[1]) * halfEdge},		// top-right
+						{x: center[0] + (+ndx[0] -ndx[1]) * halfEdge, y: center[1] + (+ndx[0] +ndx[1]) * halfEdge},		// bottom-right
+						{x: center[0] + (-ndx[0] -ndx[1]) * halfEdge, y: center[1] + (+ndx[0] -ndx[1]) * halfEdge},		// bottom-left
+					],
+				};
+			},
 		},
 
 
-		created() {
+		created () {
 			window.$main = this;
 			this.originTitle = document.title;
+
+			this.loadFaceApiModels();
 		},
 
 
@@ -318,6 +405,52 @@
 						else
 							this.loadPackage(file);
 					}
+			},
+
+
+			onTargetImgLoad (event) {
+				this.targetSize = {
+					width: this.$refs.targetImg.naturalWidth,
+					height: this.$refs.targetImg.naturalHeight,
+				};
+			},
+
+
+			onTargetMouseDown (event) {
+				//console.log("onTargetMouseDown:", event);
+				// pick a nearest face ref point
+				if (this.faceRefPoints) {
+					const mousePoint = {
+						x: event.offsetX * this.targetSize.width / this.$refs.targetImg.width,
+						y: event.offsetY * this.targetSize.height / this.$refs.targetImg.height,
+					};
+
+					let bestDistance = 100;
+					for (const point of this.faceRefPoints) {
+						const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
+						if (distance < bestDistance) {
+							this.pickedPoint = point;
+							bestDistance = distance;
+						}
+					}
+
+					event.preventDefault();
+				}
+			},
+
+
+			onTargetMouseUp () {
+				this.pickedPoint = null;
+			},
+
+
+			onTargetMouseMove (event) {
+				if (this.pickedPoint) {
+					this.pickedPoint._x = event.offsetX * this.targetSize.width / this.$refs.targetImg.width;
+					this.pickedPoint._y = event.offsetY * this.targetSize.height / this.$refs.targetImg.height;
+
+					event.preventDefault();
+				}
 			},
 
 
@@ -540,7 +673,7 @@
 					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
 
 					if (this.animationWithIndex) {
-						const number = (item.index + 1).toString();
+						const number = ((item.index + 1) * this.projectYieldInterval).toString();
 						ctx.font = "12px serif";
 						ctx.fillStyle = "#fffa";
 						ctx.fillText(number, 3.4, 12);
@@ -561,6 +694,115 @@
 				this.animationRenderProgress = null;
 				this.animationSize = image.size;
 				this.animationUrl = URL.createObjectURL(image);
+			},
+
+
+			async loadFaceApiModels () {
+				//console.log("faceapi:", faceapi);
+				await faceapi.nets.ssdMobilenetv1.load("/face-api/");
+				await faceapi.nets.faceLandmark68Net.load("/face-api/");
+
+				console.log("face-api models loaded.");
+			},
+
+
+			async detectFace (confidenceThreshold = 0) {
+				if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
+					console.warn("faceapi model not loaded yet.");
+					return;
+				}
+
+				this.faceDetecting = true;
+
+				this.faceDetectionConfidence = null;
+				this.faceRefPoints = null;
+
+				await this.$nextTick();
+
+				const option = new faceapi.SsdMobilenetv1Options({minConfidence: confidenceThreshold, maxResults: 1});
+
+				const results = await faceapi.detectAllFaces(this.$refs.targetImg, option).withFaceLandmarks();
+				//console.log("face detection result:", results);
+
+				const result = results[0];
+				if (result) {
+					this.faceDetectionConfidence = result.detection.score;
+
+					this.faceRefPoints = result.landmarks.getRefPointsForAlignment();
+					//console.log("face detection result:", this.faceRefPoints);
+
+					faceapi.draw.drawFaceLandmarks(this.$refs.targetCanvas, results);
+				}
+				else {
+					console.log("no face detected.");
+					this.faceDetectionConfidence = NaN;
+				}
+
+				this.faceDetecting = false;
+			},
+
+
+			async cropFace() {
+				console.assert(this.faceCrop, "face crop is null.");
+
+				const ctx = this.$refs.cropCanvas.getContext("2d");
+				ctx.clearRect(0, 0, this.$refs.cropCanvas.width, this.$refs.cropCanvas.height);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				// draw 8 neighbor mirrors
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, 1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, 1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x + this.targetSize.width * 2, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				ctx.resetTransform();
+				ctx.rotate(-this.faceCrop.angle);
+				ctx.translate(-this.faceCrop.vertices[0].x, -this.faceCrop.vertices[0].y + this.targetSize.height * 2);
+				ctx.scale(-1, -1);
+				ctx.drawImage(this.$refs.targetImg, 0, 0);
+
+				this.targetUrl = this.$refs.cropCanvas.toDataURL();
 			},
 		},
 
@@ -598,6 +840,12 @@
 
 			targetUrl () {
 				this.animationUrl = null;
+				this.faceDetectionConfidence = null;
+				this.faceRefPoints = null;
+
+				// clear target canvas
+				const ctx = this.$refs.targetCanvas.getContext("2d");
+				ctx.clearRect(0, 0, this.targetSize.width, this.targetSize.height);
 			},
 		},
 	};
@@ -637,6 +885,12 @@
 		text-align: center;
 	}
 
+	aside em
+	{
+		display: inline-block;
+		margin: 0 0.6em;
+	}
+
 	button.icon
 	{
 		background: transparent;
@@ -652,13 +906,18 @@
 		transform: scale(1.2);
 	}
 
-	.target
+	button.working
+	{
+		background-color: #afa;
+	}
+
+	.comparison
 	{
 		text-align: center;
 		padding: 20px;
 	}
 
-	.target .placeholder
+	.comparison .placeholder
 	{
 		padding: 2em;
 		color: #ccc;
@@ -667,31 +926,88 @@
 		user-select: none;
 	}
 
-	.target.hover .placeholder
+	.comparison.hover .placeholder
 	{
 		outline: .2em dashed #ccc;
 	}
 
-	.target > *
+	.comparison > *
 	{
 		vertical-align: middle;
 	}
 
-	.target img
+	.comparison img
 	{
 		width: min(60vh, 30vw);
 	}
 
-	.target img:first-of-type
+	/*.comparison img:first-of-type
 	{
 		height: min(60vh, 30vw);
-	}
+	}*/
 
-	.target .arrow
+	.comparison .arrow
 	{
 		font-size: 36px;
 		display: inline-block;
 		margin: 0 2em;
+	}
+
+	.target
+	{
+		position: relative;
+		display: inline-block;
+	}
+
+	.target > canvas, .target > svg
+	{
+		position: absolute;
+		left: 0;
+		right: 0;
+		width: 100%;
+		pointer-events: none;
+	}
+
+	.target .ref-point line
+	{
+		stroke-width: 4px;
+	}
+
+	.target .ref-point:nth-child(1) line
+	{
+		stroke: #c00;
+	}
+
+	.target .ref-point:nth-child(2) line
+	{
+		stroke: #0c0;
+	}
+
+	.target .ref-point:nth-child(3) line
+	{
+		stroke: #00c;
+	}
+
+	.target .crop rect
+	{
+		stroke: #000c;
+		stroke-width: 3px;
+		stroke-dasharray: 10 10;
+		fill: transparent;
+	}
+
+	.target .download
+	{
+		position: absolute;
+		right: 4px;
+		bottom: 8px;
+		opacity: 0;
+		text-decoration: none;
+	}
+
+	.target .download:hover
+	{
+		opacity: 0.8;
 	}
 
 	.yielding

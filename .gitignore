@@ -10,3 +10,4 @@ yarn.lock
 example.png
 *.local
 #documents
+*.log
