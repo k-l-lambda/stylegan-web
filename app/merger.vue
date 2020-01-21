@@ -277,26 +277,6 @@
 <style src="./common.css"></style>
 
 <style>
-	html
-	{
-		overflow: hidden;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	}
-
-	.initializing
-	{
-		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		font-size: 10vh;
-		padding: 30vh 2em 0;
-		white-space: normal;
-		background-color: #ccca;
-		color: #444c;
-	}
-
 	.g-view
 	{
 		display: inline-block;

@@ -1,6 +1,5 @@
 
 TODO:
-	outline flicking when code copy
 	project from a specified code
 
 

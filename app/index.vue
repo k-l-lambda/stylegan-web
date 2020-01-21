@@ -512,12 +512,6 @@
 </script>
 
 <style>
-	html
-	{
-		overflow: hidden;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	}
-
 	body
 	{
 		white-space: nowrap;
@@ -613,20 +607,6 @@
 	.loading img
 	{
 		opacity: 0.7;
-	}
-
-	.initializing
-	{
-		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		font-size: 10vh;
-		padding: 30vh 2em 0;
-		white-space: normal;
-		background-color: #ccca;
-		color: #444c;
 	}
 
 	.scales > span
