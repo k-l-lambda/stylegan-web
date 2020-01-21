@@ -1,0 +1,12 @@
+
+.note-box
+{
+	transition: outline-color .6s ease-out;
+	outline: 4px transparent solid;
+}
+
+.note-box.activated
+{
+	outline-color: #0f6;
+	transition: outline-color .01s;
+}

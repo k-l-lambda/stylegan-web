@@ -51,7 +51,7 @@
 			</table>
 		</aside>
 		<main :class="{loading: resultLoading}">
-			<img v-if="resultImageURL" class="result" :src="resultImageURL" @load="resultLoading = false" />
+			<img v-if="resultImageURL" class="result note-box" :class="{activated: copyActivated}" :src="resultImageURL" @load="resultLoading = false" />
 			<button class="save-result" @click="downloadResult">&#x1f4be;</button>
 		</main>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
@@ -106,6 +106,7 @@
 				formula: "INTERPOLATION",
 				FORMULA_TEXTS,
 				kMax: 1,
+				copyActivated: false,
 			};
 		},
 
@@ -223,6 +224,9 @@
 			onCopy (event) {
 				event.clipboardData.setData("text/plain", "w+:" + this.resultLatentsBytes);
 				console.log("Result latent code copied into clipboard.");
+
+				this.copyActivated = true;
+				setTimeout(() => this.copyActivated = false, 100);
 			},
 
 
@@ -269,6 +273,8 @@
 		},
 	};
 </script>
+
+<style src="./common.css"></style>
 
 <style>
 	html

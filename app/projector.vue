@@ -851,6 +851,8 @@
 	};
 </script>
 
+<style src="./common.css"></style>
+
 <style>
 	html
 	{

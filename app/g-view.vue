@@ -1,5 +1,5 @@
 <template>
-	<div :class="{['drage-hover']: drageHover}"
+	<div :class="{'drage-hover': drageHover, 'note-box': true, activated}"
 		@drop.prevent="onDropFiles"
 		@dragover.prevent="drageHover = true"
 		@drageleave="drageHover = false"
@@ -46,6 +46,7 @@
 				latents: Array(this.layers * this.lastDimension).fill(0),
 				imageLoading: false,
 				drageHover: false,
+				activated: false,
 			};
 		},
 
@@ -119,6 +120,9 @@
 			onCopy (event) {
 				event.clipboardData.setData("text/plain", "w+:" + this.latentsBytes);
 				console.log("Latent code copied into clipboard.");
+
+				this.activated = true;
+				setTimeout(() => this.activated = false, 100);
 			},
 
 

@@ -82,12 +82,14 @@
 			</ol>
 		</aside>
 		<article :class="{loading}">
-			<img v-if="latentsBytes" class="result" :src="imageURL" @load="loading = false" />
+			<img v-if="latentsBytes" class="result note-box" :class="{activated: copyActivated}" :src="imageURL" @load="loading = false" />
 		</article>
 		<div v-show="initializing" class="initializing">Model initializing, wait a moment...</div>
 		<Navigator />
 	</div>
 </template>
+
+<style src="./common.css"></style>
 
 <script>
 	import StoreInput from "./storeinput.vue";
@@ -161,6 +163,7 @@
 				lerpFactor: 0.8,
 				extendFeature: false,
 				shownLayer: 0,
+				copyActivated: false,
 			};
 		},
 
@@ -448,6 +451,9 @@
 			copyLatentCode() {
 				navigator.clipboard.writeText(this.latentsURL);
 				console.log("Latent code copied into clipboard.");
+
+				this.copyActivated = true;
+				setTimeout(() => this.copyActivated = false, 100);
 			},
 
 
