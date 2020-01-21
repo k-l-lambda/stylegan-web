@@ -1,8 +1,12 @@
 
 TODO:
-	outline flicking when code copy
 	project from a specified code
 
+
+
+2020.1.21	K.L.	<k.l.lambda@gmail.com>
+
+	+	Flick outline when copying latent codes.
 
 
 2020.1.19	K.L.	<k.l.lambda@gmail.com>

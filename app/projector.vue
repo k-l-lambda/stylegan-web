@@ -84,7 +84,7 @@
 					<a v-if="targetUrl" class="download" :href="targetUrl" :download="`${targetName}.png`">&#x1f4be;</a>
 				</div>
 				<span v-if="targetUrl" class="arrow">&#x25c4;</span>
-				<img v-if="focusResult" :src="focusResult.img" />
+				<img v-if="focusResult" :src="focusResult.img" class="note-box" :class="{activated: copyActivated}" />
 			</div>
 			<div class="yielding">
 				<a v-for="item of shownProjectedSequence" :key="item.index" class="item"
@@ -235,6 +235,7 @@
 				faceDetecting: false,
 				faceDetectionConfidence: null,
 				faceRefPoints: null,
+				copyActivated: false,
 			};
 		},
 
@@ -516,6 +517,9 @@
 				if (item) {
 					navigator.clipboard.writeText(`w+:${item.latentCodes}`);
 					console.log("Latent code copied into clipboard.");
+
+					this.copyActivated = true;
+					setTimeout(() => this.copyActivated = false, 100);
 				}
 			},
 
@@ -851,13 +855,9 @@
 	};
 </script>
 
-<style>
-	html
-	{
-		overflow: hidden;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	}
+<style src="./common.css"></style>
 
+<style>
 	body
 	{
 		position: absolute;
