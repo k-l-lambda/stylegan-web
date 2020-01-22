@@ -6,6 +6,8 @@ TODO:
 
 2020.1.22	K.L.	<k.l.lambda@gmail.com>
 
+	+	projector.vue: edit face mark point without detection.
+
 	+	projector.vue: added face detection remove button.
 
 

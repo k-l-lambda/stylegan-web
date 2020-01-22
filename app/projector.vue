@@ -311,7 +311,7 @@
 
 
 			faceCrop () {
-				if (!this.faceRefPoints)
+				if (!this.faceRefPoints || this.faceRefPoints.length < 3)
 					return null;
 
 				const [eyel, eyer, mouth] = this.faceRefPoints;
@@ -425,24 +425,34 @@
 			onTargetMouseDown (event) {
 				//console.log("onTargetMouseDown:", event);
 				// pick a nearest face ref point
-				if (this.faceRefPoints) {
+				if (this.faceDetectionConfidence !== null) {
 					const mousePoint = {
 						x: event.offsetX * this.targetSize.width / this.$refs.targetImg.width,
 						y: event.offsetY * this.targetSize.height / this.$refs.targetImg.height,
 					};
 
-					let bestDistance = 100;
-					for (const point of this.faceRefPoints) {
-						const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
-						if (distance < bestDistance) {
-							this.pickedPoint = point;
-							bestDistance = distance;
+					if (this.faceRefPoints) {
+						let bestDistance = 100;
+						for (const point of this.faceRefPoints) {
+							const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
+							if (distance < bestDistance) {
+								this.pickedPoint = point;
+								bestDistance = distance;
+							}
 						}
 					}
 
 					if (this.pickedPoint) {
 						this.pickedPoint._x = mousePoint.x;
 						this.pickedPoint._y = mousePoint.y;
+					}
+					else if (!this.faceRefPoints || this.faceRefPoints.length < 3) {
+						const point = new faceapi.Point(mousePoint.x, mousePoint.y);
+
+						this.faceRefPoints = this.faceRefPoints || [];
+						this.faceRefPoints.push(point);
+
+						this.pickedPoint = point;
 					}
 
 					event.preventDefault();
