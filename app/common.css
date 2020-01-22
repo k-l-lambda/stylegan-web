@@ -30,3 +30,15 @@ html
 	outline-color: #0f6;
 	transition: outline-color .01s;
 }
+
+button.icon
+{
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}
+
+button.icon:hover
+{
+	transform: scale(1.1);
+}
