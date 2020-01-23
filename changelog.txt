@@ -4,6 +4,11 @@ TODO:
 
 
 
+2020.1.23	K.L.	<k.l.lambda@gmail.com>
+
+	+	Entry of mappingViewer created.
+
+
 2020.1.22	K.L.	<k.l.lambda@gmail.com>
 
 	+	projector.vue: edit face mark point without detection.

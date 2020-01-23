@@ -11,6 +11,7 @@ export default [
 	"index",
 	"projector",
 	"merger",
+	"mappingViewer",
 ].map(entry => ({
 	input: `./app/${entry}.js`,
 
