@@ -7,6 +7,8 @@ TODO:
 
 2020.1.23	K.L.	<k.l.lambda@gmail.com>
 
+	+	mapppingViewer.vue: mapping from Z to W implemented.
+
 	+	mapppingViewer.vue: circleSamplePoints added.
 
 	+	vectorInput.vue: latent code copy added.

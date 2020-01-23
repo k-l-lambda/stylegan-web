@@ -19,7 +19,7 @@
 			</fieldset>
 		</header>
 		<main>
-			<!--CirclePlot :layout="plotLayout" /-->
+			<CirclePlot v-if="wCircle" :center="wCenter" :circle="wCircle" />
 		</main>
 	</div>
 </template>
@@ -29,6 +29,8 @@
 	import CirclePlot from "./circlePlot.vue";
 	import VectorInput from "./vectorInput.vue";
 	import StoreInput from "./storeinput.vue";
+
+	import * as LatentCode from "./latentCode.js"
 
 
 
@@ -93,19 +95,39 @@
 		data () {
 			return {
 				circlePointCount: 360,
+				wCenter: null,
+				wCircle: null,
 			};
 		},
 
 
-		created () {
+		async created () {
 			window.$main = this;
+
+			this.wCenter = await this.mapZtoW(new Float32Array(512), 0);
 		},
 
 
 		methods: {
-			plot () {
+			async mapZtoW (z, psi = 1) {
+				const zCode = LatentCode.encodeFloat32(z);
+				const wCode = await (await fetch(`/map-z-w?psi=${psi}&z=${encodeURIComponent(zCode)}`)).text();
+
+				return LatentCode.decodeFloat32(wCode);
+			},
+
+
+			async plot () {
 				const zs = circleSamplePoints(this.$refs.source.vector, this.$refs.target.vector, this.circlePointCount);
-				console.log("zs:", zs);
+				//console.log("zs:", zs);
+
+				const ws = [];
+				for (const z of zs) {
+					ws.push(await this.mapZtoW(z));
+				}
+				//console.log("ws:", ws);
+
+				this.wCircle = ws;
 			},
 		},
 	};
