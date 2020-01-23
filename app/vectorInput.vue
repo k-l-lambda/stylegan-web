@@ -1,5 +1,8 @@
 <template>
-	<textarea :value="vectorText" :readonly="true" @paste="onPaste" />
+	<span class="vector-input">
+		<textarea :value="vectorText" :readonly="true" @paste="onPaste" @copy.prevent="onCopy" :class="{'note-box': true, activated}" />
+		<button @click="randomize" class="icon" title="randomize">&#x1f3b2;</button>
+	</span>
 </template>
 
 <script>
@@ -22,6 +25,7 @@
 		data () {
 			return {
 				vector: new Float32Array(this.dimension),
+				activated: false,
 			};
 		},
 
@@ -58,9 +62,26 @@
 			},
 
 
+			onCopy () {
+				event.clipboardData.setData("text/plain", "z:1," + this.latentsBytes);
+				console.log("Latent code copied into clipboard.");
+
+				this.activated = true;
+				setTimeout(() => this.activated = false, 100);
+			},
+
+
 			randomize () {
 				this.vector = this.vector.map(() => LatentCode.randn_bm());
 			},
 		},
 	};
 </script>
+
+<style src="./common.css"></style>
+<style scoped>
+	.vector-input > *
+	{
+		vertical-align: middle;
+	}
+</style>

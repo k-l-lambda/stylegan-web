@@ -2,7 +2,7 @@
 	<div>
 		<header>
 			<fieldset class="vectors">
-				<VectorInput /> <span>&#x2192;</span> <VectorInput />
+				<VectorInput /> <span class="separator">&#x2192;</span> <VectorInput />
 			</fieldset>
 			<fieldset>
 				<StoreInput type="number" v-model.number="circlePointCount" localKey="mappingViewerCirclePointCount" title="point count" :styleObj="{width: '3em'}" />
@@ -58,5 +58,11 @@
 	header .vectors, header .vectors > *
 	{
 		vertical-align: middle;
+	}
+
+	span.separator
+	{
+		display: inline-block;
+		margin: 0 1em;
 	}
 </style>

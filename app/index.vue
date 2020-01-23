@@ -247,6 +247,8 @@
 						this.latentsBytesEx = path;
 
 						break;
+					default:
+						console.warn("latent URL set failed, unexpected protocol:", protocol);
 					}
 				},
 			},
@@ -471,7 +473,8 @@
 
 					this.latentsURL = text;
 				}
-				catch(_) {
+				catch (error) {
+					console.warn("latent code paste failed:", error);
 				}
 			},
 
