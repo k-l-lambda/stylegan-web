@@ -511,6 +511,7 @@
 	};
 </script>
 
+<style src="./common.css"></style>
 <style>
 	body
 	{
@@ -526,14 +527,6 @@
 	header h2
 	{
 		display: inline;
-	}
-
-	header fieldset
-	{
-		display: inline-block;
-		margin: 0 .6em;
-		border: 0;
-		padding: 0;
 	}
 
 	.latant-type

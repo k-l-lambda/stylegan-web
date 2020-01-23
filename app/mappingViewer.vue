@@ -1,60 +1,62 @@
 <template>
 	<div>
-		<div ref="plot">
-		</div>
+		<header>
+			<fieldset class="vectors">
+				<VectorInput /> <span>&#x2192;</span> <VectorInput />
+			</fieldset>
+			<fieldset>
+				<StoreInput type="number" v-model.number="circlePointCount" localKey="mappingViewerCirclePointCount" title="point count" :styleObj="{width: '3em'}" />
+			</fieldset>
+			<fieldset>
+				<button>plot</button>
+			</fieldset>
+		</header>
+		<main>
+			<!--CirclePlot :layout="plotLayout" /-->
+		</main>
 	</div>
 </template>
 
+<style src="./common.css"></style>
 <script>
+	import CirclePlot from "./circlePlot.vue";
+	import VectorInput from "./vectorInput.vue";
+	import StoreInput from "./storeinput.vue";
+
+
+
 	export default {
 		name: "mappingViewer",
 
-		created () {
-			//console.log("plotly:", plotly);
-			console.assert(window.Plotly, "plotly is required.");
+
+		components: {
+			CirclePlot,
+			VectorInput,
+			StoreInput,
 		},
 
-		mounted () {
-			const pointCount = 31;
+		
+		data () {
+			return {
+				/*plotLayout: {
+					margin: {l: 0, r: 0, t: 0, b: 0},
+					width: 400,
+					height: 400,
+				},*/
+				circlePointCount: 360,
+			};
+		},
 
-			const x = [];
-			const y = [];
-			const z = [];
-			const c = [];
 
-			for (let i = 0; i < pointCount; i++) {
-				const r = 10 * Math.cos(i / 10);
-				x.push(r * Math.cos(i));
-				y.push(r * Math.sin(i));
-				z.push(i);
-				c.push(i);
-			}
-
-			Plotly.newPlot(this.$refs.plot, [
-				{
-					type: "scatter3d",
-					mode: "lines+markers",
-					x: x,
-					y: y,
-					z: z,
-					line: {
-						width: 6,
-						color: c,
-						//colorscale: "Viridis"
-					},
-					marker: {
-						size: 3.5,
-						color: c,
-						colorscale: "Greens",
-						cmin: -20,
-						cmax: 50,
-					},
-				}
-			], {
-				margin: {l: 0, r: 0, t: 0, b: 0},
-				width: 400,
-				height: 400,
-			});
-		}
+		created () {
+			window.$main = this;
+		},
 	};
 </script>
+
+<style>
+	header .vectors, header .vectors > *
+	{
+		vertical-align: middle;
+	}
+</style>
