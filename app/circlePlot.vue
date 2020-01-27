@@ -16,8 +16,8 @@
 			layout: {
 				type: Object,
 				default: () => ({
-					width: 400,
-					height: 400,
+					width: 1200,
+					height: 800,
 				}),
 			},
 			center: Float32Array,
@@ -58,32 +58,34 @@
 
 		methods: {
 			updatePlot () {
-				const x = this.normalPoints.map(v => v[0]);
+				/*const x = this.normalPoints.map(v => v[0]);
 				const y = this.normalPoints.map(v => v[1]);
-				const z = this.normalPoints.map(v => v[2]);
-				const color = this.normalPoints.map((_, i) => i);
+				const z = this.normalPoints.map(v => v[2]);*/
+				const points = [...this.normalPoints, this.normalPoints[0]];
+				const color = points.map((_, i) => i);
+				const marker = {
+					size: 3.5,
+					color,
+					colorscale: "Greens",
+					cmin: -20,
+					cmax: 50,
+				};
 
-				Plotly.newPlot(this.$el, [
-					{
-						type: "scatter3d",
-						mode: "lines+markers",
-						x,
-						y,
-						z,
-						line: {
-							width: 6,
-							color,
-							//colorscale: "Viridis"
-						},
-						marker: {
-							size: 3.5,
-							color,
-							colorscale: "Greens",
-							cmin: -20,
-							cmax: 50,
-						},
-					}
-				], {
+				const data = Array(170).fill().map((_, i) => ({
+					type: "scatter3d",
+					mode: "lines+markers",
+					x: points.map(v => v[i * 3]),
+					y: points.map(v => v[i * 3 + 1]),
+					z: points.map(v => v[i * 3 + 2]),
+					line: {
+						width: 6,
+						color,
+						//colorscale: "Viridis",
+					},
+					marker,
+				}))
+
+				Plotly.newPlot(this.$el, data, {
 					margin: {l: 0, r: 0, t: 0, b: 0},
 					...this.layout,
 				});
