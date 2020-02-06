@@ -5,6 +5,11 @@ TODO:
 
 
 
+2020.2.6	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: source data & result images download methods implemented.
+
+
 2020.1.25	K.L.	<k.l.lambda@gmail.com>
 
 	+	circlePlot.vue: plot circle sliced 3 dimensions.

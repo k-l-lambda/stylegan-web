@@ -31,6 +31,7 @@
 	import StoreInput from "./storeinput.vue";
 
 	import * as LatentCode from "./latentCode.js"
+	import {downloadUrl} from "./utils.js";
 
 
 
@@ -128,6 +129,24 @@
 				//console.log("ws:", ws);
 
 				this.wCircle = ws;
+			},
+
+
+			downloadSourceData () {
+				const blob = new Blob([this.wCenter, ...this.wCircle]);
+				downloadUrl(URL.createObjectURL(blob), "mappingSource.dat");
+			},
+
+
+			async downloadResultImages (interval = 1) {
+				for (const [i, w] of this.wCircle.entries()) {
+					if (i % interval)
+						continue;
+
+					const response = await fetch(`/generate?fromW=1&latents=${encodeURIComponent(LatentCode.encodeFloat32(w))}`);
+					const blob = await response.blob();
+					downloadUrl(URL.createObjectURL(blob), `${i}.png`);
+				}
 			},
 		},
 	};
