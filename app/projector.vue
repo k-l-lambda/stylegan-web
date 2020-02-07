@@ -14,14 +14,19 @@
 				<StoreInput v-model.number="projectYieldInterval" type="number" localKey="projectorYieldInterval" :styleObj="{width: '4em'}" :disabled="running" title="projector yield interval" />
 			</p>
 			<p>
-				<em v-if="faceDetectionConfidence != null" :title="faceDetectionConfidence > 0 ? `face confidence: ${faceDetectionConfidence}` : 'no face found'">{{faceDetectionConfidence.toFixed(3)}}</em>
 				<span v-if="targetUrl" class="target-size">
 					<em>{{targetSize.width}}&times;{{targetSize.height}}</em>
+				</span>
+				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
+				<span v-if="faceDetectionConfidence != null">
+					<em :title="faceDetectionConfidence > 0 ? `face confidence: ${faceDetectionConfidence}` : 'no face found'">
+						{{faceDetectionConfidence.toFixed(3)}}
+					</em>
+					<button class="icon remove" @click="removeFaceDetection" title="remove face detection">&#x232b;</button>
 				</span>
 				<span v-if="faceCrop" class="crop-size">
 					&#x2192;<em>{{faceCrop.edgeLength.toFixed(0)}}<sup>2</sup></em>
 				</span>
-				<button v-show="targetUrl" @click="detectFace()" title="detect face" :class="{working: faceDetecting}">&#x1F642;</button>
 				<button v-show="faceCrop" @click="cropFace()" title="crop face area">&#x2704;</button>
 			</p>
 			<canvas v-if="faceCrop" v-show="false" ref="cropCanvas" :width="Math.round(faceCrop.edgeLength)" :height="Math.round(faceCrop.edgeLength)" />
@@ -306,7 +311,7 @@
 
 
 			faceCrop () {
-				if (!this.faceRefPoints)
+				if (!this.faceRefPoints || this.faceRefPoints.length < 3)
 					return null;
 
 				const [eyel, eyer, mouth] = this.faceRefPoints;
@@ -420,19 +425,34 @@
 			onTargetMouseDown (event) {
 				//console.log("onTargetMouseDown:", event);
 				// pick a nearest face ref point
-				if (this.faceRefPoints) {
+				if (this.faceDetectionConfidence !== null) {
 					const mousePoint = {
 						x: event.offsetX * this.targetSize.width / this.$refs.targetImg.width,
 						y: event.offsetY * this.targetSize.height / this.$refs.targetImg.height,
 					};
 
-					let bestDistance = 100;
-					for (const point of this.faceRefPoints) {
-						const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
-						if (distance < bestDistance) {
-							this.pickedPoint = point;
-							bestDistance = distance;
+					if (this.faceRefPoints) {
+						let bestDistance = 100;
+						for (const point of this.faceRefPoints) {
+							const distance = magnitude([point.x - mousePoint.x, point.y - mousePoint.y]);
+							if (distance < bestDistance) {
+								this.pickedPoint = point;
+								bestDistance = distance;
+							}
 						}
+					}
+
+					if (this.pickedPoint) {
+						this.pickedPoint._x = mousePoint.x;
+						this.pickedPoint._y = mousePoint.y;
+					}
+					else if (!this.faceRefPoints || this.faceRefPoints.length < 3) {
+						const point = new faceapi.Point(mousePoint.x, mousePoint.y);
+
+						this.faceRefPoints = this.faceRefPoints || [];
+						this.faceRefPoints.push(point);
+
+						this.pickedPoint = point;
 					}
 
 					event.preventDefault();
@@ -710,6 +730,15 @@
 			},
 
 
+			removeFaceDetection () {
+				this.faceDetectionConfidence = null;
+				this.faceRefPoints = null;
+
+				const ctx = this.$refs.targetCanvas.getContext("2d");
+				ctx.clearRect(0, 0, this.targetSize.width, this.targetSize.height);
+			},
+
+
 			async detectFace (confidenceThreshold = 0) {
 				if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
 					console.warn("faceapi model not loaded yet.");
@@ -885,13 +914,13 @@
 		text-align: center;
 	}
 
-	aside em
+	aside span
 	{
 		display: inline-block;
 		margin: 0 0.6em;
 	}
 
-	button.icon
+	/*button.icon
 	{
 		background: transparent;
 		border: 0;
@@ -904,11 +933,24 @@
 	button.icon:hover
 	{
 		transform: scale(1.2);
-	}
+	}*/
 
 	button.working
 	{
 		background-color: #afa;
+	}
+
+	button.remove
+	{
+		color: red;
+		opacity: 0;
+		padding: 0;
+		font-size: 60%;
+	}
+
+	button.remove:hover
+	{
+		opacity: 1;
 	}
 
 	.comparison
