@@ -22,6 +22,10 @@
 			},
 			center: Float32Array,
 			circle: Array,
+			mode: {
+				type: String,
+				default: "3d",
+			},
 		},
 
 
@@ -58,10 +62,7 @@
 
 		methods: {
 			updatePlot () {
-				/*const x = this.normalPoints.map(v => v[0]);
-				const y = this.normalPoints.map(v => v[1]);
-				const z = this.normalPoints.map(v => v[2]);*/
-				const points = [...this.normalPoints, this.normalPoints[0]];
+				const points = [...this.normalPoints, this.normalPoints[0]];	// close the cycle
 				const color = points.map((_, i) => i);
 				const marker = {
 					size: 3.5,
@@ -71,7 +72,20 @@
 					cmax: 50,
 				};
 
-				const data = Array(170).fill().map((_, i) => ({
+				const data = this.mode === "2d" ? Array(256).fill().map((_, i) => ({
+					type: "scatter3d",
+					mode: "lines+markers",
+					x: points.map(v => v[i * 2]),
+					y: points.map(v => v[i * 2 + 1]),
+					z: points.map(_ => 0),
+					line: {
+						width: 6,
+						color,
+						//colorscale: "Viridis",
+					},
+					marker,
+				}))
+				: Array(170).fill().map((_, i) => ({
 					type: "scatter3d",
 					mode: "lines+markers",
 					x: points.map(v => v[i * 3]),
