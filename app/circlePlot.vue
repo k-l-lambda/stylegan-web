@@ -9,7 +9,7 @@
 
 
 	export default {
-		name: "mappingViewer",
+		name: "circle-plot",
 
 
 		props: {
