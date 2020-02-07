@@ -4,7 +4,7 @@
 </template>
 
 <script>
-	import {randn_bm} from "./latentCode.js";
+	//import {randn_bm} from "./latentCode.js";
 
 
 
@@ -29,11 +29,11 @@
 		},
 
 
-		data () {
+		/*data () {
 			return {
 				normal: this.center.map(() => randn_bm()),
 			};
-		},
+		},*/
 
 
 		computed: {
