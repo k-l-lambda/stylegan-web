@@ -4,7 +4,7 @@ This project is a web porting for [NVlabs' StyleGAN2](https://github.com/NVlabs/
 
 Thanks for [NVlabs](https://github.com/NVlabs)' excellent work.
 
-## Functionality
+## Features
 
 ### Explorer
 
