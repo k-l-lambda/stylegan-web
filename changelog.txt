@@ -5,6 +5,11 @@ TODO:
 
 
 
+2020.2.8	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: compressed images downloading added.
+
+
 2020.2.6	K.L.	<k.l.lambda@gmail.com>
 
 	+	mapppingViewer.vue: source data & result images download methods implemented.

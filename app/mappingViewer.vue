@@ -20,6 +20,7 @@
 		</header>
 		<main>
 			<CirclePlot v-if="wCircle" :center="wCenter" :circle="wCircle" />
+			<canvas ref="canvas" v-show="false" />
 		</main>
 	</div>
 </template>
@@ -138,14 +139,28 @@
 			},
 
 
-			async downloadResultImages (interval = 1) {
+			async downloadResultImages ({interval = 1, resolution = 256} = {}) {
+				this.$refs.canvas.width = resolution;
+				this.$refs.canvas.height = resolution;
+				const ctx = this.$refs.canvas.getContext("2d");
+
 				for (const [i, w] of this.wCircle.entries()) {
 					if (i % interval)
 						continue;
 
 					const response = await fetch(`/generate?fromW=1&latents=${encodeURIComponent(LatentCode.encodeFloat32(w))}`);
 					const blob = await response.blob();
-					downloadUrl(URL.createObjectURL(blob), `${i}.png`);
+					//downloadUrl(URL.createObjectURL(blob), `${i}.png`);
+
+					const img = new Image();
+					await new Promise(resolve => {
+						img.onload = resolve;
+						img.src = URL.createObjectURL(blob);
+					});
+					ctx.drawImage(img, 0, 0, this.$refs.canvas.width, this.$refs.canvas.height);
+					const compressedBlob = await new Promise(resolve => this.$refs.canvas.toBlob(resolve, "image/webp"));
+
+					downloadUrl(URL.createObjectURL(compressedBlob), `${i}.webp`);
 				}
 			},
 		},
