@@ -65,6 +65,12 @@ Once you get some latent codes by projector or turning, you can test to mix feat
 
 The pair of top-left images are the source to merge, press **Ctrl+V** in the hash box below either image to paste input latent code via clipboard, and **Ctrl+C** on the right blank area to copy result latent code.
 
+### Mapping Network Research
+
+[![mapping plot](/documents/mapping-plot.png)](https://k-l-lambda.github.io/2020/02/10/stylegan-mapping/)
+
+I attempt to explore the StyleGAN mapping network high-dimensional terrain aspect, [**read this article**](https://k-l-lambda.github.io/2020/02/10/stylegan-mapping/) for details.
+
 ## Run Web Server
 
 ```.bash
