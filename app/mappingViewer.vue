@@ -139,6 +139,16 @@
 			},
 
 
+			downloadSourceDataTSV () {
+				const points = this.wCircle.map(point => point.map((x, i) => x - this.wCenter[i]));
+				//console.log("points:", points);
+
+				const text = points.map(point => Array.from(point).join("\t")).join("\n");
+				const blob = new Blob([text]);
+				downloadUrl(URL.createObjectURL(blob), "mappingSource.tsv");
+			},
+
+
 			async downloadResultImages ({interval = 1, resolution = 256} = {}) {
 				this.$refs.canvas.width = resolution;
 				this.$refs.canvas.height = resolution;
