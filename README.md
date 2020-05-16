@@ -8,7 +8,7 @@ Thanks for [NVlabs](https://github.com/NVlabs)' excellent work.
 
 ### Explorer
 
-See the result image how response to changes of latent code & psi.
+See how the result image response to changes of latent code & psi.
 
 ![Projector Demo 1](./documents/explorer-illustration.png)
 
@@ -71,11 +71,15 @@ The pair of top-left images are the source to merge, press **Ctrl+V** in the has
 
 I attempt to explore the StyleGAN mapping network high-dimensional terrain aspect, [**read this article**](https://k-l-lambda.github.io/2020/02/10/stylegan-mapping/) for details.
 
-## Run Web Server
+## Usage
+
+Run the web server:
 
 ```.bash
 python ./http_server.py
 ```
+
+If this works, open *http://localhost:8186* in your browser.
 
 To ensure it working, please read the following requirements before do this.
 
