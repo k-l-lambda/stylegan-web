@@ -1,4 +1,4 @@
-tensorflow>=1.14.0
+tensorflow-gpu>=1.14.0
 python-dotenv>=0.10.1
 Flask==1.1.1
 numpy>=1.8.0
