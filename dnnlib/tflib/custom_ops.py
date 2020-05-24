@@ -13,7 +13,7 @@ import uuid
 import hashlib
 import tempfile
 import shutil
-import tensorflow as tf
+from .tfutil import tf
 from tensorflow.python.client import device_lib # pylint: disable=no-name-in-module
 
 #----------------------------------------------------------------------------

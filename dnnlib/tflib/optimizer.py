@@ -7,7 +7,7 @@
 """Helper wrapper for a Tensorflow optimizer."""
 
 import numpy as np
-import tensorflow as tf
+from .tfutil import tf
 
 from collections import OrderedDict
 from typing import List, Union

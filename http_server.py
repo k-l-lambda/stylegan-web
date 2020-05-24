@@ -9,7 +9,8 @@ import pickle
 import PIL.Image
 import base64
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from threading import Lock
 import json
 import re

@@ -5,6 +5,11 @@ TODO:
 
 
 
+2020.5.24	K.L.	<k.l.lambda@gmail.com>
+
+	+	Replace tf importing by tensoflow.compat.v1.
+
+
 2020.4.25	K.L.	<k.l.lambda@gmail.com>
 
 	+	mapppingViewer.vue: downloadSourceDataTSV added.
