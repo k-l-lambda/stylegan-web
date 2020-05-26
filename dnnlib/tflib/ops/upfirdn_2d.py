@@ -8,7 +8,7 @@
 
 import os
 import numpy as np
-import tensorflow as tf
+from ..tfutil import tf
 from .. import custom_ops
 
 def _get_plugin():

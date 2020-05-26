@@ -9,7 +9,8 @@ import pickle
 import PIL.Image
 import base64
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from threading import Lock
 import json
 import re
@@ -134,19 +135,17 @@ def bundle(filename):
 	flask.abort(404, 'Invalid request path.')
 
 
-@app.route('/')
-def root():
-	return flask.send_from_directory(DIST_DIR, 'index.html')
+pageRouters = {
+	'/':				'index.html',
+	'/projector/':		'projector.html',
+	'/merger/':			'merger.html',
+	'/mapping-viewer/':	'mappingViewer.html',
+}
+for path in pageRouters:
+	def getHandler(filename):
+		return lambda: flask.send_from_directory(DIST_DIR, filename)
 
-
-@app.route('/projector/')
-def projector():
-	return flask.send_from_directory(DIST_DIR, 'projector.html')
-
-
-@app.route('/merger/')
-def merger():
-	return flask.send_from_directory(DIST_DIR, 'merger.html')
+	app.route(path, endpoint = 'handler' + path)(getHandler(pageRouters[path]))
 
 
 @app.route('/spec', methods=['GET'])

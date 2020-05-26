@@ -1,7 +1,47 @@
 
 TODO:
+	rotate vector by source-target input
 	project from a specified code
 
+
+
+2020.5.24	K.L.	<k.l.lambda@gmail.com>
+
+	+	Replace tf importing by tensoflow.compat.v1.
+
+
+2020.4.25	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: downloadSourceDataTSV added.
+
+
+2020.2.8	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: compressed images downloading added.
+
+
+2020.2.6	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: source data & result images download methods implemented.
+
+
+2020.1.25	K.L.	<k.l.lambda@gmail.com>
+
+	+	circlePlot.vue: plot circle sliced 3 dimensions.
+
+
+2020.1.23	K.L.	<k.l.lambda@gmail.com>
+
+	+	mapppingViewer.vue: mapping from Z to W implemented.
+
+	+	mapppingViewer.vue: circleSamplePoints added.
+
+	+	vectorInput.vue: latent code copy added.
+
+	+	vectorInput.vue created.
+	+	circlePlot.vue created.
+
+	+	Entry of mappingViewer created.
 
 
 2020.1.22	K.L.	<k.l.lambda@gmail.com>

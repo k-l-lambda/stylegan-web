@@ -12,7 +12,7 @@ import re
 import uuid
 import sys
 import numpy as np
-import tensorflow as tf
+from .tfutil import tf
 
 from collections import OrderedDict
 from typing import Any, List, Tuple, Union
@@ -282,6 +282,10 @@ class Network:
         self._build_module_src = state["build_module_src"]
         self._build_func_name = state["build_func_name"]
 
+        # the workaround of tf1 to tf2 migration in network pickle file
+        #	replace 'import tensorflow as tf' in build_module_src
+        self._build_module_src = self._build_module_src.replace('import tensorflow as tf', 'import tensorflow.compat.v1 as tf\ntf.disable_v2_behavior()')
+
         # Create temporary module from the imported source code.
         module_name = "_tflib_network_import_" + uuid.uuid4().hex
         module = types.ModuleType(module_name)
@@ -292,6 +296,8 @@ class Network:
         # Locate network build function in the temporary module.
         self._build_func = util.get_obj_from_module(module, self._build_func_name)
         assert callable(self._build_func)
+
+        #print('__setstate__: _build_module_src:', self._build_module_src)
 
         # Init TensorFlow graph.
         self._init_graph()

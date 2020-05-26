@@ -5,6 +5,14 @@ html
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+header fieldset
+{
+	display: inline-block;
+	margin: 0 .6em;
+	border: 0;
+	padding: 0;
+}
+
 .initializing
 {
 	position: fixed;

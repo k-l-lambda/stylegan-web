@@ -247,6 +247,8 @@
 						this.latentsBytesEx = path;
 
 						break;
+					default:
+						console.warn("latent URL set failed, unexpected protocol:", protocol);
 					}
 				},
 			},
@@ -471,7 +473,8 @@
 
 					this.latentsURL = text;
 				}
-				catch(_) {
+				catch (error) {
+					console.warn("latent code paste failed:", error);
 				}
 			},
 
@@ -511,6 +514,7 @@
 	};
 </script>
 
+<style src="./common.css"></style>
 <style>
 	body
 	{
@@ -526,14 +530,6 @@
 	header h2
 	{
 		display: inline;
-	}
-
-	header fieldset
-	{
-		display: inline-block;
-		margin: 0 .6em;
-		border: 0;
-		padding: 0;
 	}
 
 	.latant-type
