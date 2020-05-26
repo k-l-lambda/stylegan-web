@@ -74,6 +74,19 @@ According to [StyleGAN2 README.md](https://github.com/NVlabs/stylegan2#requireme
 	mklink /J tensorflow tensorflow_core
 	```
 
+* Tips for tensorflow 2.x
+
+	**Tensorflow 2.0+ can work now!** I have solved the compatibility issues with TF2 already, including some modification of code bundled in pickle.
+	Except one problem on Windows, if you encountered this:
+
+	>	C:/Users/xxx/AppData/Local/Programs/Python/Python36/lib/site-packages/tensorflow/include\unsupported/Eigen/CXX11/Tensor(74): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
+
+	Just open this file and comment out this line simply:
+
+	> #include <unistd.h>
+
+	It seems a bug of tensorflow, and I have committed a [issue](https://github.com/tensorflow/tensorflow/issues/39829#event-3369800641) for them.
+
 * cudafe++ issue
 
 	If you encountered python console error like:
