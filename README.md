@@ -162,7 +162,7 @@ According to [StyleGAN2 README.md](https://github.com/NVlabs/stylegan2#requireme
 
 	> #include <unistd.h>
 
-	It seems a bug of tensorflow, and I have committed a [issue](https://github.com/tensorflow/tensorflow/issues/39829#event-3369800641) for them.
+	It seems a bug of tensorflow, and I have committed an [issue](https://github.com/tensorflow/tensorflow/issues/39829#event-3369800641) for them.
 
 * cudafe++ issue
 
