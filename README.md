@@ -190,3 +190,12 @@ Key							| Description							| Default Value
 **EUCLIDEAN_DIST_WEIGHT**	| Projector training hyperparameter. Float.	| *1*
 **REGULARIZE_MAGNITUDE_WEIGHT**	| Projector training hyperparameter. Float.	| *0*
 **UNIFORM_LATENTS**			| Use uniform latents for all feature layers (consistent with origin StyleGAN2 paper). Boolean, 0 or 1	| *0*
+
+
+----
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+![A Bonus :)](./documents/tiger-projection-1000.gif)
